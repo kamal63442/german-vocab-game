@@ -80,7 +80,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--redline); o
 .verb-row { display: flex; align-items: center; gap: 8px; }
 .solution-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .hidden { display: none !important; }
-main { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; animation: screen-in .3s ease both; scrollbar-width: thin; }
+main { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; animation: screen-in .3s ease both; scrollbar-width: none; }
+main::-webkit-scrollbar { width: 0; height: 0; display: none; }
 .screen { display: grid; gap: clamp(10px, 1.8vh, 17px); padding-bottom: 4px; }
 .hero { min-height: clamp(90px, 18vh, 170px); display: flex; flex-direction: column; justify-content: center; padding: clamp(6px, 1.5vh, 16px) 2px clamp(8px, 2vh, 20px); }
 .hero-tags { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
