@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Mascot: "Der Stift" - a friendly pencil character -->
+  <defs>
+    <!-- Color palette -->
+    <style>
+      .body { fill: #F0B429; }           /* accent yellow */
+      .body-dark { fill: #D4A024; }
+      .tip { fill: #2F7A45; }             /* approved green */
+      .eraser { fill: #C0392B; }          /* redline red */
+      .face { fill: #23324D; }            /* text dark */
+      .cheek { fill: #F0B429; opacity: 0.6; }
+      .highlight { fill: #FFF; opacity: 0.3; }
+      .shadow { fill: #000; opacity: 0.1; }
+    </style>
+  </defs>
+
+  <!-- Shadow -->
+  <ellipse cx="60" cy="112" rx="35" ry="6" class="shadow"/>
+
+  <!-- Pencil body -->
+  <path d="M60 10 L35 95 Q30 100 60 100 Q90 100 85 95 L60 10Z" class="body"/>
+  <path d="M60 10 L35 95 Q30 100 60 100" class="body-dark" fill-opacity="0.2"/>
+
+  <!-- Metal ferrule -->
+  <rect x="38" y="95" width="44" height="8" rx="2" fill="#8B8B8B"/>
+  <rect x="40" y="96" width="40" height="4" rx="1" fill="#B0B0B0"/>
+
+  <!-- Eraser -->
+  <rect x="42" y="88" width="36" height="8" rx="3" class="eraser"/>
+  <rect x="45" y="89" width="30" height="4" rx="1" fill="#E55A4F" opacity="0.5"/>
+
+  <!-- Wood texture lines -->
+  <g stroke="#D4A024" stroke-width="0.5" stroke-opacity="0.5" fill="none">
+    <line x1="42" y1="15" x2="42" y2="88"/>
+    <line x1="50" y1="12" x2="50" y2="88"/>
+    <line x1="60" y1="10" x2="60" y2="88"/>
+    <line x1="70" y1="12" x2="70" y2="88"/>
+    <line x1="78" y1="15" x2="78" y2="88"/>
+  </g>
+
+  <!-- Highlight -->
+  <path d="M42 15 L42 88" class="highlight" stroke-width="2" fill="none"/>
+
+  <!-- Face: Eyes -->
+  <g class="face">
+    <!-- Left eye -->
+    <ellipse cx="50" cy="45" rx="6" ry="8"/>
+    <ellipse cx="48" cy="43" rx="2.5" ry="3" class="highlight"/>
+    <!-- Right eye -->
+    <ellipse cx="70" cy="45" rx="6" ry="8"/>
+    <ellipse cx="68" cy="43" rx="2.5" ry="3" class="highlight"/>
+  </g>
+
+  <!-- Cheeks -->
+  <ellipse cx="42" cy="55" rx="5" ry="3" class="cheek"/>
+  <ellipse cx="78" cy="55" rx="5" ry="3" class="cheek"/>
+
+  <!-- Mouth (default - friendly smile) -->
+  <path d="M50 65 Q60 75 70 65" stroke="#23324D" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+  <!-- State variations (hidden by default, shown via CSS classes) -->
+  <!-- Correct state: big smile, sparkles -->
+  <g id="state-correct" style="display:none;">
+    <path d="M45 65 Q60 80 75 65" stroke="#2F7A45" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- Sparkles -->
+    <g fill="#2F7A45">
+      <polygon points="30,25 32,30 27,30 31,33 26,33 30,38 34,33 29,33 33,30 28,30"/>
+      <polygon points="90,30 92,35 87,35 91,38 86,38 90,43 94,38 89,38 93,35 88,35" transform="scale(0.7)"/>
+      <polygon points="55,85 57,90 52,90 56,93 51,93 55,98 59,93 54,93 58,90 53,90" transform="scale(0.6)"/>
+    </g>
+    <text x="60" y="110" text-anchor="middle" font-family="Kalam, cursive" font-size="10" fill="#2F7A45" font-weight="700">Richtig!</text>
+  </g>
+
+  <!-- Wrong state: sad, bandaid -->
+  <g id="state-wrong" style="display:none;">
+    <path d="M50 65 Q60 58 70 65" stroke="#C0392B" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- Tear -->
+    <path d="M45 50 Q43 58 45 62 Q47 60 45 50" fill="#3498DB" opacity="0.8"/>
+    <path d="M45 50 Q43 58 45 62 Q47 60 45 50" stroke="#2980B9" stroke-width="0.5" fill="none"/>
+    <!-- Bandaid on tip -->
+    <rect x="56" y="12" width="16" height="8" rx="2" fill="#FFE4E1" stroke="#C0392B" stroke-width="1"/>
+    <rect x="62" y="14" width="4" height="4" fill="#C0392B"/>
+    <text x="60" y="110" text-anchor="middle" font-family="Kalam, cursive" font-size="10" fill="#C0392B">Nochmal!</text>
+  </g>
+
+  <!-- Streak state: fire, excited -->
+  <g id="state-streak" style="display:none;">
+    <path d="M48 65 Q60 82 72 65" stroke="#F0B429" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- Fire particles -->
+    <g fill="#F0B429">
+      <path d="M25 40 Q22 30 28 25 Q34 30 25 40" opacity="0.9"/>
+      <path d="M90 35 Q87 25 93 20 Q99 25 90 35" opacity="0.7" transform="scale(0.8)"/>
+      <path d="M40 85 Q37 75 43 70 Q49 75 40 85" opacity="0.6" transform="scale(0.7)"/>
+    </g>
+    <text x="60" y="110" text-anchor="middle" font-family="Kalam, cursive" font-size="10" fill="#F0B429">Streak! 🔥</text>
+  </g>
+
+  <!-- Idle/happy state -->
+  <g id="state-idle" style="display:none;">
+    <text x="60" y="110" text-anchor="middle" font-family="Kalam, cursive" font-size="9" fill="#23324D" opacity="0.7">Bereit zum Üben</text>
+  </g>
+
+  <!-- Perfect round state -->
+  <g id="state-perfect" style="display:none;">
+    <path d="M45 65 Q60 85 75 65" stroke="#F0B429" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <g fill="#F0B429">
+      <polygon points="30,20 32,25 27,25 31,28 26,28 30,33 34,28 29,28 33,25 28,25"/>
+      <polygon points="90,25 92,30 87,30 91,33 86,33 90,38 94,33 89,33 93,30 88,30" transform="scale(0.7)"/>
+      <polygon points="55,80 57,85 52,85 56,88 51,88 55,93 59,88 54,88 58,85 53,85" transform="scale(0.6)"/>
+    </g>
+    <text x="60" y="110" text-anchor="middle" font-family="Kalam, cursive" font-size="10" fill="#F0B429">Perfekt! ⭐</text>
+  </g>
+</svg>

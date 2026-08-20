@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mascot Demo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+  :root {
+    --bg: #f3ecd9; --panel: #fbf7ec; --text: #23324d; --muted: #4c5f7d;
+    --accent: #f0b429; --approved: #2f7a45; --redline: #c0392b;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 20px; }
+  h1 { font-family: 'Kalam', cursive; color: var(--text); }
+  .btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; max-width: 600px; }
+  button { padding: 14px 20px; border: 2px solid var(--text); border-radius: 10px; background: var(--panel); color: var(--text); font-family: inherit; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.15s; }
+  button:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  button:active { transform: translateY(0); }
+  .btn-correct { border-color: var(--approved); color: var(--approved); }
+  .btn-correct:hover { background: #e8f5ec; border-color: var(--approved); color: var(--approved); }
+  .btn-wrong { border-color: var(--redline); color: var(--redline); }
+  .btn-wrong:hover { background: #fdeae8; border-color: var(--redline); color: var(--redline); }
+  .btn-streak { border-color: var(--accent); color: #b8860b; }
+  .btn-streak:hover { background: #fff8e1; }
+  .btn-perfect { border-color: #9b59b6; color: #8e44ad; }
+  .btn-perfect:hover { background: #f5eef8; }
+</style>
+</head>
+<body>
+<h1>Der Stift — Mascot Demo</h1>
+<p style="color: var(--muted); max-width: 500px; text-align: center;">Click buttons to trigger states. Hover the mascot for speech bubble.</p>
+
+<div class="btn-grid">
+  <button class="btn-correct" onclick="Mascot.correct()">✓ Correct</button>
+  <button class="btn-wrong" onclick="Mascot.wrong()">✗ Wrong</button>
+  <button class="btn-streak" onclick="Mascot.streak()">🔥 Streak</button>
+  <button class="btn-perfect" onclick="Mascot.perfect()">⭐ Perfect</button>
+  <button onclick="Mascot.idle()">↺ Idle</button>
+</div>
+
+<script src="mascot.js"></script>
+<script>
+  // Override init to place mascot in demo area
+  document.addEventListener('DOMContentLoaded', () => {
+    Mascot.init();
+    const container = document.querySelector('.mascot-container');
+    if (container) {
+      container.style.position = 'relative';
+      container.style.bottom = 'auto';
+      container.style.right = 'auto';
+      container.style.margin = '20px auto';
+      container.style.pointerEvents = 'auto';
+      document.body.appendChild(container);
+    }
+  });
+</script>
+</body>
+</html>

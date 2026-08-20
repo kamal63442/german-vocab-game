@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zahlen Demo — 7 Exercise Types</title>
+<style>
+:root{--bg:#0b0d12;--panel:#13161d;--panel-2:#1a1e27;--text:#e8eaf0;--muted:#8b93a1;--accent:#2dd4bf;--accent-weak:#1a3a36;--wrong:#f87171;--wrong-bg:#3a1212;--border:#242933;--focus:#2dd4bf;--shadow:0 10px 30px rgba(0,0,0,.4)}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+.screen{min-height:100vh;padding:clamp(16px,3vw,28px);display:flex;flex-direction:column;align-items:center}
+.page-heading{h1{margin:0 0 4px;font-size:clamp(22px,4vw,32px);font-weight:700}h2{margin:0;font-size:clamp(14px,2.5vw,18px);font-weight:400;color:var(--muted)}}
+.page-copy{margin:8px 0 24px;color:var(--muted);max-width:560px}
+.mode-grid{display:grid;gap:12px;width:100%;max-width:560px}
+.mode-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;transition:.15s}
+.mode-card:hover{border-color:var(--accent);background:var(--panel-2)}
+.mode-card .kicker{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:6px;display:block}
+.mode-card h3{margin:0 0 6px;font-size:18px;font-weight:600}
+.mode-card p{margin:0;color:var(--muted);font-size:14px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:clamp(20px,4vw,28px);width:100%;max-width:720px;box-shadow:var(--shadow)}
+.card .kicker{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.question-word{font-size:clamp(28px,6vw,44px);font-weight:700;letter-spacing:-.02em;margin:8px 0 4px;word-break:break-word}
+.question-word.large{font-size:clamp(40px,9vw,72px);text-align:center}
+.prompt{color:var(--muted);margin:12px 0 20px;font-size:15px}
+.options{display:grid;gap:10px}
+.opt-btn{appearance:none;border:1px solid var(--border);background:var(--panel-2);color:var(--text);padding:14px 18px;border-radius:10px;font-size:16px;font-weight:500;cursor:pointer;text-align:left;transition:.1s}
+.opt-btn:hover{border-color:var(--accent);background:var(--accent-weak)}
+.opt-btn.correct{border-color:#22c55e;background:#0f2a1a;color:#86efac}
+.opt-btn.wrong{border-color:var(--wrong);background:var(--wrong-bg);color:#fca5a5}
+.text-input{width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:16px 18px;border-radius:10px;font-size:clamp(18px,3.5vw,24px);text-align:center;outline:none}
+.text-input:focus{border-color:var(--focus)}
+.text-input.correct{border-color:#22c55e;background:#0f2a1a}
+.text-input.wrong{border-color:var(--wrong);background:var(--wrong-bg)}
+.feedback{margin-top:18px;padding:14px 16px;border-radius:10px;font-size:14px;line-height:1.6}
+.feedback.correct{background:#0f2a1a;border:1px solid #22c55e;color:#86efac}
+.feedback.wrong{background:var(--wrong-bg);border:1px solid var(--wrong);color:#fca5a5}
+.feedback .answer{font-weight:600;margin-bottom:4px}
+.feedback .explanation{color:var(--muted);font-size:13px}
+.btn-row{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.btn{appearance:none;border:1px solid var(--border);background:var(--panel-2);color:var(--text);padding:12px 22px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:.1s}
+.btn:hover{border-color:var(--accent);background:var(--accent-weak)}
+.btn.primary{border-color:var(--accent);background:linear-gradient(180deg,#1f3d3a,var(--accent-weak));color:#fff}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.range-selector{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0 20px}
+.range-btn{appearance:none;border:1px solid var(--border);background:var(--panel-2);color:var(--text);padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer}
+.range-btn:hover{border-color:var(--accent)}
+.range-btn.active{border-color:var(--accent);background:var(--accent-weak);color:var(--accent)}
+.difficulty-selector{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0 20px}
+.diff-btn{appearance:none;border:1px solid var(--border);background:var(--panel-2);color:var(--text);padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer}
+.diff-btn:hover{border-color:var(--accent)}
+.diff-btn.active{border-color:var(--accent);background:var(--accent-weak);color:var(--accent)}
+.ordinal-forms{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:16px 0}
+.ordinal-form{appearance:none;border:1px solid var(--border);background:var(--panel-2);color:var(--text);padding:10px 16px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer}
+.ordinal-form:hover{border-color:var(--accent);background:var(--accent-weak)}
+.ordinal-form.selected{border-color:var(--accent);background:var(--accent-weak);color:var(--accent)}
+.ordinal-form.correct{border-color:#22c55e;background:#0f2a1a;color:#86efac}
+.ordinal-form.wrong{border-color:var(--wrong);background:var(--wrong-bg);color:#fca5a5}
+.stats-bar{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:16px 0;color:var(--muted);font-size:13px}
+.stat{display:flex;align-items:center;gap:6px}
+.stat strong{color:var(--text);font-variant-numeric:tabular-nums}
+@media(max-width:480px){.card{padding:18px;border-radius:12px}.question-word.large{font-size:36px}.btn{padding:10px 16px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ============ CORE NUMBER GERMAN CONVERTER ============
+var UNITS=["null","eins","zwei","drei","vier","funf","sechs","sieben","acht","neun"];
+var TEENS=["zehn","elf","zwoelf","dreizehn","vierzehn","fuenfzehn","sechzehn","siebzehn","achtzehn","neunzehn"];
+var TENS=["","","zwanzig","dreissig","vierzig","fuenfzig","sechzig","siebzig","achtzig","neunzig"];
+var SCALE=[{v:1000000000,n:"Milliarde"},{v:1000000,n:"Million"},{v:1000,n:"tausend"},{v:100,n:"hundert"}];
+var UNITS_UMLAUTE=["null","eins","zwei","drei","vier","fünf","sechs","sieben","acht","neun"];
+var TEENS_UMLAUTE=["zehn","elf","zwölf","dreizehn","vierzehn","fünfzehn","sechzehn","siebzehn","achtzehn","neunzehn"];
+var TENS_UMLAUTE=["","","zwanzig","dreißig","vierzig","fünfzig","sechzig","siebzig","achtzig","neunzig"];
+var SCALE_UMLAUTE=[{v:1000000000,n:"Milliarde"},{v:1000000,n:"Million"},{v:1000,n:"tausend"},{v:100,n:"hundert"}];
+
+function numberToGerman(n){
+  var u=UNITS_UMLAUTE, t=TEENS_UMLAUTE, tn=TENS_UMLAUTE, sc=SCALE_UMLAUTE;
+  if(n===0)return"null";
+  if(n<0)return"minus "+numberToGerman(-n);
+  var parts=[];
+  for(var si=0;si<sc.length;si++){
+    var v=sc[si].v, base=sc[si].n;
+    if(n>=v){
+      var count=Math.floor(n/v);
+      if(count>1||v===100||v===1000)parts.push(numberToGerman(count));
+      parts.push(base);
+      n=n%v;
+    }
+  }
+  if(n>0){
+    if(n<10)parts.push(u[n]);
+    else if(n<20)parts.push(t[n-10]);
+    else{
+      var ten=Math.floor(n/10)*10;
+      var unit=n%10;
+      if(unit>0)parts.push(u[unit]+"und"+tn[ten/10]);
+      else parts.push(tn[ten/10]);
+    }
+  }
+  return parts.join("");
+}
+
+var ORDINAL_BASE={1:"erste",2:"zweite",3:"dritte",4:"vierte",5:"fünfte",6:"sechste",7:"siebte",8:"achte",9:"neunte",10:"zehnte",11:"elfte",12:"zwölfte",13:"dreizehnte",14:"vierzehnte",15:"fünfzehnte",16:"sechzehnte",17:"siebzehnte",18:"achtzehnte",19:"neunzehnte",20:"zwanzigste",30:"dreißigste",40:"vierzigste",50:"fünfzigste",60:"sechzigste",70:"siebzigste",80:"achtzigste",90:"neunzigste",100:"hundertste",1000:"tausendste"};
+function ordinalBase(n){
+  if(ORDINAL_BASE[n])return ORDINAL_BASE[n];
+  if(n<20)return numberToGerman(n)+"te";
+  if(n<100){
+    var ten=Math.floor(n/10)*10, unit=n%10;
+    if(unit===0)return ORDINAL_BASE[ten]||numberToGerman(ten)+"ste";
+    return numberToGerman(unit)+"und"+(ORDINAL_BASE[ten]||numberToGerman(ten)+"ste");
+  }
+  if(n<1000){
+    var h=Math.floor(n/100), rest=n%100;
+    if(rest===0)return(h>1?numberToGerman(h):"")+"hundertste";
+    return(h>1?numberToGerman(h):"")+"hundert"+ordinalBase(rest);
+  }
+  return numberToGerman(n)+"ste";
+}
+function ordinalForm(n,gender,clss){
+  var base=ordinalBase(n);
+  var endings={nominative:{m:"r",f:"",n:"s",pl:"n"},accusative:{m:"n",f:"",n:"s",pl:"n"},dative:{m:"n",f:"n",n:"n",pl:"n"},genitive:{m:"n",f:"r",n:"n",pl:"r"}};
+  return base+endings[clss][gender];
+}
+
+// ============ MATH PARSER ============
+function germanMathToExpr(str){
+  return str.replace(/\bplus\b/g,"+").replace(/\bminus\b/g,"-").replace(/\bmal\b/g,"*").replace(/\bgeteilt durch\b/g,"/").replace(/\bgeteilt\b/g,"/");
+}
+function evalGermanMath(str){try{return eval(germanMathToExpr(str));}catch(e){return NaN;}}
+
+// ============ ALLTAGSFORMATE ============
+function formatPrice(cents){
+  var eur=Math.floor(cents/100),ct=cents%100;
+  if(ct===0)return eur+" Euro";
+  return eur+" Euro "+numberToGerman(ct);
+}
+function formatTime(h,m){
+  if(m===0)return numberToGerman(h)+" Uhr";
+  if(m===15)return "viertel "+numberToGerman((h%12)+1);
+  if(m===30)return "halb "+numberToGerman((h%12)+1);
+  if(m===45)return "dreiviertel "+numberToGerman((h%12)+1);
+  if(m<30)return numberToGerman(m)+" nach "+numberToGerman(h);
+  return numberToGerman(60-m)+" vor "+numberToGerman((h%12)+1);
+}
+function formatDate(d,m){
+  return ordinalBase(d)+". "+["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"][m-1];
+}
+function formatPhone(digits){
+  var words=[];for(var i=0;i<digits.length;i++)words.push(UNITS_UMLAUTE[parseInt(digits[i])]);
+  return words.join(" ");
+}
+
+// ============ STATE ============
+var state={screen:"mode-select",subMode:null,range:100,difficulty:"medium",session:null,pendingSubMode:null};
+
+// ============ UTIL ============
+function $(sel,ctx){return(ctx||document).querySelector(sel)}
+function $$(sel,ctx){return Array.from((ctx||document).querySelectorAll(sel))}
+function shuffle(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=a[i];a[i]=a[j];a[j]=tmp;}return a}
+function clamp(n,min,max){return Math.max(min,Math.min(max,n))}
+function speak(text){if("speechSynthesis" in window){var u=new SpeechSynthesisUtterance(text);u.lang="de-DE";speechSynthesis.cancel();speechSynthesis.speak(u)}}
+function fmtTime(sec){var m=Math.floor(sec/60),s=sec%60;return m+":"+(s<10?"0":"")+s}
+
+// ============ NUMBER POOL ============
+function generatePool(range){
+  var pool=[];for(var i=0;i<=range;i++)pool.push(i);return pool;
+}
+function pickRandom(arr,count){return shuffle(arr).slice(0,Math.min(count,arr.length))}
+
+// ============ QUESTION GENERATORS ============
+function makeZahlWortQ(n){return{type:"zahl-wort",prompt:n,answer:numberToGerman(n),display:n.toString(),meta:{n:n}}}
+function makeWortZahlQ(n,pool){
+  var correct=numberToGerman(n);
+  var distractors=pickRandom(pool.filter(function(x){return x!==n}),3).map(numberToGerman);
+  return{type:"wort-zahl",prompt:correct,answer:n.toString(),display:correct,options:shuffle([correct].concat(distractors)),meta:{n:n}};
+}
+function makeAudioZahlQ(n,pool){
+  var correct=n.toString();
+  var distractors=pickRandom(pool.filter(function(x){return x!==n}),3).map(function(x){return x.toString()});
+  return{type:"audio-zahl",prompt:n,answer:correct,display:"🔊",options:shuffle([correct].concat(distractors)),meta:{n:n}};
+}
+function makeRechnenQ(n,pool,range){
+  var ops=["plus","minus","mal"];
+  var op=ops[Math.floor(Math.random()*ops.length)];
+  var a,b,result;
+  if(op==="mal"){a=Math.floor(Math.random()*12)+1;b=Math.floor(Math.random()*12)+1;result=a*b;}
+  else if(op==="plus"){a=Math.floor(Math.random()*Math.min(range,500));b=Math.floor(Math.random()*Math.min(range,500))+1;result=a+b;}
+  else{a=Math.floor(Math.random()*Math.min(range-10,500))+10;b=Math.floor(Math.random()*a)+1;result=a-b;}
+  var expr=numberToGerman(a)+" "+op+" "+numberToGerman(b);
+  return{type:"rechnen",prompt:expr,answer:numberToGerman(result),display:expr,meta:{a:a,b:b,op:op,result:result}};
+}
+function makeOrdinalQ(n,pool){
+  var genders=["m","f","n","pl"],cases=["nominative","accusative","dative","genitive"];
+  var g=genders[Math.floor(Math.random()*genders.length)];
+  var c=cases[Math.floor(Math.random()*cases.length)];
+  var correct=ordinalForm(n,g,c);
+  var distractors=new Set();
+  while(distractors.size<3){
+    var rnd=Math.random()<0.5?n:pool[Math.floor(Math.random()*pool.length)];
+    var rg=genders[Math.floor(Math.random()*genders.length)];
+    var rc=cases[Math.floor(Math.random()*cases.length)];
+    var form=ordinalForm(rnd,rg,rc);
+    if(form!==correct)distractors.add(form);
+  }
+  var opts=[correct];distractors.forEach(function(d){opts.push(d)});
+  return{type:"ordinal",prompt:n+".",answer:correct,display:n+". ("+g+", "+c+")",options:shuffle(opts),meta:{n:n,g:g,c:c}};
+}
+function makeAlltagQ(n,pool,format){
+  var prompt,answer,display;
+  var monthNames=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+  switch(format){
+    case"price":
+      var eur=Math.floor(n/100)+","+(n%100<10?"0":"")+(n%100);
+      prompt="€ "+eur;answer=formatPrice(n);display=prompt;break;
+    case"time":
+      var h=Math.floor(n/60)%24,m=n%60;
+      prompt=(h<10?"0":"")+h+":"+(m<10?"0":"")+m;answer=formatTime(h,m);display=prompt;break;
+    case"date":
+      var day=clamp(n%28+1,1,28),month=Math.floor(Math.random()*12)+1;
+      prompt=day+"."+month+".";answer=formatDate(day,month);display=prompt;break;
+    case"phone":
+      var digits="0"+("000000000"+n).slice(-9);
+      prompt=digits.replace(/(.{3})/g,"$1 ").trim();answer=formatPhone(digits);display=prompt;break;
+  }
+  return{type:"alltag",prompt:prompt,answer:answer,display:display,meta:{format:format,n:n}};
+}
+
+// ============ SESSION ============
+function startSession(subMode,range,difficulty){
+  state.subMode=subMode;state.range=range;state.difficulty=difficulty;
+  var pool=generatePool(range);
+  var count=Math.min(20,pool.length);
+  var picked=pickRandom(pool,count);
+  var questions=[];
+  var formats=["price","time","date","phone"];
+  var blitzTypes=["zahl-wort","wort-zahl","audio-zahl","rechnen","ordinal","alltag"];
+  for(var i=0;i<picked.length;i++){
+    var n=picked[i];
+    switch(subMode){
+      case"zahl-wort":questions.push(makeZahlWortQ(n));break;
+      case"wort-zahl":questions.push(makeWortZahlQ(n,pool));break;
+      case"audio-zahl":questions.push(makeAudioZahlQ(n,pool));break;
+      case"rechnen":questions.push(makeRechnenQ(n,pool,range));break;
+      case"ordinal":questions.push(makeOrdinalQ(n,pool));break;
+      case"alltag":questions.push(makeAlltagQ(n,pool,formats[Math.floor(Math.random()*formats.length)]));break;
+      case"blitz":
+        var t=blitzTypes[Math.floor(Math.random()*blitzTypes.length)];
+        var q;
+        switch(t){case"zahl-wort":q=makeZahlWortQ(n);break;case"wort-zahl":q=makeWortZahlQ(n,pool);break;case"audio-zahl":q=makeAudioZahlQ(n,pool);break;case"rechnen":q=makeRechnenQ(n,pool,range);break;case"ordinal":q=makeOrdinalQ(n,pool);break;case"alltag":q=makeAlltagQ(n,pool,formats[Math.floor(Math.random()*formats.length)]);break;}
+        if(q){q.type=t;questions.push(q);}
+        break;
+    }
+  }
+  state.session={subMode:subMode,range:range,difficulty:difficulty,questions:questions,index:0,answers:[],score:0,startedAt:Date.now()};
+  renderQuiz();
+}
+
+// ============ ESCAPE HTML ============
+function escapeHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+
+// ============ RENDER ============
+var app=document.getElementById("app");
+
+function renderModeSelect(){
+  return '<div class="screen"><div class="page-heading"><h1>ZAHLEN DEMO</h1><h2>Choose a mode to test</h2></div><div class="mode-grid">'
+    +'<button class="mode-card" data-action="submode" data-sub="zahl-wort"><span class="kicker">1</span><h3>Zahl → Wort</h3><p>See digits, type/write the German word</p></button>'
+    +'<button class="mode-card" data-action="submode" data-sub="wort-zahl"><span class="kicker">2</span><h3>Wort → Zahl</h3><p>See German word, pick the number</p></button>'
+    +'<button class="mode-card" data-action="submode" data-sub="audio-zahl"><span class="kicker">3</span><h3>Hören → Zahl</h3><p>Hear the number, enter digits</p></button>'
+    +'<button class="mode-card" data-action="submode" data-sub="rechnen"><span class="kicker">4</span><h3>Rechnen</h3><p>German math: "dreiundzwanzig plus siebzehn"</p></button>'
+    +'<button class="mode-card" data-action="submode" data-sub="ordinal"><span class="kicker">5</span><h3>Ordinalzahlen</h3><p>"der 3. Mann" → "der dritte Mann"</p></button>'
+    +'<button class="mode-card" data-action="submode" data-sub="alltag"><span class="kicker">6</span><h3>Alltagsformate</h3><p>Preise, Uhrzeit, Daten, Telefon</p></button>'
+    +'<button class="mode-card" data-action="submode" data-sub="blitz"><span class="kicker">7</span><h3>Blitzrunde</h3><p>Mixed rapid-fire, 60 seconds</p></button>'
+    +'</div></div>';
+}
+
+function renderSubmodeConfig(){
+  var s=state.pendingSubMode;
+  var rangeBtns="";[20,100,1000,1000000].forEach(function(r){
+    var active=state.range===r?" active":"";
+    var label=r===1000000?"1 Mio":r.toString();
+    rangeBtns+='<button class="range-btn'+active+'" data-range="'+r+'">'+label+'</button>';
+  });
+  var diffBtns="";["easy","medium","hard"].forEach(function(d){
+    var active=state.difficulty===d?" active":"";
+    diffBtns+='<button class="diff-btn'+active+'" data-diff="'+d+'">'+d.charAt(0).toUpperCase()+d.slice(1)+'</button>';
+  });
+  return '<div class="screen"><div class="page-heading"><h1>'+escapeHtml(s)+'</h1><h2>Configure your session</h2></div>'
+    +'<div class="card" style="max-width:480px"><div class="kicker">Zahlenbereich</div>'
+    +'<div class="range-selector">'+rangeBtns+'</div>'
+    +'<div class="kicker" style="margin-top:16px">Schwierigkeit</div>'
+    +'<div class="difficulty-selector">'+diffBtns+'</div>'
+    +'<div class="btn-row"><button class="btn primary" data-action="start-session">Start →</button><button class="btn ghost" data-action="back">Zurück</button></div></div></div>';
+}
+
+function renderQuiz(){
+  if(!state.session||state.session.index>=state.session.questions.length)return renderResult();
+  var q=state.session.questions[state.session.index];
+  var prog=(state.session.index/state.session.questions.length)*100;
+  var answered=state.session.answers[state.session.index];
+  var isLast=state.session.index===state.session.questions.length-1;
+  var kickerLabels={"zahl-wort":"Zahl → Wort","wort-zahl":"Wort → Zahl","audio-zahl":"Hören → Zahl","rechnen":"Rechnen","ordinal":"Ordinalzahlen","alltag":"Alltagsformat","blitz":"Blitzrunde"};
+  var promptLabels={"zahl-wort":"Wie lautet die Zahl auf Deutsch?","wort-zahl":"Welche Zahl ist das?","audio-zahl":"Welche Zahl hörst du?","rechnen":"Ergebnis auf Deutsch:","ordinal":"Die richtige Form:","alltag":"Auf Deutsch:","blitz":"Los!"};
+
+  var feedbackHtml="";
+  if(answered){
+    var fbClass=answered.correct?"correct":"wrong";
+    var fbText=answered.correct?"Richtig!":"Nochmal!";
+    feedbackHtml='<div class="feedback '+fbClass+'"><div class="answer">'+fbText+' Richtig: <strong>'+escapeHtml(q.answer)+'</strong></div></div>';
+  }
+
+  var content="";
+  var isTextInput=(q.type==="zahl-wort"||q.type==="rechnen"||q.type==="alltag"||(q.type==="blitz"&&["zahl-wort","rechnen","alltag"].indexOf(q.type)>=0));
+  var isOptionInput=(q.type==="wort-zahl"||q.type==="audio-zahl"||(q.type==="blitz"&&["wort-zahl","audio-zahl"].indexOf(q.type)>=0));
+  var isOrdinal=(q.type==="ordinal"||(q.type==="blitz"&&q.type==="ordinal"));
+  var isAlltag=(q.type==="alltag"||(q.type==="blitz"&&q.type==="alltag"));
+
+  if(isTextInput){
+    content='<div class="question-word large">'+escapeHtml(q.display)+'</div><p class="prompt">'+promptLabels[q.type]+'</p>'
+      +'<input type="text" class="text-input" id="textAns" placeholder="z. B. zweiundvierzig" autocomplete="off" '+(answered?"disabled":"")+' autofocus>'
+      +feedbackHtml;
+  }else if(isOptionInput){
+    var optsHtml="";
+    if(q.options){q.options.forEach(function(o,i){
+      var cls="opt-btn";
+      if(answered){
+        if(answered.selected===o)cls+=" correct";
+        else if(!answered.correct)cls+=" wrong";
+      }
+      optsHtml+='<button class="'+cls+'" data-opt="'+escapeHtml(o)+'" '+(answered?"disabled":"")+'>'+escapeHtml(o)+'</button>';
+    });}
+    var speakBtn=q.type==="audio-zahl"?'<button class="btn" data-action="speak" style="margin-bottom:8px">🔊 Wiederhören</button>':"";
+    content='<div class="question-word">'+(q.type==="audio-zahl"?"🔊":escapeHtml(q.display))+'</div>'+speakBtn
+      +'<p class="prompt">'+promptLabels[q.type]+'</p>'
+      +'<div class="options">'+optsHtml+'</div>'
+      +feedbackHtml;
+  }else if(isOrdinal||isAlltag){
+    if(isOrdinal){
+      var ordOptsHtml="";
+      if(q.options){q.options.forEach(function(o){
+        var cls="ordinal-form";
+        if(answered){
+          if(o===q.answer)cls+=" correct";
+          else if(answered.selected===o)cls+=" wrong";
+        }
+        ordOptsHtml+='<button class="'+cls+'" data-opt="'+escapeHtml(o)+'" '+(answered?"disabled":"")+'>'+escapeHtml(o)+'</button>';
+      });}
+      content='<div class="question-word large">'+escapeHtml(q.prompt)+'</div><p class="prompt">'+promptLabels[q.type]+'</p>'
+        +'<div class="ordinal-forms">'+ordOptsHtml+'</div>'
+        +feedbackHtml;
+    }else{
+      content='<div class="question-word large">'+escapeHtml(q.display)+'</div><p class="prompt">'+promptLabels[q.type]+'</p>'
+        +'<input type="text" class="text-input" id="textAns" placeholder="z. B. neunzehn Euro neunundneunzig" autocomplete="off" '+(answered?"disabled":"")+' autofocus>'
+        +feedbackHtml;
+    }
+  }
+
+  var submitBtn=answered?"":'<button class="btn primary" data-action="submit" id="submitBtn">Prüfen</button>';
+  var nextBtn=answered?'<button class="btn primary" data-action="next">'+(isLast?"Ergebnis anzeigen":"Nächste Frage")+'</button>':"";
+  var modeLabel=state.subMode==="blitz"?"BLITZ":state.subMode.toUpperCase();
+  var rangeLabel=state.range===1000000?"1Mio":state.range;
+
+  return '<div class="screen">'
+    +'<div class="quiz-header"><span class="quiz-title">'+modeLabel+' • '+rangeLabel+'</span><span class="timer" id="timer"></span></div>'
+    +'<div class="progress-wrap"><div class="progress-bar" id="progBar" style="width:'+prog+'%"></div></div>'
+    +'<div class="card">'+content+'</div>'
+    +'<div class="btn-row">'+submitBtn+nextBtn+'<button class="btn ghost" data-action="abort">Abbrechen</button></div>'
+    +'<div class="stats-bar"><span class="stat">Score: <strong>'+state.session.score+'</strong></span><span class="stat">Frage '+(state.session.index+1)+'/'+state.session.questions.length+'</span></div>'
+    +'</div>';
+}
+
+function renderResult(){
+  var s=state.session;
+  var total=s.questions.length;
+  var pct=total?Math.round((s.score/total)*100):0;
+  var timeSec=Math.round((Date.now()-s.startedAt)/1000);
+  var detailsHtml="";
+  s.answers.forEach(function(a,i){
+    var q=s.questions[i];
+    var cls=a.correct?"correct":"wrong";
+    var sym=a.correct?"✓":"✗";
+    var detail=a.correct?escapeHtml(q.answer):("deine: "+escapeHtml(a.selected||"")+", richtig: "+escapeHtml(q.answer));
+    detailsHtml+='<div style="padding:10px;margin:6px 0;border-radius:8px;border:1px solid var(--'+cls+')" class="feedback '+cls+'"><strong>'+sym+'</strong> '+escapeHtml(q.prompt||q.display)+' → '+detail+'</div>';
+  });
+  return '<div class="screen"><div class="page-heading"><h1>Ergebnis</h1><h2>'+s.score+'/'+total+' ('+pct+'%)</h2></div>'
+    +'<div class="card" style="max-width:560px"><div class="stats-bar" style="justify-content:center"><span class="stat">Richtig: <strong>'+s.score+'</strong></span><span class="stat">Falsch: <strong>'+(total-s.score)+'</strong></span><span class="stat">Zeit: <strong>'+fmtTime(timeSec)+'</strong></span></div>'
+    +'<div style="max-height:300px;overflow:auto">'+detailsHtml+'</div></div>'
+    +'<div class="btn-row"><button class="btn primary" data-action="replay">Nochmal</button><button class="btn ghost" data-action="back-to-modes">Zurück zu Modi</button></div></div>';
+}
+
+function render(){
+  var html="";
+  if(state.screen==="mode-select")html=renderModeSelect();
+  else if(state.screen==="submode-config")html=renderSubmodeConfig();
+  else if(state.screen==="quiz")html=renderQuiz();
+  else if(state.screen==="result")html=renderResult();
+  app.innerHTML=html;
+}
+
+// ============ EVENT HANDLERS ============
+document.addEventListener("click",function(e){
+  var btn=e.target.closest("[data-action]");
+  if(!btn)return;
+  var act=btn.dataset.action;
+
+  if(act==="submode"){
+    state.pendingSubMode=btn.dataset.sub;
+    state.screen="submode-config";
+    render();
+  }
+  if(act==="back"){
+    state.screen="mode-select";
+    render();
+  }
+  if(act==="start-session"){
+    startSession(state.pendingSubMode,state.range,state.difficulty);
+  }
+  if(act==="back-to-modes"){
+    state.screen="mode-select";
+    state.session=null;
+    render();
+  }
+  if(act==="replay"){
+    startSession(state.subMode,state.range,state.difficulty);
+  }
+  if(act==="abort"){
+    if(confirm("Session beenden?")){state.screen="mode-select";state.session=null;render();}
+  }
+  if(act==="speak"){
+    var q=state.session.questions[state.session.index];
+    speak(numberToGerman(q.meta.n));
+  }
+  if(act==="submit"){
+    var q=state.session.questions[state.session.index];
+    var selected=null,correct=false;
+    var isTextInput=(q.type==="zahl-wort"||q.type==="rechnen"||q.type==="alltag"||(q.type==="blitz"&&["zahl-wort","rechnen","alltag"].indexOf(q.type)>=0));
+    var isOptionInput=(q.type==="wort-zahl"||q.type==="audio-zahl"||(q.type==="blitz"&&["wort-zahl","audio-zahl"].indexOf(q.type)>=0));
+    var isOrdinal=(q.type==="ordinal"||(q.type==="blitz"&&q.type==="ordinal"));
+    if(isTextInput){
+      var val=(document.getElementById("textAns")||{}).value||"";
+      selected=val.trim().toLowerCase();
+      var normAns=q.answer.toLowerCase().replace(/[ \-]/g,"");
+      var normVal=selected.replace(/[ \-]/g,"");
+      correct=(normVal===normAns);
+    }else if(isOptionInput){
+      var selBtn=document.querySelector(".opt-btn.selected")||document.querySelector(".opt-btn:focus");
+      if(!selBtn){
+        // check data-opt attributes
+        var allBtns=document.querySelectorAll(".opt-btn");
+        for(var i=0;i<allBtns.length;i++){
+          if(allBtns[i].classList.contains("selected")){selBtn=allBtns[i];break;}
+        }
+      }
+      if(!selBtn){alert("Bitte eine Option wählen");return;}
+      selected=selBtn.dataset.opt;
+      correct=(selected===q.answer);
+    }else if(isOrdinal){
+      var selForm=document.querySelector(".ordinal-form.selected");
+      if(!selForm){alert("Bitte eine Form wählen");return;}
+      selected=selForm.dataset.opt;
+      correct=(selected===q.answer);
+    }
+    state.session.answers[state.session.index]={selected:selected,correct:correct,correctAnswer:q.answer};
+    if(correct)state.session.score+=10;
+    render();
+  }
+  if(act==="next"){
+    state.session.index++;
+    if(state.session.index>=state.session.questions.length){state.screen="result";}
+    render();
+  }
+});
+
+// Option selection
+document.addEventListener("click",function(e){
+  if(e.target.classList.contains("opt-btn")){
+    document.querySelectorAll(".opt-btn").forEach(function(b){b.classList.remove("selected")});
+    e.target.classList.add("selected");
+  }
+  if(e.target.classList.contains("ordinal-form")){
+    document.querySelectorAll(".ordinal-form").forEach(function(b){b.classList.remove("selected")});
+    e.target.classList.add("selected");
+  }
+});
+
+// Range/difficulty selection
+document.addEventListener("click",function(e){
+  if(e.target.dataset.range){
+    state.range=parseInt(e.target.dataset.range);
+    document.querySelectorAll(".range-btn").forEach(function(b){b.classList.toggle("active",b.dataset.range===e.target.dataset.range)});
+  }
+  if(e.target.dataset.diff){
+    state.difficulty=e.target.dataset.diff;
+    document.querySelectorAll(".diff-btn").forEach(function(b){b.classList.toggle("active",b.dataset.diff===e.target.dataset.diff)});
+  }
+});
+
+// Keyboard support
+document.addEventListener("keydown",function(e){
+  if(e.key==="Enter"&&state.screen==="quiz"&&!state.session.answers[state.session.index]){
+    var btn=document.getElementById("submitBtn");
+    if(btn)btn.click();
+  }
+});
+
+// Initialize
+render();
+</script>
+</body>
+</html>

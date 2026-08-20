@@ -1,0 +1,13 @@
+.netlify/
+deploy/
+
+*.py
+*.txt
+
+app_script_check.js
+corrected_vocab.js
+verify_noun_bank.js
+verify_possessive.js
+
+qr.png
+qrcode.png
