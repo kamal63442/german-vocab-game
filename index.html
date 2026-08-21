@@ -72,10 +72,10 @@ html, body { overflow-x: hidden; }
 .brand-mark { color: var(--accent); font-size: 1.2rem; transform: rotate(-8deg); display: inline-block; }
 .header-meta { flex: 1 1 auto; min-width: 0; color: var(--muted); font-size: .68rem; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; font-weight: 600; }
 .header-actions { display: flex; gap: 8px; flex: 0 0 auto; }
-.icon-button { display: flex; align-items: center; gap: 5px; height: 38px; min-width: 34px; padding: 0 11px; border: 2px solid var(--text); border-radius: 8px 8px 3px 3px; background: var(--panel); color: var(--text); font-weight: 700; transition: .15s ease; box-shadow: 2px 2px 0 rgba(35,50,77,.12); }
+.icon-button { display: flex; align-items: center; gap: 5px; height: 38px; min-width: 34px; padding: 0 11px; border: 2px solid var(--text); border-radius: 8px; background: var(--panel); color: var(--text); font-weight: 700; transition: .15s ease; box-shadow: 2px 2px 0 rgba(35,50,77,.12); }
 .icon-button span { font-size: 1rem; }
 .icon-button small { font-size: .62rem; letter-spacing: .02em; font-weight: 700; }
-.icon-button:hover { border-color: var(--redline); color: var(--redline); }
+.icon-button:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel)); border-color: var(--accent); color: var(--accent-ink); }
 .icon-button.speaker-btn { min-width: 38px; height: 38px; padding: 0; background: var(--panel-strong); }
 .icon-button.speaker-btn:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
 .icon-button.speaker-btn.speaking { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
@@ -206,7 +206,7 @@ h1 .line { display: block; }
   background: color-mix(in srgb, var(--redline) 5%, var(--panel));
 }
 .empty-state { padding: 25px 18px; text-align: center; color: var(--muted); line-height: 1.6; font-size: .84rem; font-weight: 600; }
-.text-button { min-height: 38px; padding: 0 2px; border: 0; background: transparent; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; font-weight: 700; }
+.text-button { width: fit-content; justify-self: center; min-height: 38px; padding: 0 2px; border: 0; background: transparent; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; font-weight: 700; }
 .text-button:hover { color: var(--redline); }
 .toast-region { position: fixed; z-index: 8; top: max(15px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); width: min(calc(100% - 30px), 500px); pointer-events: none; }
 .toast { padding: 13px 15px; border: 2px solid var(--text); border-radius: 6px; background: #fff3b0; color: var(--text); font-size: .8rem; font-weight: 700; box-shadow: 3px 3px 0 rgba(35,50,77,.2); animation: toast-in .25s ease both; transform: rotate(-1deg); }
@@ -345,7 +345,7 @@ const Mascot = (() => {
       const style = document.createElement('style');
       style.id = 'mascot-styles';
       style.textContent = `
-        .mascot-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; pointer-events: none; }
+        .mascot-container { position: fixed; bottom: 20px; right: 20px; z-index: 5; pointer-events: none; }
         .mascot { width: 80px; height: 80px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); pointer-events: auto; cursor: pointer; }
         .mascot.correct { animation: mascot-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .mascot.streak { animation: mascot-pulse 0.8s ease-in-out; }
@@ -781,7 +781,10 @@ async function handleSwipeBack(startScreen) {
 function backTarget(screen) {
   screen = screen || activeScreen;
   if (screen === "vocab-level-select") return "mode-select";
-  if (screen === "session-type-select") return pendingKind === "vocab" ? "vocab-level-select" : "mode-select";
+  if (screen === "session-type-select") {
+    if (pendingKind === "vocab") return "vocab-level-select";
+    return "mode-select";
+  }
   if (screen === "review") return "session-type-select";
   return "home";
 }
@@ -1286,6 +1289,86 @@ function createPossessiveSessionQuestions(deck, allNouns, progress = null, diffi
   return deck.map(noun => createPossessiveQuestion(noun, allNouns, progress, difficulty));
 }
 
+// ---- js/zahlen.js ----
+const ZAHLEN_RANGES = { "0-20": [0,20], "0-100": [0,100], "0-1000": [0,1000] };
+const ZAHLEN_EXERCISES = ["digit-word","word-digit","hoeren","preis","uhrzeit"];
+
+function numberToGerman(n){
+  if(n===0) return "null";
+  const ones=["","eins","zwei","drei","vier","fünf","sechs","sieben","acht","neun"];
+  const teens=["zehn","elf","zwölf","dreizehn","vierzehn","fünfzehn","sechzehn","siebzehn","achtzehn","neunzehn"];
+  const tens=["","zehn","zwanzig","dreißig","vierzig","fünfzig","sechzig","siebzig","achtzig","neunzig"];
+  if(n<10) return ones[n];
+  if(n<20) return teens[n-10];
+  if(n<100){
+    const t=Math.floor(n/10), o=n%10;
+    if(o===0) return tens[t];
+    if(o===1) return "einund"+tens[t];
+    return ones[o]+"und"+tens[t];
+  }
+  if(n<1000){
+    const h=Math.floor(n/100), r=n%100;
+    const hWord=h===1?"einhundert":ones[h]+"hundert";
+    if(r===0) return hWord;
+    return hWord+numberToGerman(r);
+  }
+  if(n===1000) return "eintausend";
+  return String(n);
+}
+function timeToGerman(h,m){
+  h=h%12||12;
+  const hWord=numberToGerman(h);
+  if(m===0) return hWord+" Uhr";
+  if(m===15) return "Viertel nach "+hWord;
+  if(m===30) return "halb "+numberToGerman(h%12+1||1);
+  if(m===45) return "Viertel vor "+numberToGerman(h%12+1||1);
+  return hWord+" Uhr "+numberToGerman(m);
+}
+function createZahlenQuestion(range, allNumbers, progress, difficulty){
+  const [min,max]=ZAHLEN_RANGES[range]||[0,100];
+  const type=sample(ZAHLEN_EXERCISES);
+  const n=Math.floor(Math.random()*(max-min+1))+min;
+  const word=numberToGerman(n);
+  let question, solution, correct, options, explanation, extra={};
+  if(type==="digit-word"){
+    correct=word; options=balancedShuffle(correct, shuffle(allNumbers).slice(0,20).map(x=>numberToGerman(x)).filter(w=>w!==correct).slice(0,3));
+    question=String(n); solution=word; explanation=`${n} = "${word}".`;
+  } else if(type==="word-digit"){
+    correct=String(n); options=balancedShuffle(correct, shuffle(allNumbers).slice(0,20).map(x=>String(x)).filter(x=>x!==correct).slice(0,3));
+    question=word; solution=String(n); explanation=`"${word}" = ${n}.`;
+  } else if(type==="hoeren"){
+    correct=word; options=balancedShuffle(correct, shuffle(allNumbers).slice(0,20).map(x=>numberToGerman(x)).filter(w=>w!==correct).slice(0,3));
+    question="🔊 Was hast du gehört?"; solution=word; explanation=`Gehört: "${word}" = ${n}.`; extra.isHoeren=true; extra.hoerWord=word;
+  } else if(type==="preis"){
+    correct=word; options=balancedShuffle(correct, shuffle(allNumbers).slice(0,20).map(x=>numberToGerman(x)).filter(w=>w!==correct).slice(0,3));
+    question=`Die Jacke kostet ___ Euro. (${n} €)`; solution=`Die Jacke kostet ${word} Euro.`; explanation=`${n} € = ${word} Euro.`;
+  } else {
+    const h=Math.floor(Math.random()*12)+1, mins=[0,15,30,45][Math.floor(Math.random()*4)];
+    const timeWord=timeToGerman(h,mins);
+    correct=timeWord; const distractors=shuffle(allNumbers).slice(0,20).map(_=>{const hh=Math.floor(Math.random()*12)+1, mm=[0,15,30,45][Math.floor(Math.random()*4)]; return timeToGerman(hh,mm);}).filter(w=>w!==correct).slice(0,3);
+    options=balancedShuffle(correct, distractors);
+    question="Wie spät ist es? Es ist ___.";
+    solution=`Es ist ${timeWord}.`;
+    explanation=`${String(h).padStart(2,"0")}:${String(mins).padStart(2,"0")} = "${timeWord}".`;
+    extra.isUhrzeit=true; extra.hour=h; extra.minute=mins;
+  }
+  return { n, word, type, question, solutionSentence:solution, correct, options, explanation, signature:`${type}|${n}|${correct}`, ...extra };
+}
+function createZahlenDeck(range, allNumbers, progress, count){
+  const deck=[];
+  for(let i=0;i<count;i++) deck.push(createZahlenQuestion(range, allNumbers, progress, "medium"));
+  return deck;
+}
+function analogClockSVG(hour, minute){
+  const cx=60, cy=60, r=52;
+  const hAngle=(hour%12)*30+minute*0.5-90, mAngle=minute*6-90;
+  const hX=cx+Math.cos(hAngle*Math.PI/180)*28, hY=cy+Math.sin(hAngle*Math.PI/180)*28;
+  const mX=cx+Math.cos(mAngle*Math.PI/180)*38, mY=cy+Math.sin(mAngle*Math.PI/180)*38;
+  let ticks="";
+  for(let i=0;i<12;i++){ const a=i*30-90, x1=cx+Math.cos(a*Math.PI/180)*(r-4), y1=cy+Math.sin(a*Math.PI/180)*(r-4), x2=cx+Math.cos(a*Math.PI/180)*r, y2=cy+Math.sin(a*Math.PI/180)*r; ticks+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#23324d" stroke-width="${i%3===0?2:1}" />`; }
+  return `<svg viewBox="0 0 120 120" width="160" height="160" style="display:block;margin:0 auto;background:#fbf7ec;border:2px solid #23324d;border-radius:50%;"><circle cx="${cx}" cy="${cy}" r="${r}" fill="#fbf7ec" stroke="#23324d" stroke-width="2"/>${ticks}<line x1="${cx}" y1="${cy}" x2="${hX}" y2="${hY}" stroke="#23324d" stroke-width="4" stroke-linecap="round"/><line x1="${cx}" y1="${cy}" x2="${mX}" y2="${mY}" stroke="#c0392b" stroke-width="3" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="5" fill="#23324d"/></svg>`;
+}
+
 // ---- js/settings.js ----
 const settingsMeta = {
   animations: { title: "Animations", description: "Use movement and visual answer feedback." },
@@ -1309,7 +1392,7 @@ function renderHome({ stats, verbCount, wordCountA1, wordCountB1 }) {
   const accuracy = percent(stats.correct, stats.total);
   const totalWords = wordCountA1 + wordCountB1;
   return `<section class="screen">
-    <div class="hero"><span class="eyebrow">Deutschheft · Übung 1</span><h1><span class="line">MEIN</span><span class="line">ÜBUNGSHEFT</span></h1><p class="subtitle">Verbs, vocabulary, and possessive articles — all in one notebook.</p><div class="hero-tags"><span class="hero-tag">✎ Konjugation · ${verbCount}</span><span class="hero-tag">📖 Wortschatz · ${totalWords.toLocaleString("en-US")} (A1: ${wordCountA1.toLocaleString("en-US")} + B1: ${wordCountB1.toLocaleString("en-US")})</span><span class="hero-tag">🔤 Possessivartikel · ${possessiveNouns.length}</span></div></div>
+    <div class="hero"><span class="eyebrow">Deutschheft · Übung 1</span><h1><span class="line">MEIN</span><span class="line">ÜBUNGSHEFT</span></h1><p class="subtitle">Verbs, vocabulary, possessive articles and numbers — all in one notebook.</p><div class="hero-tags"><span class="hero-tag">✎ Konjugation · ${verbCount}</span><span class="hero-tag">📖 Wortschatz · ${totalWords.toLocaleString("en-US")} (A1: ${wordCountA1.toLocaleString("en-US")} + B1: ${wordCountB1.toLocaleString("en-US")})</span><span class="hero-tag">🔤 Possessivartikel · ${(possessiveNouns.length * POSSESSIVE_OWNERS.length * 2).toLocaleString("en-US")}</span><span class="hero-tag">🔢 Zahlen · ${(100*5).toLocaleString("en-US")}+ Fragen</span></div></div>
     <section class="panel"><div class="section-title"><h2>YOUR PROGRESS</h2><span>saved on this device</span></div><div class="stats-grid">
       ${statCard("Accuracy", `${accuracy}`, "%")}${statCard("Current streak", stats.currentStreak)}${statCard("Best streak", stats.bestStreak)}${statCard("Answered", stats.total)}
     </div></section>
@@ -1334,6 +1417,11 @@ function renderModeSelect() {
       <span class="kicker">Seite 3 — Grammatik</span>
       <h2 class="mode-card-title">Possessivartikel</h2>
       <p class="page-copy">Mein, dein, sein… pick the article that matches gender and case.</p>
+    </button>
+    <button type="button" class="panel mode-card" data-action="choose-mode" data-kind="zahlen">
+      <span class="kicker">Seite 4 — Grundzahlen</span>
+      <h2 class="mode-card-title">Zahlen</h2>
+      <p class="page-copy">0–1000: all numbers, prices and clock times.</p>
     </button>
   </section>`;
 }
@@ -1363,6 +1451,7 @@ function renderSessionTypeSelect(kind, vocabLevel) {
   const label = isReverse ? "Wortschatz (English → German)"
     : kind === "conjugation" ? "A1 Konjugation"
     : kind === "possessive" ? "A1 Possessivartikel"
+    : kind === "zahlen" ? "Zahlen"
     : (vocabLevel === "b1" ? "B1 Wortschatz" : "A1 Wortschatz");
   return `<section class="screen">
     <div><div class="page-heading"><h1>${label.toUpperCase()}</h1></div><p class="page-copy">Practice loop or timed exam?</p></div>
@@ -1389,7 +1478,7 @@ function renderQuiz({ session, question, mode, remainingSeconds }) {
   const index = session.index + 1;
   const timer = mode === "exam" ? `<span class="timer">◷ ${formatTime(remainingSeconds)}</span>` : `<span class="quiz-score">Score ${session.score}</span>`;
   const verbSpeaker = speakerButton(question.verb.verb, "Pronounce verb infinitive", "speak-verb");
-  return `<section class="screen"><div class="quiz-meta"><span>${mode === "exam" ? "EXAM MODE" : "PRACTICE LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index - 1}" max="${session.questions.length}"></progress>
+   return `<section class="screen"><div class="quiz-meta"><span>${mode === "exam" ? "EXAM MODE" : "PRACTICE LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress>
     <article class="question-card"><span class="kicker">${question.questionTypeLabel} · ${escapeHtml(question.pronoun.label)} · ${question.verb.irregular ? "irregular pattern" : "present tense"}</span><div class="verb-row"><div class="verb-word">${escapeHtml(question.verb.verb)}</div>${verbSpeaker}</div><p class="meaning">${escapeHtml(question.verb.meaning)}</p></div><p class="prompt">${escapeHtml(question.sentence).replaceAll("___", "<span class=\"blank\">______</span>")}</p>
       <div class="options">${question.options.map((option, i) => optionButton(option, i, session.currentAnswer, "all")).join("")}</div>
       ${answered ? feedbackWithSpeaker(question, correct) : ""}
@@ -1402,10 +1491,7 @@ function feedbackWithSpeaker(question, correct) {
   return `<div class="feedback ${correct ? "" : "wrong-feedback"}"><strong>${correct ? "Richtig! +10" : "Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span><span class="solution-row">Full sentence: ${escapeHtml(question.solutionSentence)} ${sentenceSpeaker}</span></div>`;
 }
 function capitalize(str) {
-  if (str === str.toLocaleUpperCase("de-DE")) {
-    return str.charAt(0).toLocaleUpperCase("de-DE") + str.slice(1).toLocaleLowerCase("de-DE");
-  }
-  return str;
+  return str.charAt(0).toLocaleUpperCase("de-DE") + str.slice(1).toLocaleLowerCase("de-DE");
 }
 function capitalizeFirst(str) {
   if (!str) return str;
@@ -1429,7 +1515,7 @@ function renderVocabQuiz({ session, question, mode, remainingSeconds }) {
   const prompt = isReverse ? "What is the German word?" : "What does this word mean?";
   const speakWordText = question.word;
   const wordSpeaker = speakerButton(speakWordText, isReverse ? "Pronounce English meaning" : "Pronounce word", "speak-word");
-  return `<section class="screen"><div class="quiz-meta"><span>${mode === "exam" ? (isReverse ? "VOCAB EXAM (EN→DE)" : "VOCAB EXAM") : (isReverse ? "VOCAB LOOP (EN→DE)" : "VOCAB LOOP")} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index - 1}" max="${session.questions.length}"></progress>
+   return `<section class="screen"><div class="quiz-meta"><span>${mode === "exam" ? (isReverse ? "VOCAB EXAM (EN→DE)" : "VOCAB EXAM") : (isReverse ? "VOCAB LOOP (EN→DE)" : "VOCAB LOOP")} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress>
     <article class="question-card"><span class="kicker">${question.posLabel} · Wortschatz${isReverse ? " (EN→DE)" : ""}</span><div class="verb-row"><div class="verb-word">${escapeHtml(capitalizeFirst(question.word))}</div>${wordSpeaker}</div><p class="prompt">${prompt}</p>
       <div class="options">${question.options.map((option, i) => optionButton(option, i, session.currentAnswer, "first")).join("")}</div>
       ${answered ? vocabFeedbackWithSpeaker(question, correct) : ""}
@@ -1447,7 +1533,7 @@ function renderPossessiveQuiz({ session, question, mode, remainingSeconds }) {
   const timer = mode === "exam" ? `<span class="timer">◷ ${formatTime(remainingSeconds)}</span>` : `<span class="quiz-score">Score ${session.score}</span>`;
   const nounSpeaker = speakerButton(question.noun, "Pronounce noun", "speak-noun");
   const sentenceSpeaker = speakerButton(question.solutionSentence, "Pronounce full sentence", "speak-sentence");
-  return `<section class="screen"><div class="quiz-meta"><span>${mode === "exam" ? "POSSESSIV EXAM" : "POSSESSIV LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index - 1}" max="${session.questions.length}"></progress>
+   return `<section class="screen"><div class="quiz-meta"><span>${mode === "exam" ? "POSSESSIV EXAM" : "POSSESSIV LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress>
     <article class="question-card"><span class="kicker">${question.caseLabel} · ${question.owner.label}</span><p class="prompt">${escapeHtml(question.sentence).replace("______", '<span class="blank">______</span>')}</p><p class="meaning verb-row">${escapeHtml(question.noun)} ${nounSpeaker} — ${escapeHtml(question.meaning)}</p>
       <div class="options">${question.options.map((option, i) => optionButton(option, i, session.currentAnswer)).join("")}</div>
       ${answered ? possessiveFeedbackWithSpeaker(question, correct, sentenceSpeaker) : ""}
@@ -1484,6 +1570,7 @@ function renderReview(session) {
   const reviewItem = answer => {
     if (session.kind === "vocab") return `<article class="review-item ${answer.correct ? "correct-review" : "wrong-review"}"><div class="review-head"><strong>${escapeHtml(answer.question.word)}</strong><span>${answer.correct ? "✓ Richtig" : "✗ Nochmal"}</span></div><p>Your answer: <code>${escapeHtml(answer.selected)}</code> · Correct: <code>${escapeHtml(answer.question.correct)}</code></p></article>`;
     if (session.kind === "possessive") return `<article class="review-item ${answer.correct ? "correct-review" : "wrong-review"}"><div class="review-head"><strong>${escapeHtml(answer.question.noun)}</strong><span>${answer.correct ? "✓ Richtig" : "✗ Nochmal"}</span></div><p><code>${escapeHtml(answer.question.solutionSentence)}</code></p><p>Your answer: <code>${escapeHtml(answer.selected)}</code> · Correct: <code>${escapeHtml(answer.question.correct)}</code></p></article>`;
+    if (session.kind === "zahlen") return `<article class="review-item ${answer.correct ? "correct-review" : "wrong-review"}"><div class="review-head"><strong>${escapeHtml(answer.question.type)} · ${answer.question.n}</strong><span>${answer.correct ? "✓ Richtig" : "✗ Nochmal"}</span></div><p><code>${escapeHtml(answer.question.solutionSentence)}</code></p><p>Your answer: <code>${escapeHtml(answer.selected)}</code> · Correct: <code>${escapeHtml(answer.question.correct)}</code></p><p>${escapeHtml(answer.question.explanation)}</p></article>`;
     return `<article class="review-item ${answer.correct ? "correct-review" : "wrong-review"}"><div class="review-head"><strong>${escapeHtml(answer.question.verb.verb)}</strong><span>${answer.correct ? "✓ Richtig" : "✗ Nochmal"}</span></div><p><code>${escapeHtml(answer.question.solutionSentence)}</code></p><p>Your answer: <code>${escapeHtml(answer.selected)}</code> · Correct: <code>${escapeHtml(answer.question.correct)}</code></p><p>${escapeHtml(answer.question.explanation)}</p></article>`;
   };
   return `<section class="screen"><div><div class="page-heading"><h1>${session.mode === "exam" ? "EXAM COMPLETE" : "SESSION REVIEW"}</h1><span class="kicker">${correct}/${total} correct</span></div><p class="page-copy">${session.mode === "exam" ? `Final percentage ${accuracy}% — grade ${session.grade}.` : `Accuracy ${accuracy}%. Review every answer below, then start another loop.`}</p></div>${grade}
@@ -1689,6 +1776,7 @@ let timerId = null;
 let lastSession = null;
 let pendingKind = null;
 let pendingVocabLevel = "a1";
+let pendingZahlenRange = "0-1000";
 
 boot();
 
@@ -1805,6 +1893,31 @@ function startPossessiveSession(mode) {
   if (mode === "exam") { stopTimer(); timerId = window.setInterval(tickExam, 1000); }
   render("practice");
 }
+function startZahlenSession(mode, range) {
+  const difficulty = state.settings.difficulty || "medium";
+  const count = mode === "exam" ? 50 : 20;
+  const allNumbers = Array.from({length: 1001}, (_,i)=>i);
+  const deck = createZahlenDeck(range, allNumbers, state.progress, count);
+  saveState(state);
+  activeSession = {
+    kind: "zahlen", mode, range, questions: deck, index: 0, answers: [], currentAnswer: null, score: 0, currentStreak: 0, requeued: new Set(),
+    startedAt: performance.now(), questionStartedAt: performance.now(), endsAt: mode === "exam" ? Date.now() + 10 * 60 * 1000 : null
+  };
+  if (mode === "exam") { stopTimer(); timerId = window.setInterval(tickExam, 1000); }
+  render("practice");
+}
+function renderZahlenQuiz({ session, question, mode, remainingSeconds }) {
+  const answered = Boolean(session.currentAnswer);
+  const correct = session.currentAnswer?.correct;
+  const index = session.index + 1;
+  const timer = mode === "exam" ? `<span class="timer">◷ ${formatTime(remainingSeconds)}</span>` : `<span class="quiz-score">Score ${session.score}</span>`;
+  const typeLabel = { "digit-word":"Zahl → Wort", "word-digit":"Wort → Zahl", "hoeren":"Hören", "preis":"Preis", "uhrzeit":"Uhrzeit" }[question.type] || "Zahlen";
+  const clock = question.isUhrzeit ? analogClockSVG(question.hour, question.minute) : "";
+  const hoerBtn = question.isHoeren ? `<div style="display:flex;justify-content:center;margin:18px 0"><button type="button" class="icon-button speaker-btn" style="min-width:80px;height:80px;border-radius:16px;display:flex;align-items:center;justify-content:center" data-action="speak-zahlen" data-text="${escapeHtml(question.hoerWord)}" aria-label="Play number" title="Play number"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><path d="M15.54 8.46a5 5 0 0 1 0 7.08"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button></div>` : "";
+  const promptHtml = question.isHoeren ? `${escapeHtml(question.question)}${hoerBtn}` : escapeHtml(question.question).replace("___",'<span class="blank">______</span>');
+  const bigWord = question.isUhrzeit || question.isHoeren ? "" : `<div class="verb-word" style="font-size:clamp(1.6rem,4vw+2vh,2.8rem)">${escapeHtml(question.question)}</div>`;
+  return `<section class="screen"><div class="quiz-meta"><span>${mode==="exam"?"ZAHLEN EXAM":"ZAHLEN LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress><article class="question-card"><span class="kicker">${typeLabel}</span>${clock}${bigWord}<p class="prompt">${promptHtml}</p><div class="options">${question.options.map((o,i)=>optionButton(o,i,session.currentAnswer, question.type==="word-digit"?"none":"first")).join("")}</div>${answered?`<div class="feedback ${correct?"":"wrong-feedback"}"><strong>${correct?"Richtig! +10":"Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span></div>`:""}${answered?`<button type="button" class="primary-button" data-action="next-question">${index===session.questions.length?"Finish Session →":"Next Question →"}</button>`:""}</article><button type="button" class="text-button" data-action="abandon-session">End session</button></section>`;
+}
 function renderActiveQuestion() {
   if (!activeSession) return render("home");
   const remaining = activeSession.endsAt ? Math.max(0, Math.round((activeSession.endsAt - Date.now()) / 1000)) : 0;
@@ -1820,6 +1933,12 @@ function renderActiveQuestion() {
     app.innerHTML = renderPossessiveQuiz({ session: activeSession, question: activeSession.questions[activeSession.index], mode: activeSession.mode, remainingSeconds: remaining });
     question = activeSession.questions[activeSession.index];
     if (state.settings.autoSpeak) speakWord(question.noun);
+    return;
+  }
+  if (activeSession.kind === "zahlen") {
+    app.innerHTML = renderZahlenQuiz({ session: activeSession, question: activeSession.questions[activeSession.index], mode: activeSession.mode, remainingSeconds: remaining });
+    question = activeSession.questions[activeSession.index];
+    if (state.settings.autoSpeak && question.isHoeren) speakWord(question.hoerWord, "de-DE");
     return;
   }
   app.innerHTML = renderQuiz({ session: activeSession, question: activeSession.questions[activeSession.index], mode: activeSession.mode, remainingSeconds: remaining });
@@ -1841,7 +1960,8 @@ async function handleAction(event) {
   const action = button.dataset.action;
   if (action === "choose-mode") {
     pendingKind = button.dataset.kind;
-    render(pendingKind === "vocab" ? "vocab-level-select" : "session-type-select");
+    if (pendingKind === "vocab") render("vocab-level-select");
+    else render("session-type-select");
   }
   if (action === "choose-vocab-level") { pendingVocabLevel = button.dataset.level; render("session-type-select"); }
   if (action === "choose-vocab-reverse") { pendingVocabLevel = "both"; render("session-type-select"); }
@@ -1850,6 +1970,7 @@ async function handleAction(event) {
     const kind = button.dataset.kind || "vocab";
     if (kind === "vocab" || kind === "vocab-reverse") startVocabSession(mode, pendingVocabLevel, kind);
     else if (kind === "possessive") startPossessiveSession(mode);
+    else if (kind === "zahlen") startZahlenSession(mode, pendingZahlenRange);
     else startSession(mode);
   }
   if (action === "answer") answer(button.dataset.answer);
@@ -1858,6 +1979,7 @@ async function handleAction(event) {
     const s = activeSession || lastSession;
     if (s?.kind === "vocab") startVocabSession(s.mode, s.level, s.direction === "reverse" ? "vocab-reverse" : "vocab");
     else if (s?.kind === "possessive") startPossessiveSession(s.mode);
+    else if (s?.kind === "zahlen") startZahlenSession(s.mode, s.range || pendingZahlenRange);
     else startSession(s?.mode || "practice");
   }
   if (action === "abandon-session") abandonSession();
@@ -1875,6 +1997,7 @@ async function handleAction(event) {
     else if (action === "speak-german-answer") { const q = activeSession.questions[activeSession.index]; p = speakWord(q.isReverse ? q.correct : q.word, "de-DE"); }
     else if (action === "speak-noun") p = speakWord(activeSession.questions[activeSession.index].noun);
     else if (action === "speak-sentence") p = speakSentence(activeSession.questions[activeSession.index].solutionSentence);
+    else if (action === "speak-zahlen") p = speakWord(activeSession.questions[activeSession.index].hoerWord || activeSession.questions[activeSession.index].correct, "de-DE");
     if (p) p.then(clearSpeaking, clearSpeaking);
     setTimeout(clearSpeaking, 6000);
   }
@@ -1888,7 +2011,7 @@ function answer(selected) {
   activeSession.answers.push({ question, selected, correct, elapsedMs });
   if (correct) { activeSession.score += 10; activeSession.currentStreak = (activeSession.currentStreak || 0) + 1; }
   else activeSession.currentStreak = 0;
-  const key = normalizeVerbKey(activeSession.kind === "vocab" ? question.word : activeSession.kind === "possessive" ? question.noun : question.verb.verb);
+  const key = normalizeVerbKey(activeSession.kind === "vocab" ? question.word : activeSession.kind === "possessive" ? question.noun : activeSession.kind === "zahlen" ? `zahlen-${question.type}-${question.n}` : question.verb.verb);
   recordAnswer(state, { key, correct, elapsedMs });
   if (!correct && !activeSession.requeued.has(question.signature)) {
     activeSession.requeued.add(question.signature);
