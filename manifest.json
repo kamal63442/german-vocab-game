@@ -1,10 +1,10 @@
 {
   "name": "Mein Übungsheft",
   "short_name": "Übungsheft",
-  "id": "/german-vocab-game/",
+  "id": "/",
   "description": "German A1 practice notebook: verb conjugation drills and a 1,897-word vocabulary game.",
-  "start_url": "/german-vocab-game/",
-  "scope": "/german-vocab-game/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f3ecd9",
   "theme_color": "#f3ecd9",

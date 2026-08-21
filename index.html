@@ -6,7 +6,7 @@
 <title>Mein Übungsheft</title>
 <meta name="description" content="German A1/B1 practice notebook: verb conjugation, possessive articles, and vocabulary games. Works offline.">
 <meta name="theme-color" content="#f3ecd9">
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json?v=2">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -75,11 +75,10 @@ html, body { overflow-x: hidden; }
 .icon-button { display: flex; align-items: center; gap: 5px; height: 38px; min-width: 34px; padding: 0 11px; border: 2px solid var(--text); border-radius: 8px 8px 3px 3px; background: var(--panel); color: var(--text); font-weight: 700; transition: .15s ease; box-shadow: 2px 2px 0 rgba(35,50,77,.12); }
 .icon-button span { font-size: 1rem; }
 .icon-button small { font-size: .62rem; letter-spacing: .02em; font-weight: 700; }
+.icon-button:hover { border-color: var(--redline); color: var(--redline); }
 .icon-button.speaker-btn { min-width: 38px; height: 38px; padding: 0; background: var(--panel-strong); }
-@media (hover: hover) {
-  .icon-button:hover { border-color: var(--redline); color: var(--redline); }
-  .icon-button.speaker-btn:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
-}
+.icon-button.speaker-btn:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
+.icon-button.speaker-btn.speaking { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
 .verb-row { display: flex; align-items: center; gap: 8px; }
 .solution-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .hidden { display: none !important; }
@@ -328,7 +327,6 @@ const Mascot = (() => {
       case 'streak': return '<g fill="#F0B429"><path d="M25 40 Q22 30 28 25 Q34 30 25 40" opacity="0.9"/><path d="M90 35 Q87 25 93 20 Q99 25 90 35" opacity="0.7" transform="scale(0.8)"/><path d="M40 85 Q37 75 43 70 Q49 75 40 85" opacity="0.6" transform="scale(0.7)"/></g>';
       case 'perfect': return '<g fill="#F0B429"><polygon points="30,20 32,25 27,25 31,28 26,28 30,33 34,28 29,28 33,25 28,25"/><polygon points="90,25 92,30 87,30 91,33 86,33 90,38 94,33 89,33 93,30 88,30" transform="scale(0.7)"/><polygon points="55,80 57,85 52,85 56,88 51,88 55,93 59,88 54,88 58,85 53,85" transform="scale(0.6)"/></g>';
       case 'tickle': return '<path d="M44 45 Q50 38 56 45" stroke="#23324D" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M64 45 Q70 38 76 45" stroke="#23324D" stroke-width="2.5" fill="none" stroke-linecap="round"/><g stroke="#F0B429" stroke-width="2.5" stroke-linecap="round" opacity="0.8"><path d="M20 25 L10 15"/><path d="M28 18 L22 8"/><path d="M100 25 L110 15"/><path d="M92 18 L98 8"/></g>';
-      case 'run': return '<path d="M44 44 Q50 37 56 44" stroke="#23324D" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M64 44 Q70 37 76 44" stroke="#23324D" stroke-width="2.5" fill="none" stroke-linecap="round"/><g fill="#23324D"><path d="M37 100 Q35 109 43 109 L45 101 Z"/><path d="M77 100 Q79 109 71 109 L69 101 Z"/></g><g stroke="#F0B429" stroke-width="3" stroke-linecap="round" opacity="0.85"><path d="M12 44 L0 40"/><path d="M16 58 L2 58"/><path d="M14 72 L4 76"/></g>';
       case 'run': return '<path d="M44 44 Q50 37 56 44" stroke="#23324D" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M64 44 Q70 37 76 44" stroke="#23324D" stroke-width="2.5" fill="none" stroke-linecap="round"/><g fill="#23324D"><path d="M37 100 Q35 109 43 109 L45 101 Z"/><path d="M77 100 Q79 109 71 109 L69 101 Z"/></g><g stroke="#F0B429" stroke-width="3" stroke-linecap="round" opacity="0.85"><path d="M12 44 L0 40"/><path d="M16 58 L2 58"/><path d="M14 72 L4 76"/></g>';
       default: return '';
     }
@@ -1671,6 +1669,7 @@ let activeSession = null;
 let activeScreen = "home";
 let screenHistory = [];
 let timerId = null;
+let lastSession = null;
 let pendingKind = null;
 let pendingVocabLevel = "a1";
 
@@ -1724,7 +1723,7 @@ function render(screen) {
   else if (screen === "settings") app.innerHTML = renderSettings(state.settings, state.customVerbs?.length || 0);
   else if (screen === "achievements") app.innerHTML = renderAchievements(state.achievements);
   else if (screen === "practice" || screen === "exam") renderActiveQuestion();
-  else if (screen === "review" && activeSession) app.innerHTML = renderReview(activeSession);
+  else if (screen === "review" && (activeSession || lastSession)) app.innerHTML = renderReview(activeSession || lastSession);
   else render("home");
   app.focus({ preventScroll: true });
 }
@@ -1738,7 +1737,7 @@ function startSession(mode) {
   const questions = createSessionQuestions(deck, mode, state.progress, verbs, difficulty);
   saveState(state);
   activeSession = {
-    kind: "conjugation", mode, questions, index: 0, answers: [], currentAnswer: null, score: 0, requeued: new Set(),
+    kind: "conjugation", mode, questions, index: 0, answers: [], currentAnswer: null, score: 0, currentStreak: 0, requeued: new Set(),
     startedAt: performance.now(), questionStartedAt: performance.now(), endsAt: mode === "exam" ? Date.now() + 10 * 60 * 1000 : null
   };
   if (mode === "exam") { stopTimer(); timerId = window.setInterval(tickExam, 1000); }
@@ -1760,7 +1759,7 @@ function startVocabSession(mode, level, kind = "vocab") {
   state.progress[recentKey] = deckProgress.recentVocabQuestions;
   saveState(state);
   activeSession = {
-    kind: "vocab", mode, level: isReverse ? "both" : (level || "a1"), direction: isReverse ? "reverse" : "forward", questions, index: 0, answers: [], currentAnswer: null, score: 0, requeued: new Set(),
+    kind: "vocab", mode, level: isReverse ? "both" : (level || "a1"), direction: isReverse ? "reverse" : "forward", questions, index: 0, answers: [], currentAnswer: null, score: 0, currentStreak: 0, requeued: new Set(),
     startedAt: performance.now(), questionStartedAt: performance.now(), endsAt: mode === "exam" ? Date.now() + 10 * 60 * 1000 : null
   };
   if (mode === "exam") { stopTimer(); timerId = window.setInterval(tickExam, 1000); }
@@ -1774,7 +1773,7 @@ function startPossessiveSession(mode) {
   const questions = createPossessiveSessionQuestions(deck, possessiveNouns, state.progress, difficulty);
   saveState(state);
   activeSession = {
-    kind: "possessive", mode, questions, index: 0, answers: [], currentAnswer: null, score: 0, requeued: new Set(),
+    kind: "possessive", mode, questions, index: 0, answers: [], currentAnswer: null, score: 0, currentStreak: 0, requeued: new Set(),
     startedAt: performance.now(), questionStartedAt: performance.now(), endsAt: mode === "exam" ? Date.now() + 10 * 60 * 1000 : null
   };
   if (mode === "exam") { stopTimer(); timerId = window.setInterval(tickExam, 1000); }
@@ -1830,26 +1829,29 @@ async function handleAction(event) {
   if (action === "answer") answer(button.dataset.answer);
   if (action === "next-question") nextQuestion();
   if (action === "play-again") {
-    if (activeSession?.kind === "vocab") startVocabSession(activeSession.mode, activeSession.level, activeSession.direction === "reverse" ? "vocab-reverse" : "vocab");
-    else if (activeSession?.kind === "possessive") startPossessiveSession(activeSession.mode);
-    else startSession(activeSession?.mode || "practice");
+    const s = activeSession || lastSession;
+    if (s?.kind === "vocab") startVocabSession(s.mode, s.level, s.direction === "reverse" ? "vocab-reverse" : "vocab");
+    else if (s?.kind === "possessive") startPossessiveSession(s.mode);
+    else startSession(s?.mode || "practice");
   }
   if (action === "abandon-session") abandonSession();
   if (action === "reset-progress") {
     if (await confirmation("Reset all local progress?", "This removes statistics, achievements, and any imported workbook from this browser.", "Reset Everything")) { state = await resetState(); document.body.classList.remove("no-animations"); activeSession = null; stopTimer(); render("home"); toast("Local progress reset."); }
   }
-  if (action === "speak-verb" && activeSession) speakVerb(activeSession.questions[activeSession.index].verb);
-  if (action === "speak-form" && activeSession) speak(activeSession.questions[activeSession.index].correct);
-  if (action === "speak-word" && activeSession) {
-    const q = activeSession.questions[activeSession.index];
-    speakWord(q.word, q.isReverse ? "en-GB" : "de-DE");
+  if (action.startsWith("speak") && activeSession) {
+    const btn = button;
+    btn.classList.add("speaking");
+    const clearSpeaking = () => btn.classList.remove("speaking");
+    let p;
+    if (action === "speak-verb") p = speakVerb(activeSession.questions[activeSession.index].verb);
+    else if (action === "speak-form") p = speak(activeSession.questions[activeSession.index].correct);
+    else if (action === "speak-word") { const q = activeSession.questions[activeSession.index]; p = speakWord(q.word, q.isReverse ? "en-GB" : "de-DE"); }
+    else if (action === "speak-german-answer") { const q = activeSession.questions[activeSession.index]; p = speakWord(q.isReverse ? q.correct : q.word, "de-DE"); }
+    else if (action === "speak-noun") p = speakWord(activeSession.questions[activeSession.index].noun);
+    else if (action === "speak-sentence") p = speakSentence(activeSession.questions[activeSession.index].solutionSentence);
+    if (p) p.then(clearSpeaking, clearSpeaking);
+    setTimeout(clearSpeaking, 6000);
   }
-  if (action === "speak-german-answer" && activeSession) {
-    const q = activeSession.questions[activeSession.index];
-    speakWord(q.isReverse ? q.correct : q.word, "de-DE");
-  }
-  if (action === "speak-noun" && activeSession) speakWord(activeSession.questions[activeSession.index].noun);
-  if (action === "speak-sentence" && activeSession) speakSentence(activeSession.questions[activeSession.index].solutionSentence);
 }
 function answer(selected) {
   if (!activeSession || activeSession.currentAnswer) return;
@@ -1858,7 +1860,8 @@ function answer(selected) {
   const elapsedMs = Math.max(0, performance.now() - activeSession.questionStartedAt);
   activeSession.currentAnswer = { selected, correct, correctAnswer: question.correct, elapsedMs };
   activeSession.answers.push({ question, selected, correct, elapsedMs });
-  if (correct) activeSession.score += 10;
+  if (correct) { activeSession.score += 10; activeSession.currentStreak = (activeSession.currentStreak || 0) + 1; }
+  else activeSession.currentStreak = 0;
   const key = normalizeVerbKey(activeSession.kind === "vocab" ? question.word : activeSession.kind === "possessive" ? question.noun : question.verb.verb);
   recordAnswer(state, { key, correct, elapsedMs });
   if (!correct && !activeSession.requeued.has(question.signature)) {
@@ -1907,6 +1910,7 @@ function finishSession(timedOut) {
   newlyUnlocked.forEach(item => window.setTimeout(() => toast(`Achievement unlocked: ${item.title}`), 350));
   if (total >= 5 && percent(correctCount, total) >= 80) celebrate();
   if (window.Mascot && correctCount === total && total > 0) Mascot.perfect();
+  lastSession = activeSession;
   render("review");
   activeSession = null;
 }
