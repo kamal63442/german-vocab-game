@@ -1100,6 +1100,7 @@ const ENDINGS = {
   accusative: { m: "en", f: "e", n: "", pl: "e" }
 };
 
+function ownerDisplayLabel(owner) { const m={ 'sie-she':'sie (she)', 'sie-they':'sie (they)', 'formal':'Sie (formal)'}; return m[owner.id] || owner.label; }
 function decline(stem, gender, grammarCase) {
   const ending = ENDINGS[grammarCase][gender];
   // "euer" drops its middle e before any ending is added: euer -> eur-e / eur-en
@@ -1115,12 +1116,12 @@ const NOUN_BANK = {
   Bruder: { gender: "m", meaning: "brother", verbs: ["besuchen", "haben", "sehen"], animate: true },
   Vater: { gender: "m", meaning: "father", verbs: ["besuchen", "sehen", "fragen"], animate: true },
   Hund: { gender: "m", meaning: "dog", verbs: ["besuchen", "lieben", "mögen"], animate: true },
-  Freund: { gender: "m", meaning: "friend", verbs: ["sehen"], animate: true },
+  Freund: { gender: "m", meaning: "friend", verbs: ["sehen", "besuchen", "treffen"], animate: true },
   Mantel: { gender: "m", meaning: "coat", verbs: ["kaufen"], animate: false },
   Schlüssel: { gender: "m", meaning: "key", verbs: ["finden", "suchen"], animate: false },
   Computer: { gender: "m", meaning: "computer", verbs: ["brauchen", "nehmen"], animate: false },
   Stift: { gender: "m", meaning: "pen", verbs: ["brauchen", "nehmen", "finden"], animate: false },
-  Brief: { gender: "m", meaning: "letter", verbs: ["lesen"], animate: false },
+  Brief: { gender: "m", meaning: "letter", verbs: ["lesen", "schreiben"], animate: false },
   Lehrer: { gender: "m", meaning: "teacher", verbs: ["besuchen", "kennen", "sehen", "fragen"], animate: true },
   Onkel: { gender: "m", meaning: "uncle", verbs: ["besuchen", "sehen", "fragen"], animate: true },
   Großvater: { gender: "m", meaning: "grandfather", verbs: ["besuchen", "sehen"], animate: true },
@@ -1131,20 +1132,20 @@ const NOUN_BANK = {
   Katze: { gender: "f", meaning: "cat", verbs: ["lieben", "mögen"], animate: true },
   Tasche: { gender: "f", meaning: "bag", verbs: ["kaufen", "nehmen", "suchen"], animate: false },
   Jacke: { gender: "f", meaning: "jacket", verbs: ["brauchen", "kaufen"], animate: false },
-  Uhr: { gender: "f", meaning: "watch", verbs: ["brauchen"], animate: false },
+  Uhr: { gender: "f", meaning: "watch", verbs: ["brauchen", "kaufen", "finden"], animate: false },
   Tante: { gender: "f", meaning: "aunt", verbs: ["besuchen", "sehen"], animate: true },
   Großmutter: { gender: "f", meaning: "grandmother", verbs: ["besuchen", "sehen"], animate: true },
   Freundin: { gender: "f", meaning: "girlfriend", verbs: ["besuchen", "treffen", "sehen"], animate: true },
   Brille: { gender: "f", meaning: "glasses", verbs: ["finden", "suchen", "haben"], animate: false },
   Auto: { gender: "n", meaning: "car", verbs: ["haben", "kaufen"], animate: false },
-  Zimmer: { gender: "n", meaning: "room", verbs: ["putzen"], animate: false },
-  Fenster: { gender: "n", meaning: "window", verbs: ["öffnen"], animate: false },
+  Zimmer: { gender: "n", meaning: "room", verbs: ["putzen", "haben"], animate: false },
+  Fenster: { gender: "n", meaning: "window", verbs: ["öffnen", "putzen"], animate: false },
   Fahrrad: { gender: "n", meaning: "bicycle", verbs: ["finden", "kaufen", "nehmen", "reparieren", "bringen"], animate: false },
   Handy: { gender: "n", meaning: "phone", verbs: ["nehmen", "reparieren", "suchen"], animate: false },
-  Kinder: { gender: "pl", meaning: "children", verbs: ["sehen"], animate: true },
+  Kinder: { gender: "pl", meaning: "children", verbs: ["sehen", "haben", "lieben"], animate: true },
   Eltern: { gender: "pl", meaning: "parents", verbs: ["besuchen", "lieben"], animate: true },
   Bücher: { gender: "pl", meaning: "books", verbs: ["kaufen", "suchen"], animate: false },
-  Schuhe: { gender: "pl", meaning: "shoes", verbs: ["kaufen"], animate: false },
+  Schuhe: { gender: "pl", meaning: "shoes", verbs: ["kaufen", "haben", "finden"], animate: false },
   Freunde: { gender: "pl", meaning: "friends", verbs: ["besuchen", "treffen", "sehen"], animate: true }
 };
 const POSSESSIVE_NOUNS = Object.entries(NOUN_BANK).map(([noun, data]) => ({ noun, ...data }));
@@ -1167,28 +1168,29 @@ const TRANSITIVE_VERBS = {
   treffen: { ich: "treffe", du: "triffst", er: "trifft", es: "trifft", wir: "treffen", ihr: "trefft", sie: "treffen" },
   fragen: { ich: "frage", du: "fragst", er: "fragt", es: "fragt", wir: "fragen", ihr: "fragt", sie: "fragen" },
   mögen: { ich: "mag", du: "magst", er: "mag", es: "mag", wir: "mögen", ihr: "mögt", sie: "mögen" },
-  bringen: { ich: "bringe", du: "bringst", er: "bringt", es: "bringt", wir: "bringen", ihr: "bringt", sie: "bringen" }
+  bringen: { ich: "bringe", du: "bringst", er: "bringt", es: "bringt", wir: "bringen", ihr: "bringt", sie: "bringen" },
+  schreiben: { ich: "schreibe", du: "schreibst", er: "schreibt", es: "schreibt", wir: "schreiben", ihr: "schreibt", sie: "schreiben" }
 };
-const PERSON_ADJECTIVES = ["nett", "klein", "groß", "alt", "jung", "lustig", "freundlich"];
-const OBJECT_ADJECTIVES = ["neu", "alt", "klein", "groß", "praktisch", "wichtig", "teuer", "sauber", "kaputt"];
+// (adjectives removed — nominative now uses "Das ist/sind …" pattern)
 
 function capitalize(word) { return word.charAt(0).toLocaleUpperCase("de-DE") + word.slice(1); }
 
 function buildSentenceData(owner, noun, grammarCase, correct) {
   if (grammarCase === "nominative") {
-    const adjective = sample(noun.animate ? PERSON_ADJECTIVES : OBJECT_ADJECTIVES);
     const verb = noun.gender === "pl" ? "sind" : "ist";
     return {
-      question: `______ ${noun.noun} ${verb} ${adjective}.`,
-      solution: `${correct} ${noun.noun} ${verb} ${adjective}.`
+      question: `Das ${verb} ______ ${noun.noun}.`,
+      solution: `Das ${verb} ${correct} ${noun.noun}.`
     };
   }
   const verbName = sample(noun.verbs);
   const verbForm = TRANSITIVE_VERBS[verbName][owner.verbKey];
   const subject = capitalize(owner.label);
+  const tails = { nehmen: "mit", finden: "nicht", suchen: "gerade", reparieren: "gerade", putzen: "gerade", öffnen: "gerade", bringen: "mit" };
+  const tail = tails[verbName] ? ` ${tails[verbName]}` : "";
   return {
-    question: `${subject} ${verbForm} ______ ${noun.noun}.`,
-    solution: `${subject} ${verbForm} ${correct} ${noun.noun}.`
+    question: `${subject} ${verbForm} ______ ${noun.noun}${tail}.`,
+    solution: `${subject} ${verbForm} ${correct} ${noun.noun}${tail}.`
   };
 }
 
@@ -1197,7 +1199,7 @@ function buildPossessiveOptions(owner, noun, grammarCase, correct, difficulty = 
   const genders = ["m", "f", "n", "pl"];
   const otherGenders = genders.filter(g => g !== noun.gender);
   const otherCase = grammarCase === "nominative" ? "accusative" : "nominative";
-  const otherOwners = POSSESSIVE_OWNERS.filter(o => o.stem.toLocaleLowerCase("de-DE") !== owner.stem.toLocaleLowerCase("de-DE"));
+  const otherOwners = POSSESSIVE_OWNERS.filter(o => o.id !== owner.id);
 
   if (difficulty === "easy") {
     shuffle(otherOwners).forEach(o => { if (candidates.size < 3) candidates.add(decline(o.stem, noun.gender, grammarCase)); });
@@ -1244,7 +1246,7 @@ function createPossessiveQuestion(noun, allNouns, progress = null, difficulty = 
       sentence: sentenceData.question,
       solutionSentence: sentenceData.solution,
       caseLabel: grammarCase === "nominative" ? "Nominativ" : "Akkusativ",
-      explanation: `${capitalize(owner.label)} + ${genderLabel} ${noun.noun} (${grammarCase}) → “${correct}”.`,
+      explanation: `${capitalize(ownerDisplayLabel(owner))} + ${genderLabel} ${noun.noun} (${grammarCase === "nominative" ? "Nominativ" : "Akkusativ"}) → “${correct}”.`,
       signature: `${noun.noun}|${owner.id}|${grammarCase}|${sentenceData.question}`
     };
     attempt += 1;
@@ -1768,8 +1770,18 @@ function startVocabSession(mode, level, kind = "vocab") {
 function startPossessiveSession(mode) {
   if (!possessiveNouns.length) return toast("No possessive-article data is available yet.", "error");
   const difficulty = state.settings.difficulty || "medium";
-  const count = Math.min(mode === "exam" ? 50 : 20, possessiveNouns.length);
-  const deck = createPossessiveDeck(possessiveNouns, state.progress || (state.progress = { usedVerbKeys: [] }), count);
+  const count = mode === "exam" ? 50 : 20;
+  // For exam with 50 questions but only 34 nouns, reuse nouns with different owner/case combos
+  let deck;
+  if (count > possessiveNouns.length) {
+    const shuffled = shuffle([...possessiveNouns]);
+    deck = [];
+    while (deck.length < count) deck.push(...shuffle([...possessiveNouns]));
+    deck = deck.slice(0, count);
+    // Don't track used keys when we exceed unique nouns — avoid exhausting the pool
+  } else {
+    deck = createPossessiveDeck(possessiveNouns, state.progress || (state.progress = { usedVerbKeys: [] }), count);
+  }
   const questions = createPossessiveSessionQuestions(deck, possessiveNouns, state.progress, difficulty);
   saveState(state);
   activeSession = {
