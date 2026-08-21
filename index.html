@@ -75,9 +75,11 @@ html, body { overflow-x: hidden; }
 .icon-button { display: flex; align-items: center; gap: 5px; height: 38px; min-width: 34px; padding: 0 11px; border: 2px solid var(--text); border-radius: 8px 8px 3px 3px; background: var(--panel); color: var(--text); font-weight: 700; transition: .15s ease; box-shadow: 2px 2px 0 rgba(35,50,77,.12); }
 .icon-button span { font-size: 1rem; }
 .icon-button small { font-size: .62rem; letter-spacing: .02em; font-weight: 700; }
-.icon-button:hover { border-color: var(--redline); color: var(--redline); }
 .icon-button.speaker-btn { min-width: 38px; height: 38px; padding: 0; background: var(--panel-strong); }
-.icon-button.speaker-btn:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
+@media (hover: hover) {
+  .icon-button:hover { border-color: var(--redline); color: var(--redline); }
+  .icon-button.speaker-btn:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
+}
 .verb-row { display: flex; align-items: center; gap: 8px; }
 .solution-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .hidden { display: none !important; }
