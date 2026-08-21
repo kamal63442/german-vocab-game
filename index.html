@@ -1296,7 +1296,7 @@ function renderHome({ stats, verbCount, wordCountA1, wordCountB1 }) {
     <section class="panel"><div class="section-title"><h2>YOUR PROGRESS</h2><span>saved on this device</span></div><div class="stats-grid">
       ${statCard("Accuracy", `${accuracy}`, "%")}${statCard("Current streak", stats.currentStreak)}${statCard("Best streak", stats.bestStreak)}${statCard("Answered", stats.total)}
     </div></section>
-    <div class="action-grid"><button type="button" class="primary-button" data-nav="practice">Start Practice →</button><button type="button" class="secondary-button" id="install-btn" hidden>Install as App →</button></div>
+    <div class="action-grid"><button type="button" class="primary-button" data-nav="practice">Start Practice →</button></div>
     <button type="button" class="text-button" data-nav="achievements">View achievements →</button>
   </section>`;
 }
@@ -1952,8 +1952,6 @@ function sound(kind) {
 
 </script>
 <script>
-let deferredInstallPrompt = null;
-window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredInstallPrompt = e; const btn = document.querySelector("#install-btn"); if (btn) btn.hidden = false; });
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("sw.js").catch(() => {});
@@ -1966,16 +1964,6 @@ if ("serviceWorker" in navigator) {
     }
   });
 }
-document.addEventListener("click", async (e) => {
-  if (e.target.closest("#install-btn") && deferredInstallPrompt) {
-    deferredInstallPrompt.prompt();
-    const { outcome } = await deferredInstallPrompt.userChoice;
-    if (outcome === "accepted") toast("App installed!");
-    deferredInstallPrompt = null;
-    const btn = document.querySelector("#install-btn");
-    if (btn) btn.hidden = true;
-  }
-}, { once: true });
 </script>
 </body>
 </html>
