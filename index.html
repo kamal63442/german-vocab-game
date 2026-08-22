@@ -241,6 +241,28 @@ h1 .line { display: block; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
 body.no-animations *, body.no-animations *::before, body.no-animations *::after { animation: none !important; transition: none !important; }
 
+/* ---- Das Lebendige Heft (Concept 2) ---- */
+.screen { position: relative; }
+.punch-hole.filled { display: flex; align-items: center; justify-content: center; font-size: 8px; line-height: 1; color: #c0392b; background: #fff3b0; border-color: var(--accent); box-shadow: inset 0 0 0 2px #fff3b0, 0 0 0 1.5px var(--accent); }
+.review-item .stamp { position: absolute; right: 10px; top: -9px; border: 2.5px solid var(--approved); color: var(--approved); background: color-mix(in srgb, var(--panel) 72%, transparent); border-radius: 8px; font-family: var(--font-hand); font-weight: 700; font-size: .78rem; letter-spacing: .09em; padding: 1px 8px; transform: rotate(7deg); opacity: .95; pointer-events: none; z-index: 2; white-space: nowrap; }
+.review-item .stamp::after { content: ""; position: absolute; inset: 2px; border: 1px dashed color-mix(in srgb, var(--approved) 55%, transparent); border-radius: 5px; }
+.review-item .stamp-no { border-color: var(--redline); color: var(--redline); transform: rotate(-7deg); }
+.review-item .stamp-no::after { border-color: color-mix(in srgb, var(--redline) 55%, transparent); }
+.smudge-word { position: relative; text-decoration: line-through; text-decoration-color: rgba(192,57,43,.65); text-decoration-thickness: 2px; }
+.smudge-word::before { content: ""; position: absolute; left: -5px; right: -5px; top: -3px; bottom: -3px; background: radial-gradient(closest-side, rgba(90,90,90,.22), rgba(90,90,90,.06) 70%, transparent); transform: rotate(-3deg); border-radius: 60% 40% 55% 45%; }
+.mode-card.dogear { --s: 16px; clip-path: polygon(0 0, calc(100% - var(--s)) 0, 100% var(--s), 100% 100%, 0 100%); }
+.mode-card.dogear::before { content: ""; position: absolute; top: 0; right: 0; width: var(--s); height: var(--s); background: linear-gradient(225deg, var(--bg) 48%, rgba(35,50,77,.28) 52%, var(--panel-strong) 58%, transparent 64%); border-left: 2px solid rgba(35,50,77,.35); border-bottom: 2px solid rgba(35,50,77,.25); filter: drop-shadow(-2px 2px 1px rgba(35,50,77,.12)); z-index: 1; }
+.done-tag { position: absolute; top: 9px; right: 26px; font-family: var(--font-hand); color: var(--approved); font-size: .72rem; font-weight: 700; transform: rotate(6deg); pointer-events: none; }
+.coffee-stain { position: absolute; right: -30px; top: 42%; width: 118px; height: 118px; border-radius: 50%; border: 8px solid rgba(139,90,43,.10); pointer-events: none; z-index: 0; }
+.coffee-stain::after { content: ""; position: absolute; inset: 8px; border-radius: 50%; border: 3px solid rgba(139,90,43,.07); }
+.ink-row { display: flex; align-items: center; gap: 12px; }
+.ink-bottle { width: 32px; height: 42px; flex: none; border: 2.5px solid var(--text); border-radius: 4px 4px 9px 9px; background: var(--panel-strong); position: relative; overflow: hidden; }
+.ink-bottle::before { content: ""; position: absolute; left: 11px; top: -6px; width: 9px; height: 8px; background: var(--text); }
+.ink-bottle span { position: absolute; left: 0; right: 0; bottom: 0; display: block; height: var(--ink, 0%); background: repeating-linear-gradient(-45deg, #2b3a67, #2b3a67 5px, #33447a 5px, #33447a 10px); }
+.ink-meter { flex: 1; min-width: 0; height: 12px; border: 2px solid var(--text); border-radius: 6px; background: var(--panel-strong); overflow: hidden; }
+.ink-meter span { display: block; height: 100%; width: var(--ink, 0%); background: repeating-linear-gradient(-45deg, #c0392b, #c0392b 6px, #d0453a 6px, #d0453a 12px); }
+.torn-edge { height: 12px; margin: 4px -4px 0; background: linear-gradient(-45deg, transparent 7px, var(--bg-deep) 0) 0 0/14px 14px repeat-x, linear-gradient(45deg, transparent 7px, var(--bg-deep) 0) 7px 0/14px 14px repeat-x; opacity: .85; }
+
 </style>
 </head>
 <body>
@@ -1388,11 +1410,23 @@ function ranking(map) { return Object.entries(map).sort((a, b) => b[1] - a[1] ||
 
 // ---- js/ui.js ----
 const letters = ["A", "B", "C", "D"];
+function updatePunchHoles() {
+  const icons = (state?.achievements || []).slice(0, 3).map(id => definitions.find(d => d.id === id)?.icon || "✦");
+  ["hole-1", "hole-2", "hole-3"].forEach((cls, i) => {
+    const el = document.querySelector("." + cls);
+    if (!el) return;
+    if (icons[i]) { el.classList.add("filled"); el.textContent = icons[i]; }
+    else { el.classList.remove("filled"); el.textContent = ""; }
+  });
+}
 function renderHome({ stats, verbCount, wordCountA1, wordCountB1 }) {
   const accuracy = percent(stats.correct, stats.total);
   const totalWords = wordCountA1 + wordCountB1;
+  const inkPct = stats.total % 100;
   return `<section class="screen">
+    <span class="coffee-stain" aria-hidden="true"></span>
     <div class="hero"><span class="eyebrow">Deutschheft · Übung 1</span><h1><span class="line">MEIN</span><span class="line">ÜBUNGSHEFT</span></h1><p class="subtitle">Verbs, vocabulary, possessive articles and numbers — all in one notebook.</p><div class="hero-tags"><span class="hero-tag">✎ Konjugation · ${verbCount}</span><span class="hero-tag">📖 Wortschatz · ${totalWords.toLocaleString("en-US")} (A1: ${wordCountA1.toLocaleString("en-US")} + B1: ${wordCountB1.toLocaleString("en-US")})</span><span class="hero-tag">🔤 Possessivartikel · ${(possessiveNouns.length * POSSESSIVE_OWNERS.length * 2).toLocaleString("en-US")}</span><span class="hero-tag">🔢 Zahlen · ${(100*5).toLocaleString("en-US")}+ Fragen</span></div></div>
+    <section class="panel ink-row"><div class="ink-bottle"><span style="--ink:${inkPct}%"></span></div><div class="ink-meter"><span style="--ink:${inkPct}%"></span></div><div style="min-width:0"><div style="font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);">Tintenfüller</div><div style="font-weight:800;font-size:.85rem;">${100 - inkPct} Fragen bis die Seite voll ist.</div></div></section>
     <section class="panel"><div class="section-title"><h2>YOUR PROGRESS</h2><span>saved on this device</span></div><div class="stats-grid">
       ${statCard("Accuracy", `${accuracy}`, "%")}${statCard("Current streak", stats.currentStreak)}${statCard("Best streak", stats.bestStreak)}${statCard("Answered", stats.total)}
     </div></section>
@@ -1401,28 +1435,22 @@ function renderHome({ stats, verbCount, wordCountA1, wordCountB1 }) {
   </section>`;
 }
 function renderModeSelect() {
+  const done = state?.progress?.seitenDone || {};
+  const card = (kind, kicker, title, copy) => {
+    const isDone = !!done[kind];
+    return `<button type="button" class="panel mode-card ${isDone ? "dogear" : ""}" data-action="choose-mode" data-kind="${kind}">
+      ${isDone ? `<span class="done-tag">fertig ✓</span>` : ""}
+      <span class="kicker">${kicker}</span>
+      <h2 class="mode-card-title">${title}</h2>
+      <p class="page-copy">${copy}</p>
+    </button>`;
+  };
   return `<section class="screen">
     <div><div class="page-heading"><h1>ÜBEN</h1></div><p class="page-copy">Pick a page from the exercise book to work through.</p></div>
-    <button type="button" class="panel mode-card" data-action="choose-mode" data-kind="conjugation">
-      <span class="kicker">Seite 1 — Grammatik</span>
-      <h2 class="mode-card-title">Konjugation</h2>
-      <p class="page-copy">Fill in the blank with the correct verb form, in context.</p>
-    </button>
-    <button type="button" class="panel mode-card" data-action="choose-mode" data-kind="vocab">
-      <span class="kicker">Seite 2 — Wortschatz</span>
-      <h2 class="mode-card-title">Wortschatz</h2>
-      <p class="page-copy">See a German word, choose its English meaning.</p>
-    </button>
-    <button type="button" class="panel mode-card" data-action="choose-mode" data-kind="possessive">
-      <span class="kicker">Seite 3 — Grammatik</span>
-      <h2 class="mode-card-title">Possessivartikel</h2>
-      <p class="page-copy">Mein, dein, sein… pick the article that matches gender and case.</p>
-    </button>
-    <button type="button" class="panel mode-card" data-action="choose-mode" data-kind="zahlen">
-      <span class="kicker">Seite 4 — Grundzahlen</span>
-      <h2 class="mode-card-title">Zahlen</h2>
-      <p class="page-copy">0–1000: all numbers, prices and clock times.</p>
-    </button>
+    ${card("conjugation", "Seite 1 — Grammatik", "Konjugation", "Fill in the blank with the correct verb form, in context.")}
+    ${card("vocab", "Seite 2 — Wortschatz", "Wortschatz", "See a German word, choose its English meaning.")}
+    ${card("possessive", "Seite 3 — Grammatik", "Possessivartikel", "Mein, dein, sein… pick the article that matches gender and case.")}
+    ${card("zahlen", "Seite 4 — Grundzahlen", "Zahlen", "0–1000: all numbers, prices and clock times.")}
   </section>`;
 }
 function renderVocabLevelSelect() {
@@ -1567,16 +1595,18 @@ function renderAchievements(unlocked) {
 }
 function renderReview(session) {
   const correct = session.answers.filter(answer => answer.correct).length; const total = session.answers.length; const accuracy = percent(correct, total); const grade = session.mode === "exam" ? `<div class="grade">${session.grade}</div>` : "";
+  const stampFor = answer => answer.correct ? `<span class="stamp">GEPRÜFT ✓</span>` : `<span class="stamp stamp-no">NOCHMAL!</span>`;
+  const sel = answer => answer.correct ? escapeHtml(answer.selected) : `<span class="smudge-word">${escapeHtml(answer.selected)}</span>`;
   const reviewItem = answer => {
-    if (session.kind === "vocab") return `<article class="review-item ${answer.correct ? "correct-review" : "wrong-review"}"><div class="review-head"><strong>${escapeHtml(answer.question.word)}</strong><span>${answer.correct ? "✓ Richtig" : "✗ Nochmal"}</span></div><p>Your answer: <code>${escapeHtml(answer.selected)}</code> · Correct: <code>${escapeHtml(answer.question.correct)}</code></p></article>`;
-    if (session.kind === "possessive") return `<article class="review-item ${answer.correct ? "correct-review" : "wrong-review"}"><div class="review-head"><strong>${escapeHtml(answer.question.noun)}</strong><span>${answer.correct ? "✓ Richtig" : "✗ Nochmal"}</span></div><p><code>${escapeHtml(answer.question.solutionSentence)}</code></p><p>Your answer: <code>${escapeHtml(answer.selected)}</code> · Correct: <code>${escapeHtml(answer.question.correct)}</code></p></article>`;
-    if (session.kind === "zahlen") return `<article class="review-item ${answer.correct ? "correct-review" : "wrong-review"}"><div class="review-head"><strong>${escapeHtml(answer.question.type)} · ${answer.question.n}</strong><span>${answer.correct ? "✓ Richtig" : "✗ Nochmal"}</span></div><p><code>${escapeHtml(answer.question.solutionSentence)}</code></p><p>Your answer: <code>${escapeHtml(answer.selected)}</code> · Correct: <code>${escapeHtml(answer.question.correct)}</code></p><p>${escapeHtml(answer.question.explanation)}</p></article>`;
-    return `<article class="review-item ${answer.correct ? "correct-review" : "wrong-review"}"><div class="review-head"><strong>${escapeHtml(answer.question.verb.verb)}</strong><span>${answer.correct ? "✓ Richtig" : "✗ Nochmal"}</span></div><p><code>${escapeHtml(answer.question.solutionSentence)}</code></p><p>Your answer: <code>${escapeHtml(answer.selected)}</code> · Correct: <code>${escapeHtml(answer.question.correct)}</code></p><p>${escapeHtml(answer.question.explanation)}</p></article>`;
+    if (session.kind === "vocab") return `<article class="review-item ${answer.correct ? "correct-review" : "wrong-review"}">${stampFor(answer)}<div class="review-head"><strong>${escapeHtml(answer.question.word)}</strong><span>${answer.correct ? "✓ Richtig" : "✗ Nochmal"}</span></div><p>Your answer: <code>${sel(answer)}</code> · Correct: <code>${escapeHtml(answer.question.correct)}</code></p></article>`;
+    if (session.kind === "possessive") return `<article class="review-item ${answer.correct ? "correct-review" : "wrong-review"}">${stampFor(answer)}<div class="review-head"><strong>${escapeHtml(answer.question.noun)}</strong><span>${answer.correct ? "✓ Richtig" : "✗ Nochmal"}</span></div><p><code>${escapeHtml(answer.question.solutionSentence)}</code></p><p>Your answer: <code>${sel(answer)}</code> · Correct: <code>${escapeHtml(answer.question.correct)}</code></p></article>`;
+    if (session.kind === "zahlen") return `<article class="review-item ${answer.correct ? "correct-review" : "wrong-review"}">${stampFor(answer)}<div class="review-head"><strong>${escapeHtml(answer.question.type)} · ${answer.question.n}</strong><span>${answer.correct ? "✓ Richtig" : "✗ Nochmal"}</span></div><p><code>${escapeHtml(answer.question.solutionSentence)}</code></p><p>Your answer: <code>${sel(answer)}</code> · Correct: <code>${escapeHtml(answer.question.correct)}</code></p><p>${escapeHtml(answer.question.explanation)}</p></article>`;
+    return `<article class="review-item ${answer.correct ? "correct-review" : "wrong-review"}">${stampFor(answer)}<div class="review-head"><strong>${escapeHtml(answer.question.verb.verb)}</strong><span>${answer.correct ? "✓ Richtig" : "✗ Nochmal"}</span></div><p><code>${escapeHtml(answer.question.solutionSentence)}</code></p><p>Your answer: <code>${sel(answer)}</code> · Correct: <code>${escapeHtml(answer.question.correct)}</code></p><p>${escapeHtml(answer.question.explanation)}</p></article>`;
   };
   return `<section class="screen"><div><div class="page-heading"><h1>${session.mode === "exam" ? "EXAM COMPLETE" : "SESSION REVIEW"}</h1><span class="kicker">${correct}/${total} correct</span></div><p class="page-copy">${session.mode === "exam" ? `Final percentage ${accuracy}% — grade ${session.grade}.` : `Accuracy ${accuracy}%. Review every answer below, then start another loop.`}</p></div>${grade}
     <section class="panel"><div class="stats-grid">${statCard("Correct", correct)}${statCard("Wrong", total - correct)}${statCard("Accuracy", accuracy, "%")}${statCard("Score", correct * 10)}</div></section>
     <section class="screen">${session.answers.map(reviewItem).join("")}</section>
-    <div class="button-row"><button type="button" class="primary-button" data-action="play-again">Play Again →</button><button type="button" class="secondary-button" data-nav="home">Home</button></div></section>`;
+    <div class="button-row"><button type="button" class="primary-button" data-action="play-again">Play Again →</button><button type="button" class="secondary-button" data-nav="home">Home</button></div>${total >= 5 && accuracy >= 80 ? `<div class="torn-edge" aria-hidden="true"></div>` : ""}</section>`;
 }
 function statCard(label, value, suffix = "") { return `<article class="stat-card"><span class="stat-label">${label}</span><strong class="stat-value">${value}<span class="stat-suffix">${suffix}</span></strong></article>`; }
 function toast(message, type = "") { const region = document.querySelector("#toast-region"); region.innerHTML = `<div class="toast ${type}">${escapeHtml(message)}</div>`; window.setTimeout(() => { region.innerHTML = ""; }, 3500); }
@@ -1797,6 +1827,7 @@ async function boot() {
   document.addEventListener("click", handleAction);
   document.addEventListener("change", handleSetting);
   render("home");
+  updatePunchHoles();
   if (window.Mascot) Mascot.init();
 }
 
@@ -1984,7 +2015,7 @@ async function handleAction(event) {
   }
   if (action === "abandon-session") abandonSession();
   if (action === "reset-progress") {
-    if (await confirmation("Reset all local progress?", "This removes statistics, achievements, and any imported workbook from this browser.", "Reset Everything")) { state = await resetState(); document.body.classList.remove("no-animations"); activeSession = null; stopTimer(); render("home"); toast("Local progress reset."); }
+    if (await confirmation("Reset all local progress?", "This removes statistics, achievements, and any imported workbook from this browser.", "Reset Everything")) { state = await resetState(); document.body.classList.remove("no-animations"); activeSession = null; stopTimer(); render("home"); updatePunchHoles(); toast("Local progress reset."); }
   }
   if (action.startsWith("speak") && activeSession) {
     const btn = button;
@@ -2055,8 +2086,14 @@ function finishSession(timedOut) {
   const total = activeSession.mode === "exam" ? activeSession.questions.length : activeSession.answers.length;
   const correctCount = activeSession.answers.filter(answer => answer.correct).length;
   activeSession.grade = gradeFor(percent(correctCount, total));
+  if (activeSession.answers.length >= 5) {
+    if (!state.progress) state.progress = { usedVerbKeys: [] };
+    state.progress.seitenDone = state.progress.seitenDone || {};
+    if (!state.progress.seitenDone[activeSession.kind]) { state.progress.seitenDone[activeSession.kind] = true; }
+  }
   const newlyUnlocked = updateAchievements(state, activeSession); saveState(state);
   newlyUnlocked.forEach(item => window.setTimeout(() => toast(`Achievement unlocked: ${item.title}`), 350));
+  updatePunchHoles();
   if (total >= 5 && percent(correctCount, total) >= 80) celebrate();
   if (window.Mascot && correctCount === total && total > 0) Mascot.perfect();
   lastSession = activeSession;
