@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo — Zahlen Übungen</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box}
+body{margin:0;padding:28px 16px;background:#e8dfc4;font-family:"Nunito",system-ui,sans-serif;color:#23324d;
+  background-image:linear-gradient(rgba(120,148,191,.35) 1px,transparent 1px);background-size:100% 21px;}
+.wrap{max-width:380px;margin:0 auto;display:flex;flex-direction:column;gap:22px;}
+h1{font-family:"Kalam",cursive;font-size:1.8rem;margin:0;text-align:center;transform:rotate(-1deg);}
+.note{text-align:center;font-size:.78rem;font-weight:600;color:#4c5f7d;margin:2px 0 0;}
+
+/* ==== app-exact pieces ==== */
+.frame{border:2px solid #23324d;border-radius:12px;background:#f3ecd9;box-shadow:4px 4px 0 rgba(35,50,77,.16);overflow:hidden;}
+.qmeta{display:flex;justify-content:space-between;padding:9px 14px 6px;color:#4c5f7d;font-size:.68rem;font-weight:800;}
+.qmeta .score{color:#c0392b;}
+.meter{height:5px;border-radius:4px;background:rgba(35,50,77,.28);overflow:hidden;margin:0 14px 10px;}
+.meter i{display:block;height:100%;background:#c0392b;}
+.qcard{border:2px solid #23324d;border-radius:8px;background:#fbf7ec;box-shadow:3px 3px 0 rgba(35,50,77,.14);padding:13px 15px;display:grid;gap:9px;}
+.kicker{color:#c0392b;font-family:"Kalam",cursive;font-size:.68rem;font-weight:700;}
+.bigword{font-family:"Kalam",cursive;font-weight:700;line-height:1.05;transform:rotate(-1deg);word-break:break-word;
+  font-size:clamp(1.4rem, 3.4vw + 2vh, 2.4rem);}
+.prompt{font-size:.97rem;font-weight:700;line-height:1.5;}
+.blank{color:#c0392b;border-bottom:2px dashed #c0392b;padding:0 .12em;}
+.opts{display:grid;gap:8px;}
+.opt{border:2px solid #23324d;border-radius:8px;background:#fbf7ec;padding:9px 12px;font-weight:700;font-size:.84rem;display:flex;gap:10px;align-items:center;}
+.opt .k{width:20px;height:20px;border:2px solid rgba(35,50,77,.5);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.62rem;color:#4c5f7d;flex:none;}
+.endbtn{display:block;width:fit-content;margin:10px auto 12px;border:0;background:none;color:#4c5f7d;
+  font-weight:700;font-size:.82rem;text-decoration:underline;text-underline-offset:4px;}
+.icon-button{display:inline-flex;align-items:center;justify-content:center;height:38px;min-width:38px;padding:0;border:2px solid #23324d;border-radius:8px;background:#f6efdc;color:#23324d;box-shadow:2px 2px 0 rgba(35,50,77,.12);}
+.bigbtn{height:80px;min-width:80px;border-radius:16px;}
+.lbl{text-align:center;font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#4c5f7d;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Zahlen — alle 5 Übungen</h1>
+  <p class="note">So sehen die Fragen heute aus</p>
+
+  <!-- 1 · Zahl → Wort -->
+  <div>
+    <div class="frame">
+      <div class="qmeta"><span>ZAHLEN LOOP // 20 OF 28</span><span class="score">Score 50</span></div>
+      <div class="meter"><i style="width:71%"></i></div>
+      <div class="qcard">
+        <span class="kicker">Zahl → Wort</span>
+        <div class="bigword">28</div>
+        <div class="opts">
+          <div class="opt"><span class="k">A</span>Zweihundertdreiundvierzig</div>
+          <div class="opt"><span class="k">B</span>Sechshundertsechsunddreißig</div>
+          <div class="opt"><span class="k">C</span>Achtundzwanzig</div>
+          <div class="opt"><span class="k">D</span>Dreihundertsechzig</div>
+        </div>
+      </div>
+      <span class="endbtn">End session</span>
+    </div>
+    <div class="lbl">1 · Zahl → Wort — nur einmal gezeigt ✓</div>
+  </div>
+
+  <!-- 2 · Wort → Zahl -->
+  <div>
+    <div class="frame">
+      <div class="qcard">
+        <span class="kicker">Wort → Zahl</span>
+        <div class="bigword">achtundzwanzig</div>
+        <div class="opts">
+          <div class="opt"><span class="k">A</span>243</div>
+          <div class="opt"><span class="k">B</span>82</div>
+          <div class="opt"><span class="k">C</span>128</div>
+          <div class="opt"><span class="k">D</span>28</div>
+        </div>
+      </div>
+    </div>
+    <div class="lbl">2 · Wort → Zahl — großes Wort</div>
+  </div>
+
+  <!-- 3 · Hören -->
+  <div>
+    <div class="frame">
+      <div class="qcard">
+        <span class="kicker">Hören</span>
+        <p class="prompt" style="text-align:center;">Was hast du gehört?</p>
+        <div style="display:flex;justify-content:center;margin:4px 0 2px;">
+          <button class="icon-button bigbtn"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M11.4 5.6 C10 6.7 8.4 7.9 6.5 8.8 L3.6 8.9 C3.2 10.9 3.2 13 3.5 15.1 L6.6 15.3 C8.5 16.2 10.1 17.5 11.5 18.6 C11.8 14.3 11.8 9.9 11.4 5.6 Z" fill="currentColor" fill-opacity=".18"/><path d="M15.4 9.4 C16.5 11 16.5 13 15.3 14.7"/><path d="M18.6 6.9 C21 10 21 14 18.4 17.2"/></svg></button>
+        </div>
+        <div class="opts">
+          <div class="opt"><span class="k">A</span>fünfhundertneunundneunzig</div>
+          <div class="opt"><span class="k">B</span>einhundertdreißig</div>
+          <div class="opt"><span class="k">C</span>fünfhundertvierundsiebzig</div>
+          <div class="opt"><span class="k">D</span>siebenhundertzweiundsiebzig</div>
+        </div>
+      </div>
+    </div>
+    <div class="lbl">3 · Hören — ein Button, zentriert</div>
+  </div>
+
+  <!-- 4 · Preis -->
+  <div>
+    <div class="frame">
+      <div class="qcard">
+        <span class="kicker">Preis</span>
+        <div style="display:flex;justify-content:center;margin:2px 0;"><span style="border:2px dashed #23324d;background:#fff3b0;border-radius:8px;padding:3px 14px;font-family:'Kalam',cursive;font-weight:700;font-size:1.05rem;transform:rotate(-3deg);">12 €</span></div>
+        <div class="bigword">Die Jacke kostet <span class="blank">______</span> Euro.</div>
+        <div class="opts">
+          <div class="opt"><span class="k">A</span>Zwölf</div>
+          <div class="opt"><span class="k">B</span>Zwanzig</div>
+          <div class="opt"><span class="k">C</span>Zwei</div>
+          <div class="opt"><span class="k">D</span>Hundert</div>
+        </div>
+      </div>
+    </div>
+    <div class="lbl">4 · Preis — Satz groß mit Lücke</div>
+  </div>
+
+  <!-- 5 · Uhrzeit -->
+  <div>
+    <div class="frame">
+      <div class="qcard">
+        <span class="kicker">Uhrzeit</span>
+        <div id="clock"></div>
+        <p class="prompt" style="text-align:center;">Wie spät ist es? Es ist <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
+        <div class="opts">
+          <div class="opt"><span class="k">A</span>halb drei</div>
+          <div class="opt"><span class="k">B</span>Viertel nach zwei</div>
+          <div class="opt"><span class="k">C</span>zwei Uhr</div>
+          <div class="opt"><span class="k">D</span>Viertel vor drei</div>
+        </div>
+      </div>
+    </div>
+    <div class="lbl">5 · Uhrzeit — analoge Uhr → „halb drei"</div>
+  </div>
+
+</div>
+
+<script>
+// same math as app's analogClockSVG for 02:30
+(function(){
+  const hour=2, minute=30, cx=60, cy=60, r=52;
+  const hAngle=(hour%12)*30+minute*0.5-90, mAngle=minute*6-90;
+  const hx=cx+Math.cos(hAngle*Math.PI/180)*28, hy=cy+Math.sin(hAngle*Math.PI/180)*28;
+  const mx=cx+Math.cos(mAngle*Math.PI/180)*38, my=cy+Math.sin(mAngle*Math.PI/180)*38;
+  let ticks="";
+  for(let i=0;i<12;i++){const a=i*30-90,x1=cx+Math.cos(a*Math.PI/180)*(r-4),y1=cy+Math.sin(a*Math.PI/180)*(r-4),x2=cx+Math.cos(a*Math.PI/180)*r,y2=cy+Math.sin(a*Math.PI/180)*r;
+    ticks+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#23324d" stroke-width="${i%3===0?2:1}"/>`;}
+  document.getElementById("clock").innerHTML =
+    `<svg viewBox="0 0 120 120" width="170" height="170" style="display:block;margin:0 auto;">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="#fbf7ec" stroke="#23324d" stroke-width="2"/>${ticks}
+      <line x1="${cx}" y1="${cy}" x2="${hx.toFixed(1)}" y2="${hy.toFixed(1)}" stroke="#23324d" stroke-width="4" stroke-linecap="round"/>
+      <line x1="${cx}" y1="${cy}" x2="${mx.toFixed(1)}" y2="${my.toFixed(1)}" stroke="#c0392b" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="${cx}" cy="${cy}" r="5" fill="#23324d"/>
+    </svg>`;
+})();
+</script>
+</body>
+</html>

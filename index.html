@@ -76,7 +76,7 @@ html, body { overflow-x: hidden; }
 .icon-button span { font-size: 1rem; }
 .icon-button small { font-size: .62rem; letter-spacing: .02em; font-weight: 700; }
 .icon-button:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel)); border-color: var(--accent); color: var(--accent-ink); }
-.icon-button.speaker-btn { min-width: 38px; height: 38px; padding: 0; background: var(--panel-strong); }
+.icon-button.speaker-btn { display: flex; align-items: center; justify-content: center; min-width: 38px; height: 38px; padding: 0; gap: 0; background: var(--panel-strong); }
 .icon-button.speaker-btn:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
 .icon-button.speaker-btn.speaking { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
 .verb-row { display: flex; align-items: center; gap: 8px; }
@@ -1360,10 +1360,10 @@ function createZahlenQuestion(range, allNumbers, progress, difficulty){
     question=word; solution=String(n); explanation=`"${word}" = ${n}.`;
   } else if(type==="hoeren"){
     correct=word; options=balancedShuffle(correct, shuffle(allNumbers).slice(0,20).map(x=>numberToGerman(x)).filter(w=>w!==correct).slice(0,3));
-    question="🔊 Was hast du gehört?"; solution=word; explanation=`Gehört: "${word}" = ${n}.`; extra.isHoeren=true; extra.hoerWord=word;
+    question="Was hast du gehört?"; solution=word; explanation=`Gehört: "${word}" = ${n}.`; extra.isHoeren=true; extra.hoerWord=word;
   } else if(type==="preis"){
     correct=word; options=balancedShuffle(correct, shuffle(allNumbers).slice(0,20).map(x=>numberToGerman(x)).filter(w=>w!==correct).slice(0,3));
-    question=`Die Jacke kostet ___ Euro. (${n} €)`; solution=`Die Jacke kostet ${word} Euro.`; explanation=`${n} € = ${word} Euro.`;
+    question=`Die Jacke kostet ___ Euro.`; solution=`Die Jacke kostet ${word} Euro.`; explanation=`${n} € = ${word} Euro.`; extra.priceTag=`${n} €`;
   } else {
     const h=Math.floor(Math.random()*12)+1, mins=[0,15,30,45][Math.floor(Math.random()*4)];
     const timeWord=timeToGerman(h,mins);
@@ -1496,8 +1496,9 @@ function renderSessionTypeSelect(kind, vocabLevel) {
     <button type="button" class="text-button" data-nav="${pendingKind === "vocab" ? "vocab-level-select" : "practice"}">← Back</button>
   </section>`;
 }
+const SKETCHY_SPEAKER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M11.4 5.6 C10 6.7 8.4 7.9 6.5 8.8 L3.6 8.9 C3.2 10.9 3.2 13 3.5 15.1 L6.6 15.3 C8.5 16.2 10.1 17.5 11.5 18.6 C11.8 14.3 11.8 9.9 11.4 5.6 Z" fill="currentColor" fill-opacity=".18"/><path d="M15.4 9.4 C16.5 11 16.5 13 15.3 14.7"/><path d="M18.6 6.9 C21 10 21 14 18.4 17.2"/></svg>`;
 function speakerButton(text, ariaLabel, dataAction = "speak") {
-  return `<button type="button" class="icon-button speaker-btn" data-action="${dataAction}" data-text="${escapeHtml(text)}" aria-label="${escapeHtml(ariaLabel)}" title="${escapeHtml(ariaLabel)}"><span>🔊</span></button>`;
+  return `<button type="button" class="icon-button speaker-btn" data-action="${dataAction}" data-text="${escapeHtml(text)}" aria-label="${escapeHtml(ariaLabel)}" title="${escapeHtml(ariaLabel)}">${SKETCHY_SPEAKER.replace("<svg ", '<svg width="20" height="20" ')}</button>`;
 }
 
 function renderQuiz({ session, question, mode, remainingSeconds }) {
@@ -1944,10 +1945,13 @@ function renderZahlenQuiz({ session, question, mode, remainingSeconds }) {
   const timer = mode === "exam" ? `<span class="timer">◷ ${formatTime(remainingSeconds)}</span>` : `<span class="quiz-score">Score ${session.score}</span>`;
   const typeLabel = { "digit-word":"Zahl → Wort", "word-digit":"Wort → Zahl", "hoeren":"Hören", "preis":"Preis", "uhrzeit":"Uhrzeit" }[question.type] || "Zahlen";
   const clock = question.isUhrzeit ? analogClockSVG(question.hour, question.minute) : "";
-  const hoerBtn = question.isHoeren ? `<div style="display:flex;justify-content:center;margin:18px 0"><button type="button" class="icon-button speaker-btn" style="min-width:80px;height:80px;border-radius:16px;display:flex;align-items:center;justify-content:center" data-action="speak-zahlen" data-text="${escapeHtml(question.hoerWord)}" aria-label="Play number" title="Play number"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><path d="M15.54 8.46a5 5 0 0 1 0 7.08"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button></div>` : "";
+  const hoerBtn = question.isHoeren ? `<div style="display:flex;justify-content:center;margin:14px 0 4px"><button type="button" class="icon-button speaker-btn" style="min-width:80px;height:80px;border-radius:16px;display:flex;align-items:center;justify-content:center" data-action="speak-zahlen" data-text="${escapeHtml(question.hoerWord)}" aria-label="Play number" title="Play number">${SKETCHY_SPEAKER.replace("<svg ", '<svg width="38" height="38" ')}</button></div>` : "";
   const promptHtml = question.isHoeren ? `${escapeHtml(question.question)}${hoerBtn}` : escapeHtml(question.question).replace("___",'<span class="blank">______</span>');
-  const bigWord = question.isUhrzeit || question.isHoeren ? "" : `<div class="verb-word" style="font-size:clamp(1.6rem,4vw+2vh,2.8rem)">${escapeHtml(question.question)}</div>`;
-  return `<section class="screen"><div class="quiz-meta"><span>${mode==="exam"?"ZAHLEN EXAM":"ZAHLEN LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress><article class="question-card"><span class="kicker">${typeLabel}</span>${clock}${bigWord}<p class="prompt">${promptHtml}</p><div class="options">${question.options.map((o,i)=>optionButton(o,i,session.currentAnswer, question.type==="word-digit"?"none":"first")).join("")}</div>${answered?`<div class="feedback ${correct?"":"wrong-feedback"}"><strong>${correct?"Richtig! +10":"Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span></div>`:""}${answered?`<button type="button" class="primary-button" data-action="next-question">${index===session.questions.length?"Finish Session →":"Next Question →"}</button>`:""}</article><button type="button" class="text-button" data-action="abandon-session">End session</button></section>`;
+  const isBigType = question.type === "digit-word" || question.type === "word-digit" || question.type === "preis";
+  const priceChip = question.priceTag ? `<div style="display:flex;justify-content:center;margin:2px 0;"><span style="border:2px dashed var(--text);background:#fff3b0;border-radius:8px;padding:3px 14px;font-family:var(--font-hand);font-weight:700;font-size:1.05rem;transform:rotate(-3deg);">${escapeHtml(question.priceTag)}</span></div>` : "";
+  const bigWord = isBigType ? `<div class="verb-word" style="font-size:clamp(1.4rem,3.4vw+2vh,2.4rem)">${escapeHtml(question.question).replace("___",'<span class="blank">______</span>')}</div>` : "";
+  const promptBlock = isBigType ? "" : `<p class="prompt">${promptHtml}</p>`;
+  return `<section class="screen"><div class="quiz-meta"><span>${mode==="exam"?"ZAHLEN EXAM":"ZAHLEN LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress><article class="question-card"><span class="kicker">${typeLabel}</span>${clock}${priceChip}${bigWord}${promptBlock}<div class="options">${question.options.map((o,i)=>optionButton(o,i,session.currentAnswer, question.type==="word-digit"?"none":"first")).join("")}</div>${answered?`<div class="feedback ${correct?"":"wrong-feedback"}"><strong>${correct?"Richtig! +10":"Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span></div>`:""}${answered?`<button type="button" class="primary-button" data-action="next-question">${index===session.questions.length?"Finish Session →":"Next Question →"}</button>`:""}</article><button type="button" class="text-button" data-action="abandon-session">End session</button></section>`;
 }
 function renderActiveQuestion() {
   if (!activeSession) return render("home");

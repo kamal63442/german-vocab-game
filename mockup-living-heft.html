@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup — Das Lebendige Heft</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; padding: 30px 16px;
+  background: #2b2317;
+  background-image: radial-gradient(rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 22px 22px;
+  font-family: "Nunito", system-ui, sans-serif; color: #23324d;
+  display: flex; flex-wrap: wrap; gap: 34px; justify-content: center; align-items: flex-start;
+}
+.intro { width: 100%; text-align: center; color: #f3ecd9; }
+.intro h1 { font-family: "Kalam", cursive; font-size: 2rem; margin: 0 0 6px; transform: rotate(-1deg); }
+.intro p { margin: 0; opacity: .75; font-size: .85rem; }
+
+.phone {
+  width: 340px; border-radius: 38px; padding: 12px;
+  background: #17120c;
+  box-shadow: 0 24px 60px rgba(0,0,0,.55), inset 0 0 0 3px #3a2f20;
+}
+.screen {
+  border-radius: 27px; overflow: hidden; position: relative;
+  height: 660px; display: flex; flex-direction: column;
+  background: #f3ecd9;
+}
+.label { text-align: center; color: #e8dfc4; font-size: .78rem; font-weight: 800; letter-spacing: .08em; margin-top: 14px; text-transform: uppercase; }
+
+/* shared paper bits */
+.paper-bg {
+  position:absolute; inset:0;
+  background-image: linear-gradient(rgba(120,148,191,.5) 1px, transparent 1px);
+  background-size: 100% 21px;
+}
+.margin-rule { position:absolute; top:0; bottom:0; left:26px; width:2px; background:#c0392b; opacity:.8; }
+.hole { position:absolute; left:10px; width:11px; height:11px; border-radius:50%; background:#f3ecd9; border:1.5px solid rgba(35,50,77,.5); z-index:2; display:flex; align-items:center; justify-content:center; font-size:7px; }
+.hole.filled { border-color:#f0b429; box-shadow:0 0 0 1.5px #f0b429 inset; }
+.header { display:flex; justify-content:space-between; align-items:center; padding:14px 16px 8px 40px; border-bottom:2px dashed rgba(35,50,77,.5); position:relative; z-index:3;}
+.brand { font-family:"Kalam",cursive; font-weight:700; font-size:1.05rem; display:flex; gap:6px; align-items:baseline;}
+.brand .pen { color:#f0b429; transform:rotate(-8deg); display:inline-block;}
+.pillbtns { display:flex; gap:6px;}
+.pill { border:2px solid #23324d; border-radius:8px; background:#fbf7ec; font-size:.58rem; font-weight:800; padding:4px 8px; box-shadow:2px 2px 0 rgba(35,50,77,.12);}
+.content { flex:1; overflow:hidden; padding:12px 16px 14px 40px; position:relative; z-index:3; display:flex; flex-direction:column; gap:10px;}
+
+/* coffee stain */
+.coffee {
+  position:absolute; right:-28px; top:210px; width:120px; height:120px; border-radius:50%;
+  border:9px solid rgba(139,90,43,.13); filter: blur(.4px); pointer-events:none;
+}
+.coffee::after{content:"";position:absolute;inset:8px;border-radius:50%;border:3px solid rgba(139,90,43,.09);}
+
+/* dog ear card */
+.card { border:2px solid #23324d; border-radius:7px; background:#fbf7ec; box-shadow:3px 3px 0 rgba(35,50,77,.14); position:relative; padding:12px 14px; }
+.card.dogear { --s:18px; clip-path: polygon(0 0, calc(100% - var(--s)) 0, 100% var(--s), 100% 100%, 0 100%); }
+.card.dogear::before{
+  content:""; position:absolute; top:0; right:0; width:var(--s); height:var(--s);
+  background:linear-gradient(225deg, #f3ecd9 50%, rgba(35,50,77,.25) 50%, #e8dfc4 56%, transparent 62%);
+  border-left:2px solid rgba(35,50,77,.35); border-bottom:2px solid rgba(35,50,77,.2);
+  filter: drop-shadow(-2px 2px 1px rgba(35,50,77,.15));
+}
+.done-tag { position:absolute; top:10px; right:24px; font-family:"Kalam",cursive; color:#2f7a45; font-size:.72rem; transform:rotate(6deg);}
+.kicker { color:#c0392b; font-family:"Kalam",cursive; font-size:.68rem; font-weight:700;}
+.title { font-family:"Kalam",cursive; font-weight:700; font-size:1.35rem; line-height:1.05; transform:rotate(-.6deg); margin:2px 0 4px;}
+.sub { color:#4c5f7d; font-size:.72rem; font-weight:600; line-height:1.45;}
+
+.hero-title { font-family:"Kalam",cursive; font-weight:700; font-size:2rem; line-height:.95; transform:rotate(-1deg); margin:6px 0 4px;}
+.tags {display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.tag {border:2px solid rgba(35,50,77,.5);border-radius:8px 8px 3px 3px;padding:3px 8px;font-size:.6rem;font-weight:700;color:#4c5f7d;background:#fbf7ec;}
+.tag.locked{opacity:.55;border-style:dashed;}
+
+/* ink meter */
+.ink-row{display:flex;align-items:center;gap:10px;}
+.bottle{width:34px;height:44px;border:2.5px solid #23324d;border-radius:4px 4px 10px 10px;background:#fbf7ec;position:relative;overflow:hidden;}
+.bottle::after{content:"";position:absolute;left:11px;top:-8px;width:10px;height:10px;background:#23324d;}
+.ink-fill{position:absolute;bottom:0;left:0;right:0;height:72%;background:#2b3a67;}
+.ink-label{font-size:.62rem;font-weight:800;color:#4c5f7d;text-transform:uppercase;letter-spacing:.06em;}
+.ink-bar{flex:1;height:10px;border:2px solid #23324d;border-radius:6px;background:#fbf7ec;overflow:hidden;}
+.ink-bar span{display:block;height:100%;width:64%;background:repeating-linear-gradient(-45deg,#2b3a67,#2b3a67 6px,#33447a 6px,#33447a 12px);}
+
+/* quiz */
+.progressline{display:flex;justify-content:space-between;font-size:.62rem;font-weight:800;color:#4c5f7d;}
+.meter{height:8px;border-radius:4px;background:rgba(35,50,77,.25);overflow:hidden;}
+.meter i{display:block;height:100%;background:#c0392b;}
+.qword{font-family:"Kalam",cursive;font-weight:700;font-size:2.1rem;line-height:1;transform:rotate(-1deg);margin:4px 0 2px;display:flex;align-items:center;gap:10px;}
+.meaning{font-style:italic;color:#4c5f7d;font-size:.76rem;font-weight:600;}
+.prompt{font-size:1rem;font-weight:700;line-height:1.5;}
+.blank{color:#c0392b;border-bottom:2px dashed #c0392b;padding:0 .12em;}
+.opt{border:2px solid #23324d;border-radius:8px;background:#fbf7ec;padding:10px 12px;font-weight:700;font-size:.86rem;display:flex;gap:10px;align-items:center;}
+.opt .k{width:20px;height:20px;border:2px solid rgba(35,50,77,.5);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.62rem;color:#4c5f7d;flex:none;}
+.smudge{
+  position:relative;
+}
+.smudge::after{
+  content:""; position:absolute; left:-6px; top:-4px; width:74px; height:30px; z-index:-1;
+  background:radial-gradient(closest-side, rgba(80,80,80,.16), rgba(80,80,80,.05) 70%, transparent);
+  transform:rotate(-8deg);
+}
+.smudge-word{text-decoration-line:line-through; text-decoration-color:rgba(192,57,43,.65); text-decoration-thickness:2px; color:#7a8aa5;}
+.speaker{width:26px;height:26px;border:2px solid #23324d;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:#f6efdc;flex:none;}
+
+/* feedback + stamp */
+.feedback{border-left:3px solid #2f7a45;background:rgba(47,122,69,.08);padding:10px 12px;font-size:.74rem;font-weight:600;border-radius:0 6px 6px 0;}
+.feedback.wrong{border-color:#c0392b;background:rgba(192,57,43,.08);}
+.feedback strong{font-family:"Kalam",cursive;font-size:1rem;}
+.stamp{
+  position:absolute; right:14px; top:-14px;
+  border:3px solid #2f7a45; color:#2f7a45; border-radius:10px;
+  font-family:"Kalam",cursive; font-weight:700; font-size:.95rem; letter-spacing:.12em;
+  padding:3px 10px; transform:rotate(12deg); opacity:.9;
+  mix-blend-mode:multiply; pointer-events:none;
+}
+.stamp::after{content:"";position:absolute;inset:2px;border:1px dashed rgba(47,122,69,.55);border-radius:7px;}
+.stamp.red{border-color:#c0392b;color:#c0392b;}
+.stamp.red::after{border-color:rgba(192,57,43,.55);}
+
+.review-item{padding:10px 12px;position:relative;}
+.review-item p{margin:4px 0 0;font-size:.68rem;color:#4c5f7d;font-weight:600;}
+code{font-weight:800;color:#23324d;font-family:inherit;}
+
+.btnrow{display:flex;gap:8px;margin-top:auto;}
+.primary{flex:1;border:2px solid #23324d;border-radius:8px;background:#f0b429;color:#23324d;font-weight:800;padding:11px;font-size:.82rem;box-shadow:3px 3px 0 rgba(35,50,77,.22);}
+.secondary{flex:1;border:2px solid #23324d;border-radius:8px;background:#fbf7ec;font-weight:800;padding:11px;font-size:.82rem;}
+
+.torn{position:absolute;left:0;right:0;bottom:-2px;height:16px;z-index:4;
+  background:linear-gradient(-45deg,transparent 8px,#f3ecd9 0),linear-gradient(45deg,transparent 8px,#f3ecd9 0);
+  background-size:16px 16px; background-repeat:repeat-x;}
+.confetti{position:absolute;top:-10px;width:8px;height:12px;border-radius:2px;z-index:5;}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>✎ Das Lebendige Heft — Konzept-Mockups</h1>
+  <p>Concept 2 · Living Notebook · static previews, not the real app</p>
+</div>
+
+<!-- ============ PHONE 1 : HOME ============ -->
+<div>
+<div class="phone"><div class="screen">
+  <div class="paper-bg"></div><div class="margin-rule"></div>
+  <div class="coffee"></div>
+  <span class="hole" style="top:15%">⭐</span>
+  <span class="hole" style="top:49%">⚡</span>
+  <span class="hole filled" style="top:83%"></span>
+
+  <div class="header">
+    <div class="brand"><span class="pen">✎</span>Übungsheft</div>
+    <div class="pillbtns"><div class="pill">▥ Noten</div><div class="pill">⚙ Mehr</div></div>
+  </div>
+
+  <div class="content">
+    <div>
+      <div class="kicker">Deutschheft · Übung 1</div>
+      <div class="hero-title">MEIN<br>ÜBUNGSHEFT</div>
+      <div class="sub">Dein Heft wächst mit dir — Seite für Seite.</div>
+      <div class="tags">
+        <span class="tag">✎ Konjugation ✓</span>
+        <span class="tag">📖 Wortschatz ✓</span>
+        <span class="tag">🔤 Possessiv ✓</span>
+        <span class="tag locked">🔢 Zahlen · neu</span>
+      </div>
+    </div>
+
+    <div class="card ink-row">
+      <div class="bottle"><div class="ink-fill"></div></div>
+      <div style="flex:1">
+        <div class="ink-label">Tintenfüller · 64 %</div>
+        <div class="ink-bar"><span></span></div>
+        <div class="sub" style="margin-top:3px">Noch 36 Fragen bis zur nächsten Seite voll.</div>
+      </div>
+    </div>
+
+    <div class="card dogear">
+      <span class="done-tag">fertig ✓</span>
+      <div class="kicker">Seite 1 — Grammatik</div>
+      <div class="title" style="font-size:1.1rem">Konjugation</div>
+      <div class="sub">71 Verben · gemeistert: 58 · 13 offen</div>
+    </div>
+    <div class="card">
+      <div class="kicker">Seite 2 — Wortschatz</div>
+      <div class="title" style="font-size:1.1rem">Wortschatz</div>
+      <div class="sub">3.623 Wörter · 214 gestempelt</div>
+    </div>
+
+    <div class="btnrow">
+      <button class="primary" type="button">Weiter üben →</button>
+    </div>
+  </div>
+</div></div>
+<div class="label">1 · Startseite — Sticker, Ohren, Tinte</div>
+</div>
+
+<!-- ============ PHONE 2 : QUIZ ============ -->
+<div>
+<div class="phone"><div class="screen">
+  <div class="paper-bg"></div><div class="margin-rule"></div>
+  <span class="hole" style="top:15%"></span>
+  <span class="hole" style="top:49%"></span>
+  <span class="hole" style="top:83%"></span>
+
+  <div class="header">
+    <div class="brand"><span class="pen">✎</span>Übungsheft</div>
+    <div class="pillbtns"><div class="pill">▥ Noten</div><div class="pill">⚙ Mehr</div></div>
+  </div>
+
+  <div class="content">
+    <div class="progressline"><span>PRACTICE LOOP // 7 OF 20</span><span style="color:#c0392b">Score 60</span></div>
+    <div class="meter"><i style="width:35%"></i></div>
+
+    <div class="card" style="display:flex;flex-direction:column;gap:9px;">
+      <span class="kicker">Aussagesatz · er · irregular pattern</span>
+      <div class="qword">
+        FAHREN
+        <span class="speaker"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+      </div>
+      <div class="meaning">to drive; to travel/go (by vehicle)</div>
+      <p class="prompt">Er <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> morgen mit dem Zug.</p>
+      <div class="opt smudge"><span class="k">A</span><span><span class="smudge-word">Fährtst</span>&nbsp; <span style="color:#c0392b;font-family:'Kalam',cursive;">(radiert)</span></span></div>
+      <div class="opt"><span class="k">B</span>Fährt ab</div>
+      <div class="opt"><span class="k">C</span>Fährt</div>
+      <div class="opt"><span class="k">D</span>Fahren</div>
+    </div>
+
+    <div class="sub" style="text-align:center;font-family:'Kalam',cursive;">
+      ✎ Deine Handschrift wird sauberer — Serie: 6 richtig!
+    </div>
+
+    <div class="btnrow">
+      <button class="primary" type="button">C antworten…</button>
+    </div>
+  </div>
+</div></div>
+<div class="label">2 · Übung — Radiergummi-Schmieren</div>
+</div>
+
+<!-- ============ PHONE 3 : REVIEW ============ -->
+<div>
+<div class="phone"><div class="screen">
+  <div class="paper-bg"></div><div class="margin-rule"></div>
+  <span class="hole" style="top:15%"></span>
+  <span class="hole" style="top:49%"></span>
+  <span class="hole" style="top:83%"></span>
+
+  <div class="header">
+    <div class="brand"><span class="pen">✎</span>Übungsheft</div>
+    <div class="pillbtns"><div class="pill">▥ Noten</div><div class="pill">⚙ Mehr</div></div>
+  </div>
+
+  <!-- confetti -->
+  <span class="confetti" style="left:20%;background:#c0392b;transform:rotate(20deg)"></span>
+  <span class="confetti" style="left:48%;background:#2f7a45;transform:rotate(-30deg)"></span>
+  <span class="confetti" style="left:70%;background:#f0b429;transform:rotate(60deg)"></span>
+  <span class="confetti" style="left:85%;background:#23324d;transform:rotate(10deg)"></span>
+  <div class="torn"></div>
+
+  <div class="header" style="border-bottom:0;padding-bottom:2px;"></div>
+
+  <div class="content" style="padding-top:2px;">
+    <div>
+      <div class="kicker">SESSION REVIEW</div>
+      <div class="hero-title" style="font-size:1.6rem">Seite geschafft!</div>
+      <div class="sub">Accuracy 90% · Score 180 · Bestserie 12</div>
+    </div>
+
+    <div class="card review-item">
+      <div class="stamp">GEPRÜFT ✓</div>
+      <strong>fahren</strong>
+      <p>Lösung: <code>Er fährt morgen mit dem Zug.</code></p>
+      <p>Your answer: <code>Fährt</code> · Correct: <code>Fährt</code></p>
+    </div>
+
+    <div class="card review-item">
+      <div class="stamp red">NOCHMAL!</div>
+      <strong>kennen</strong>
+      <p>Lösung: <code>Sie kennt meine Lehrerin.</code></p>
+      <p>Your answer: <code>kennt nicht</code> · Correct: <code>kennt</code></p>
+    </div>
+
+    <div class="card review-item">
+      <div class="stamp">GEPRÜFT ✓</div>
+      <strong>wissen</strong>
+      <p>Lösung: <code>Wir wissen die Antwort schon.</code></p>
+      <p>Your answer: <code>wissen</code> · Correct: <code>wissen</code></p>
+    </div>
+
+    <div class="btnrow">
+      <button class="primary" type="button">Play Again →</button>
+      <button class="secondary" type="button">Home</button>
+    </div>
+  </div>
+</div></div>
+<div class="label">3 · Abschluss — Stempel & aufgerissene Seite</div>
+</div>
+
+</body>
+</html>

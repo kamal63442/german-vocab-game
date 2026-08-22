@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup v2 — Concept 4: Wilde Features</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:30px 16px;background:#0d0a06;font-family:"Nunito",system-ui,sans-serif;color:#23324d;display:flex;flex-wrap:wrap;gap:36px;justify-content:center;align-items:flex-start;
+  background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:24px 24px;}
+.intro{width:100%;text-align:center;color:#f3ecd9;margin-bottom:4px}
+.intro h1{font-family:"Kalam",cursive;font-size:2.1rem;margin:0 0 6px;transform:rotate(-1deg)}
+.intro p{margin:0;opacity:.7;font-size:.85rem}
+
+.phone{width:340px;border-radius:40px;padding:12px;background:#000;box-shadow:0 26px 70px rgba(0,0,0,.65),inset 0 0 0 3px #2e2519;}
+.screen{border-radius:28px;overflow:hidden;position:relative;height:680px;display:flex;flex-direction:column;background:#f3ecd9;}
+.label{text-align:center;color:#d8cbae;font-size:.75rem;font-weight:800;letter-spacing:.1em;margin-top:14px;text-transform:uppercase;line-height:1.5}
+.paper-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(120,148,191,.5) 1px,transparent 1px);background-size:100% 21px;}
+.margin-rule{position:absolute;top:0;bottom:0;left:26px;width:2px;background:#c0392b;opacity:.8;z-index:2}
+.hole{position:absolute;left:10px;width:11px;height:11px;border-radius:50%;background:#f3ecd9;border:1.5px solid rgba(35,50,77,.5);z-index:3}
+.header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 8px 40px;border-bottom:2px dashed rgba(35,50,77,.5);position:relative;z-index:6}
+.brand{font-family:"Kalam",cursive;font-weight:700;font-size:1.02rem;display:flex;gap:6px;align-items:baseline}
+.brand .pen{color:#f0b429;transform:rotate(-8deg);display:inline-block}
+.content{flex:1;overflow:hidden;padding:12px 16px 14px 40px;position:relative;z-index:6;display:flex;flex-direction:column;gap:10px}
+.card{border:2px solid #23324d;border-radius:8px;background:#fbf7ec;box-shadow:3px 3px 0 rgba(35,50,77,.14);position:relative;padding:12px 14px}
+.kicker{color:#c0392b;font-family:"Kalam",cursive;font-size:.68rem;font-weight:700}
+.title{font-family:"Kalam",cursive;font-weight:700;font-size:1.3rem;transform:rotate(-.6deg);margin:2px 0 4px}
+.sub{color:#4c5f7d;font-size:.72rem;font-weight:600;line-height:1.45}
+.opt{border:2px solid #23324d;border-radius:8px;background:#fbf7ec;padding:10px 12px;font-weight:700;font-size:.84rem;display:flex;gap:10px;align-items:center}
+.opt .k{width:20px;height:20px;border:2px solid rgba(35,50,77,.5);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.62rem;color:#4c5f7d;flex:none}
+.prompt{font-size:.97rem;font-weight:700;line-height:1.5}
+.blank{color:#c0392b;border-bottom:2px dashed #c0392b;padding:0 .12em}
+
+/* ============ 1 · LAMPE AN ============ */
+.night{background:linear-gradient(#171008 0%,#241a0e 55%,#33241a 78%,#4a3423 79%,#3c2b1d 100%) !important;}
+.deskwood{position:absolute;left:0;right:0;bottom:0;height:22%;z-index:1;
+  background:repeating-linear-gradient(90deg,#4a3423 0 46px,#443021 46px 92px);
+  box-shadow:inset 0 10px 18px rgba(0,0,0,.55);}
+.deskwood::after{content:"";position:absolute;inset:0;background:
+  radial-gradient(60% 90% at 62% -10%, rgba(255,220,140,.20), transparent 60%);}
+.lamparm{position:absolute;top:-4px;right:26px;z-index:8;width:150px;height:150px;pointer-events:none;}
+.lamparm .base{position:absolute;top:0;right:52px;width:56px;height:10px;background:#20180e;border-radius:3px;}
+.lamparm .arm1{position:absolute;top:6px;right:74px;width:74px;height:9px;background:#2e2314;border-radius:5px;transform:rotate(-38deg);transform-origin:right center;}
+.lamparm .joint{position:absolute;width:13px;height:13px;border-radius:50%;background:#57452c;border:2px solid #20180e;}
+.lamparm .j1{top:8px;right:70px;}
+.lamparm .j2{top:56px;right:118px;}
+.lamparm .arm2{position:absolute;top:58px;right:124px;width:66px;height:9px;background:#2e2314;border-radius:5px;transform:rotate(-104deg);transform-origin:right center;}
+.lamparm .shade{position:absolute;top:96px;right:158px;width:64px;height:30px;background:linear-gradient(#5d4930,#3a2c19);
+  clip-path:polygon(16% 100%,84% 100%,100% 0,0 0);border-radius:5px 5px 0 0;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6));}
+.bulbglow{position:absolute;top:122px;right:186px;width:16px;height:16px;border-radius:50%;background:#ffe9a8;z-index:8;
+  box-shadow:0 0 22px 10px rgba(255,225,140,.9),0 0 60px 30px rgba(255,215,120,.35);animation:flicker 4s infinite;}
+@keyframes flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.72}94%{opacity:1}97%{opacity:.85}98%{opacity:1}}
+.cone{position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:conic-gradient(from 148deg at calc(100% - 190px) 128px,
+    transparent 0deg, rgba(255,228,150,.07) 10deg, rgba(255,226,142,.20) 24deg,
+    rgba(255,222,132,.30) 34deg, rgba(255,226,142,.20) 44deg, rgba(255,228,150,.07) 58deg, transparent 68deg);}
+.mote{position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(255,240,200,.5);filter:blur(1px);z-index:7;animation:drift 7s ease-in-out infinite;}
+@keyframes drift{0%,100%{transform:translate(0,0);opacity:.15}50%{transform:translate(-14px,18px);opacity:.7}}
+.night .header{border-color:#4a3b26;}
+.night .brand{color:#f3ecd9;}
+.night .hole{background:#241a0e;border-color:#57452c;}
+.night .dim{opacity:.38;}
+.togglepill{border:2px solid #f0b429;color:#ffd76a;border-radius:999px;font-size:.6rem;font-weight:800;padding:4px 11px;background:rgba(240,180,41,.14);display:flex;align-items:center;gap:5px;}
+.night .card,.night .opt{border-color:#6b5836;background:#2a2114;color:#fff3da;box-shadow:4px 5px 0 rgba(0,0,0,.5);}
+.night .opt .k{border-color:#8a744c;color:#e8d8b0;}
+.night .kicker{color:#ffcf70;}
+.night .title,.night .prompt{color:#fff3da;text-shadow:0 1px 0 rgba(0,0,0,.4);}
+.night .sub{color:#cdbfa4;}
+.night .blank{color:#ffb84d;border-color:#ffb84d;}
+.glowline{text-align:center;font-family:"Kalam",cursive;color:#ffd76a;font-size:.76rem;}
+
+/* ============ 2 · WORTPASS ============ */
+.passwrap{position:absolute;inset:0;background:linear-gradient(160deg,#20294a,#141b33);display:flex;align-items:center;justify-content:center;padding:18px 14px;}
+.passbook{width:96%;max-width:292px;border-radius:12px;overflow:hidden;box-shadow:0 20px 44px rgba(0,0,0,.55);border:3px solid #101731;}
+.coverflap{background:linear-gradient(165deg,#2b3a67,#1a2440);padding:13px 14px 11px;position:relative;}
+.crest{width:44px;height:44px;border-radius:50%;border:2.5px solid #d9b64a;color:#e8c766;display:flex;align-items:center;justify-content:center;
+  font-family:"Kalam",cursive;font-weight:700;font-size:1.3rem;margin:0 auto 5px;box-shadow:inset 0 0 0 3px rgba(217,182,74,.25);}
+.covertitle{text-align:center;color:#e8c766;font-family:"Kalam",cursive;font-weight:700;letter-spacing:.22em;font-size:.86rem;}
+.coversub{text-align:center;color:#93a2c9;font-size:.52rem;font-weight:800;letter-spacing:.34em;margin-top:2px;}
+.pages{background:#f8f2e2;padding:12px 12px 8px;}
+.pghead{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid rgba(35,50,77,.25);padding-bottom:5px;margin-bottom:9px;}
+.pghead b{font-size:.62rem;letter-spacing:.18em;color:#23324d;}
+.pghead span{font-size:.52rem;color:#8b96ad;font-weight:800;letter-spacing:.1em;}
+.stampline{display:flex;gap:8px;margin-bottom:9px;}
+.vstamp{flex:1;border:2px dashed rgba(35,50,77,.3);border-radius:8px;background:#fdfaf1;padding:7px 6px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:86px;justify-content:center;}
+.vsring{width:52px;height:52px;border-radius:50%;border:2.5px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  font-family:"Kalam",cursive;font-weight:700;line-height:1.02;font-size:.5rem;padding:3px;mix-blend-mode:multiply;position:relative;}
+.vsring::after{content:"";position:absolute;inset:2.5px;border:1px dashed currentColor;border-radius:50%;opacity:.6;}
+.vsring small{font-size:.42rem;font-weight:800;font-family:"Nunito";letter-spacing:.06em;}
+.grn{color:#2f7a45;border-color:#2f7a45;transform:rotate(-9deg);}
+.blu{color:#2b3a67;border-color:#2b3a67;transform:rotate(7deg);}
+.red{color:#c0392b;border-color:#c0392b;transform:rotate(-5deg);}
+.wlabel{font-size:.6rem;font-weight:800;color:#23324d;}
+.emptyvs{color:#a8b2c6;font-size:.52rem;font-weight:800;letter-spacing:.1em;text-align:center;line-height:1.6;}
+.dateline{display:flex;justify-content:space-between;font-size:.5rem;color:#8b96ad;font-weight:700;padding:0 3px;margin-top:-4px;}
+.citizenbar{margin-top:2px;}
+.cty-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.cty-top b{font-family:"Kalam",cursive;color:#2b3a67;font-size:.78rem;}
+.cty-top span{font-size:.56rem;font-weight:800;color:#4c5f7d;}
+.cbar{height:11px;border:2px solid #23324d;border-radius:6px;background:#fdfaf1;overflow:hidden;}
+.cbar i{display:block;height:100%;width:72%;background:repeating-linear-gradient(-45deg,#2b3a67,#2b3a67 6px,#33447a 6px,#33447a 12px);}
+.mrz{background:#e9e2cf;padding:6px 10px;font-family:"Space Mono",monospace;font-size:.56rem;letter-spacing:.08em;color:#4a4a44;white-space:nowrap;overflow:hidden;}
+.goldseal{position:absolute;top:-17px;right:-12px;width:62px;height:62px;border-radius:50%;
+  border:3px double #d9b64a;background:radial-gradient(circle at 32% 30%,#fbe9b6,#eec95e);
+  display:flex;align-items:center;justify-content:center;text-align:center;color:#7a5c12;
+  font-family:"Kalam",cursive;font-weight:700;font-size:.48rem;line-height:1.15;transform:rotate(13deg);
+  box-shadow:0 8px 18px rgba(0,0,0,.4);}
+
+/* ============ 3 · DRACHEN ============ */
+.battle{background:radial-gradient(130% 100% at 50% -12%, #4a1620 0%, #301018 48%, #180a0f 100%) !important;color:#f6e7d7;}
+.arena-glow{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(46% 34% at 50% 24%, rgba(255,110,50,.16), transparent 70%);}
+.bt-head{display:flex;align-items:center;gap:12px;padding:16px 16px 2px 40px;position:relative;z-index:6;}
+.dragonwrap{width:108px;height:108px;flex:none;position:relative;animation:hover 2.8s ease-in-out infinite;}
+@keyframes hover{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1.5deg)}}
+.firepuff{position:absolute;right:-6px;top:34px;font-size:1.1rem;animation:puff 1.8s ease-in-out infinite;}
+@keyframes puff{0%,100%{opacity:.25;transform:translate(0,0) scale(.8)}50%{opacity:1;transform:translate(6px,-4px) scale(1.15)}}
+.hpwrap{flex:1;min-width:0;}
+.bosstag{display:inline-block;border:2px solid #ff9d6b;color:#ffb37a;border-radius:999px;font-size:.52rem;font-weight:800;letter-spacing:.22em;padding:2px 9px;margin-bottom:4px;}
+.bossname{font-family:"Kalam",cursive;font-weight:700;font-size:1.18rem;color:#ffd9b0;line-height:1;}
+.hpseg{display:flex;gap:2px;margin-top:6px;}
+.hpseg i{height:11px;flex:1;background:linear-gradient(#ff7a52,#c23a1e);border:1px solid #7a2f1d;border-radius:2px;}
+.hpseg i.off{background:#2a1210;box-shadow:inset 0 2px 3px rgba(0,0,0,.6);}
+.hpnum{font-size:.56rem;font-weight:800;color:#e8b9a4;letter-spacing:.12em;margin-top:3px;}
+.dmgfloat{position:absolute;right:26px;top:112px;z-index:7;font-family:"Kalam",cursive;font-weight:700;font-size:1.15rem;color:#ffd76a;
+  text-shadow:0 3px 8px rgba(0,0,0,.7);animation:dmg 1.6s ease-out infinite;}
+@keyframes dmg{0%{opacity:0;transform:translateY(6px) rotate(8deg)}25%{opacity:1}100%{opacity:0;transform:translateY(-22px) rotate(-4deg)}}
+.blog{background:rgba(0,0,0,.32);border:1.5px solid rgba(255,157,107,.35);border-radius:8px;padding:7px 10px;font-size:.6rem;font-weight:700;color:#e8b9a4;line-height:1.55;}
+.blog em{color:#ffd76a;font-style:normal;}
+.combo{display:flex;align-items:center;gap:6px;justify-content:center;font-family:"Kalam",cursive;color:#ff9d6b;font-size:.8rem;}
+
+/* ============ 4 · WETTER ============ */
+.rainy{background:linear-gradient(180deg,#c9d4dd 0%,#e6dfd0 34%,#f3ecd9 55%) !important;}
+.cloudband{position:absolute;top:-8px;left:-10%;right:-10%;height:120px;z-index:2;pointer-events:none;opacity:.9;}
+.cloud{position:absolute;background:#aebac6;border-radius:50px;filter:blur(2px);}
+.c1{width:150px;height:44px;top:18px;left:-20px}.c2{width:120px;height:38px;top:44px;left:90px;opacity:.85}
+.c3{width:170px;height:48px;top:8px;right:-40px}.c4{width:110px;height:36px;top:52px;right:70px;opacity:.8}
+.rainlayer{position:absolute;inset:0;z-index:3;pointer-events:none;}
+.rain-a{background-image:repeating-linear-gradient(100deg,transparent 0 26px,rgba(43,58,103,.22) 26px 27px,transparent 27px 60px);
+  animation:fallA .55s linear infinite;}
+.rain-b{background-image:repeating-linear-gradient(100deg,transparent 0 44px,rgba(43,58,103,.13) 44px 45px,transparent 45px 96px);
+  animation:fallB .8s linear infinite;opacity:.8;}
+@keyframes fallA{to{background-position:-46px 640px}}
+@keyframes fallB{to{background-position:-70px 640px}}
+.puddle{position:absolute;bottom:26px;right:30px;width:90px;height:16px;border-radius:50%;z-index:2;
+  background:radial-gradient(closest-side,rgba(43,58,103,.20),rgba(43,58,103,.05) 70%,transparent);}
+.wx-chip{display:inline-flex;align-items:center;gap:7px;border:2px solid #23324d;border-radius:999px;background:#fbf7ec;
+  padding:5px 12px;font-weight:800;font-size:.68rem;box-shadow:2px 2px 0 rgba(35,50,77,.12);}
+.wx-chip .t{color:#4c5f7d;font-weight:800;}
+.cozybig{border:2px solid #2b3a67;border-left-width:5px;background:linear-gradient(135deg,rgba(43,58,103,.09),rgba(43,58,103,.03));
+  padding:13px 14px;border-radius:8px;position:relative;}
+.cozybig h3{margin:0;font-family:"Kalam",cursive;color:#2b3a67;font-size:1.02rem;}
+.cozybig p{margin:5px 0 0;font-size:.74rem;font-weight:600;color:#3d4c66;line-height:1.5;}
+.xpchip{display:inline-block;border:2px solid #2f7a45;color:#2f7a45;border-radius:999px;padding:3px 11px;font-size:.62rem;font-weight:800;transform:rotate(-2deg);margin-top:8px;background:#fbf7ec;}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Concept 4 · v2 — Wilde Features</h1>
+  <p>Lampe an &nbsp;·&nbsp; Wortpass &nbsp;·&nbsp; Grammatik-Drachen &nbsp;·&nbsp; Berliner Wetter</p>
+</div>
+
+<!-- ==================== 1 · LAMPE AN ==================== -->
+<div>
+<div class="phone"><div class="screen night">
+  <div class="paper-bg"></div>
+  <div class="deskwood"></div>
+  <div class="margin-rule" style="background:#8a3a2c;"></div>
+  <span class="hole" style="top:12%"></span><span class="hole" style="top:46%"></span><span class="hole" style="top:80%"></span>
+
+  <div class="lamparm">
+    <div class="base"></div>
+    <div class="arm1"></div><div class="joint j1"></div>
+    <div class="arm2"></div><div class="joint j2"></div>
+    <div class="shade"></div>
+  </div>
+  <div class="bulbglow"></div>
+  <span class="mote" style="right:210px;top:170px"></span>
+  <span class="mote" style="right:250px;top:230px;animation-delay:1.4s"></span>
+  <span class="mote" style="right:180px;top:300px;animation-delay:2.6s"></span>
+  <span class="mote" style="right:280px;top:380px;animation-delay:3.4s"></span>
+  <div class="cone"></div>
+
+  <div class="header dim" style="border-color:#4a3b26;">
+    <div class="brand"><span class="pen">✎</span>Übungsheft</div>
+    <div class="togglepill">💡 Lampe an</div>
+  </div>
+
+  <div class="content">
+    <div class="dim" style="display:flex;justify-content:space-between;font-size:.6rem;font-weight:800;color:#cdbfa4;">
+      <span>PRACTICE LOOP // 8 OF 20</span><span style="color:#ffb84d">Score 70</span>
+    </div>
+
+    <div class="card">
+      <span class="kicker">Aussagesatz · sie (she) · irregular pattern</span>
+      <div class="title" style="font-size:1.65rem;">ESSEN</div>
+      <div class="sub">to eat</div>
+      <p class="prompt" style="margin-top:7px;">Sie <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;</span> gern ein gesundes Frühstück.</p>
+      <div style="display:grid;gap:7px;margin-top:10px;">
+        <div class="opt"><span class="k">A</span>isst</div>
+        <div class="opt"><span class="k">B</span>eßt</div>
+        <div class="opt"><span class="k">C</span>esst</div>
+        <div class="opt"><span class="k">D</span>essen</div>
+      </div>
+    </div>
+
+    <div class="glowline">☾ Nur der Schreibtisch ist noch wach.</div>
+  </div>
+</div></div>
+<div class="label">1 · „Lampe an“<br>flickering lamp · dust motes · warm pool of light</div>
+</div>
+
+<!-- ==================== 2 · WORTPASS ==================== -->
+<div>
+<div class="phone"><div class="screen" style="background:#141b33;">
+  <div class="passwrap">
+    <div class="passbook" style="position:relative;">
+      <div class="goldseal">B1<br>ZERTIFIKAT<br>BEREIT</div>
+      <div class="coverflap">
+        <div class="crest">Ü</div>
+        <div class="covertitle">WORTPASS</div>
+        <div class="coversub">DEUTSCH · A1–B1</div>
+      </div>
+      <div class="pages">
+        <div class="pghead"><b>VISA-SEITE 3 VON 10</b><span>42 STAMPS</span></div>
+        <div class="stampline">
+          <div class="vstamp">
+            <div class="vsring grn">der Hund<small>✓ SUB.</small></div>
+            <div class="wlabel">der Hund</div>
+          </div>
+          <div class="vstamp">
+            <div class="vsring blu">fahren ✓<small>KONJ.</small></div>
+            <div class="wlabel">fahren</div>
+          </div>
+        </div>
+        <div class="dateline"><span>12.03.26</span><span>28.04.26</span></div>
+        <div class="stampline">
+          <div class="vstamp">
+            <div class="vsring red">meinen ✓<small>POSS.</small></div>
+            <div class="wlabel">Possessiv</div>
+          </div>
+          <div class="vstamp">
+            <div class="emptyvs">— LEER —<br>2 WÖRTER<br>BIS STAMP</div>
+          </div>
+        </div>
+        <div class="citizenbar">
+          <div class="cty-top"><b>Staatsbürgerschaft</b><span>72%</span></div>
+          <div class="cbar"><i></i></div>
+          <div class="dateline" style="margin-top:4px;"><span>A1 ✓</span><span>A2 ✓</span><span style="color:#2b3a67">B1 …</span><span>B2</span></div>
+        </div>
+      </div>
+      <div class="mrz">UEBUNGSHEFT&lt;&lt;DER&lt;&lt;STIFT&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;<br>D2708&gt;&gt;8DEUTSCH&gt;&gt;A1.B1.CITIZEN&gt;&gt;</div>
+    </div>
+  </div>
+</div></div>
+<div class="label">2 · Wortpass<br>official visa stamps · citizenship bar · MRZ</div>
+</div>
+
+<!-- ==================== 3 · GRAMMATIK-DRACHEN ==================== -->
+<div>
+<div class="phone"><div class="screen battle">
+  <div class="arena-glow"></div>
+
+  <div class="bt-head">
+    <div class="dragonwrap">
+      <svg viewBox="0 0 110 100" width="108" height="100" aria-hidden="true">
+        <ellipse cx="55" cy="94" rx="30" ry="5" fill="rgba(0,0,0,.4)"/>
+        <path d="M88 46 Q104 40 106 26 Q92 30 86 38Z" fill="#a92c18"/>
+        <path d="M22 50 Q6 46 4 30 Q18 34 24 42Z" fill="#a92c18"/>
+        <path d="M18 76 Q12 58 24 46 Q20 32 34 28 Q32 16 46 18 Q58 8 68 20 Q84 22 82 38 Q92 44 86 56 Q90 72 74 78 Q58 88 42 82 Q26 86 18 76Z" fill="#7a2f1d"/>
+        <path d="M46 18 L42 4 L54 14 Z" fill="#c23a1e"/>
+        <path d="M63 20 L64 5 L73 17 Z" fill="#c23a1e"/>
+        <circle cx="57" cy="37" r="6.4" fill="#ffe08a"/><circle cx="58.6" cy="37" r="2.8" fill="#1d0d08"/>
+        <circle cx="59" cy="35" r="1" fill="#fff"/>
+        <path d="M38 52 Q52 61 68 52 L61 63 Q50 67 43 60 Z" fill="#3c1710"/>
+        <path d="M42 53 L45 60 M49 54 L51 61 M58 54 L56 61 M64 53 L61 60" stroke="#ffe9d2" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M30 78 Q26 88 17 91 M68 80 Q72 90 81 91" stroke="#3c1710" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+        <path d="M74 78 Q88 84 96 78 Q88 74 82 72Z" fill="#c23a1e"/>
+      </svg>
+      <span class="firepuff">🔥</span>
+    </div>
+    <div class="hpwrap">
+      <div class="bosstag">BOSSKAMPF</div>
+      <div class="bossname">Grammatik-Drachen</div>
+      <div class="hpnum">HP 62 / 100 · PRÜFUNGSENDE</div>
+      <div class="hpseg">
+        <i></i><i></i><i></i><i></i><i></i><i></i>
+        <i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i>
+      </div>
+    </div>
+  </div>
+  <span class="dmgfloat">−10 ❤</span>
+
+  <div class="content" style="padding-top:6px;">
+    <div class="blog">
+      Du hast <em>fahren → fährt</em> getroffen! &nbsp;−10 ❤<br>
+      Der Drache schnappt nach deiner Serie… 🔥
+    </div>
+
+    <div class="card bt-card" style="border-color:#7a2f1d;background:#2a1712;color:#ffe9d2;box-shadow:4px 5px 0 rgba(0,0,0,.5);">
+      <span class="kicker" style="color:#ffb37a;">Letzte Frage · Treffer = Schaden</span>
+      <p class="prompt">Der Drache <span class="blank" style="color:#ffb84d;border-color:#ffb84d">___</span> deine Fehler! <span style="opacity:.6">(fressen · er)</span></p>
+      <div style="display:grid;gap:7px;margin-top:9px;">
+        <div class="opt bt-opt" style="background:#20100c;border-color:#7a2f1d;color:#ffe9d2;"><span class="k" style="border-color:#a44a2e;color:#ffb37a;">A</span>frißt</div>
+        <div class="opt bt-opt" style="background:#20100c;border-color:#7a2f1d;color:#ffe9d2;"><span class="k" style="border-color:#a44a2e;color:#ffb37a;">B</span>frisst</div>
+        <div class="opt bt-opt" style="background:#20100c;border-color:#7a2f1d;color:#ffe9d2;"><span class="k" style="border-color:#a44a2e;color:#ffb37a;">C</span>fresst</div>
+        <div class="opt bt-opt" style="background:#20100c;border-color:#7a2f1d;color:#ffe9d2;"><span class="k" style="border-color:#a44a2e;color:#ffb37a;">D</span>fressen</div>
+      </div>
+    </div>
+
+    <div class="combo">🔥 SERIE ×6 — nächster Treffer: KRITISCH!</div>
+  </div>
+</div></div>
+<div class="label">3 · Grammatik-Drachen<br>segmented HP · battle log · combo crits</div>
+</div>
+
+<!-- ==================== 4 · BERLINER WETTER ==================== -->
+<div>
+<div class="phone"><div class="screen rainy">
+  <div class="cloudband">
+    <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div><div class="cloud c4"></div>
+  </div>
+  <div class="rainlayer rain-a"></div>
+  <div class="rainlayer rain-b"></div>
+  <div class="puddle"></div>
+
+  <div class="paper-bg" style="opacity:.45"></div>
+  <div class="margin-rule"></div>
+  <span class="hole" style="top:15%"></span><span class="hole" style="top:49%"></span><span class="hole" style="top:83%"></span>
+
+  <div class="header">
+    <div class="brand"><span class="pen">✎</span>Übungsheft</div>
+    <div class="wx-chip">☔ <span class="t">Berlin</span> 12° Regen</div>
+  </div>
+
+  <div class="content">
+    <div>
+      <div class="kicker">Deutschheft · Übung 1</div>
+      <div class="title" style="font-size:1.8rem;">Regentag ☔</div>
+      <div class="sub">Berlin trinkt Kaffee. Du trainierst Konjugationen.</div>
+    </div>
+
+    <div class="cozybig">
+      <h3>Kuschel-Studienmodus aktiv ☕</h3>
+      <p>Es regnet — heute zählt jede richtige Antwort doppelt ins Tintenfüller-Glas.</p>
+      <span class="xpchip">+XP × 2 · nur heute</span>
+    </div>
+
+    <section class="panel card ink-row" style="display:flex;align-items:center;gap:12px;">
+      <div class="ink-bottle"><span style="--ink:64%"></span></div>
+      <div class="ink-meter"><span style="--ink:64%"></span></div>
+    </section>
+
+    <div class="action-grid" style="margin-top:auto;"><button type="button" class="primary-button" style="width:100%;">Weiter üben →</button></div>
+  </div>
+</div></div>
+<div class="label">4 · Berliner Wetter<br>animated rain · clouds · cozy study mode ×2 XP</div>
+</div>
+
+</body>
+</html>

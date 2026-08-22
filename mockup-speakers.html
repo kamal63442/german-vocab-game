@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Speaker Icon Candidates — Übungsheft</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box}
+body{margin:0;padding:28px 18px;background:#e8dfc4;font-family:"Nunito",system-ui,sans-serif;color:#23324d;
+  background-image:linear-gradient(rgba(120,148,191,.35) 1px,transparent 1px);background-size:100% 21px;}
+.intro{max-width:720px;margin:0 auto 22px;}
+.intro h1{font-family:"Kalam",cursive;font-size:1.9rem;margin:0 0 4px;transform:rotate(-1deg);}
+.intro p{margin:0;font-size:.85rem;font-weight:600;color:#4c5f7d;}
+.grid{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px;}
+.cand{border:2px solid #23324d;border-radius:10px;background:#fbf7ec;box-shadow:3px 3px 0 rgba(35,50,77,.16);padding:14px 16px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+.badge{width:34px;height:34px;border-radius:50%;background:#23324d;color:#f0b429;display:flex;align-items:center;justify-content:center;
+  font-family:"Kalam",cursive;font-weight:700;font-size:1.05rem;flex:none;}
+.info{width:150px;min-width:130px;}
+.info b{display:block;font-size:.92rem;}
+.info small{color:#4c5f7d;font-weight:600;font-size:.72rem;line-height:1.4;display:block;margin-top:2px;}
+
+/* ==== exact app button styles ==== */
+.icon-button{display:inline-flex;align-items:center;justify-content:center;height:38px;min-width:38px;padding:0;border:2px solid #23324d;border-radius:8px;background:#f6efdc;color:#23324d;font-weight:700;transition:.15s ease;box-shadow:2px 2px 0 rgba(35,50,77,.12);}
+.icon-button:hover,.icon-button.speaking{background:rgba(240,180,41,.2);border-color:#f0b429;}
+.small svg{width:18px;height:18px;}
+.big{height:80px;width:80px;border-radius:16px;}
+.big svg{width:40px;height:40px;}
+.group{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.grouplabel{font-size:.58rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#4c5f7d;width:100%;margin-bottom:-4px;}
+.ringwrap{display:flex;align-items:center;justify-content:center;border:2px dashed currentColor;border-radius:50%;}
+.small .ringwrap{width:22px;height:22px;}
+.big .ringwrap{width:52px;height:52px;}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>🔊 Speaker-Kandidaten</h1>
+  <p>Gleiche Buttons wie in der App — klein (Quiz) und groß (Hören). Sag mir den Buchstaben, ich baue ihn überall ein.</p>
+</div>
+
+<div class="grid">
+
+<!-- A · emoji baseline -->
+<div class="cand">
+  <div class="badge">A</div>
+  <div class="info"><b>Emoji 🔊 <span style="color:#c0392b">(jetzt)</span></b><small>Aktueller Standard. Verlässt sich auf System-Font, wirkt auf jedem Handy etwas anders.</small></div>
+  <div class="group"><span class="grouplabel">klein</span>
+    <button class="icon-button small"><span style="font-size:1rem">🔊</span></button>
+    <button class="icon-button small speaking"><span style="font-size:1rem">🔊</span></button>
+  </div>
+  <div class="group"><span class="grouplabel">groß</span>
+    <button class="icon-button big"><span style="font-size:2rem">🔊</span></button>
+  </div>
+</div>
+
+<!-- B · line speaker -->
+<div class="cand">
+  <div class="badge">B</div>
+  <div class="info"><b>Linien-Lautsprecher <span style="color:#c0392b">(Hören jetzt)</span></b><small>Gefüllter Körper + Strichwellen. Sauber & modern, passt zu Nunito.</small></div>
+  <div class="group"><span class="grouplabel">klein</span>
+    <button class="icon-button small"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><path d="M15.54 8.46a5 5 0 0 1 0 7.08"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+    <button class="icon-button small speaking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><path d="M15.54 8.46a5 5 0 0 1 0 7.08"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+  </div>
+  <div class="group"><span class="grouplabel">groß</span>
+    <button class="icon-button big"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><path d="M15.54 8.46a5 5 0 0 1 0 7.08"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+  </div>
+</div>
+
+<!-- C · sketchy hand-drawn -->
+<div class="cand">
+  <div class="badge">C</div>
+  <div class="info"><b>Kritzelstil ✏️</b><small>Wackelige Hand-strich-Linien — passt zur Kalam-Handschrift & Heft-Idee.</small></div>
+  <div class="group"><span class="grouplabel">klein</span>
+    <button class="icon-button small"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M11.2 5.3 C9.8 6.6 8.2 8 6.3 8.9 L3.4 9 C3.1 11 3.2 13 3.5 15 L6.4 15.2 C8.3 16 9.9 17.4 11.3 18.7 C11.5 14.2 11.5 9.8 11.2 5.3 Z" fill="currentColor" fill-opacity=".12"/><path d="M14.6 9.1 C15.8 10.9 15.8 13.2 14.5 14.9"/><path d="M17.8 6.6 C20.4 10 20.4 14 17.7 17.4"/></svg></button>
+    <button class="icon-button small speaking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M11.2 5.3 C9.8 6.6 8.2 8 6.3 8.9 L3.4 9 C3.1 11 3.2 13 3.5 15 L6.4 15.2 C8.3 16 9.9 17.4 11.3 18.7 C11.5 14.2 11.5 9.8 11.2 5.3 Z" fill="currentColor" fill-opacity=".12"/><path d="M14.6 9.1 C15.8 10.9 15.8 13.2 14.5 14.9"/><path d="M17.8 6.6 C20.4 10 20.4 14 17.7 17.4"/></svg></button>
+  </div>
+  <div class="group"><span class="grouplabel">groß</span>
+    <button class="icon-button big"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M11.2 5.3 C9.8 6.6 8.2 8 6.3 8.9 L3.4 9 C3.1 11 3.2 13 3.5 15 L6.4 15.2 C8.3 16 9.9 17.4 11.3 18.7 C11.5 14.2 11.5 9.8 11.2 5.3 Z" fill="currentColor" fill-opacity=".12"/><path d="M14.6 9.1 C15.8 10.9 15.8 13.2 14.5 14.9"/><path d="M17.8 6.6 C20.4 10 20.4 14 17.7 17.4"/></svg></button>
+  </div>
+</div>
+
+<!-- D · solid ink -->
+<div class="cand">
+  <div class="badge">D</div>
+  <div class="info"><b>Tinte voll 💧</b><small>Alles gefüllt, dicke Wellen — maximale Sichtbarkeit auf dem Handy.</small></div>
+  <div class="group"><span class="grouplabel">klein</span>
+    <button class="icon-button small"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M14.2 8.3a5.2 5.2 0 0 1 0 7.4" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M18 5.2a10.5 10.5 0 0 1 0 13.6" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg></button>
+    <button class="icon-button small speaking"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M14.2 8.3a5.2 5.2 0 0 1 0 7.4" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M18 5.2a10.5 10.5 0 0 1 0 13.6" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg></button>
+  </div>
+  <div class="group"><span class="grouplabel">groß</span>
+    <button class="icon-button big"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M14.2 8.3a5.2 5.2 0 0 1 0 7.4" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M18 5.2a10.5 10.5 0 0 1 0 13.6" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></button>
+  </div>
+</div>
+
+<!-- E · tonspur -->
+<div class="cand">
+  <div class="badge">E</div>
+  <div class="info"><b>Tonspur 🎚</b><small>Nur Balken, kein Lautsprecher — minimal & einzigartig.</small></div>
+  <div class="group"><span class="grouplabel">klein</span>
+    <button class="icon-button small"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3.5" y="9" width="3.4" height="6" rx="1.6"/><rect x="10.3" y="5" width="3.4" height="14" rx="1.6"/><rect x="17.1" y="8" width="3.4" height="8" rx="1.6"/></svg></button>
+    <button class="icon-button small speaking"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3.5" y="9" width="3.4" height="6" rx="1.6"/><rect x="10.3" y="5" width="3.4" height="14" rx="1.6"/><rect x="17.1" y="8" width="3.4" height="8" rx="1.6"/></svg></button>
+  </div>
+  <div class="group"><span class="grouplabel">groß</span>
+    <button class="icon-button big"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3.5" y="9" width="3.4" height="6" rx="1.6"/><rect x="10.3" y="5" width="3.4" height="14" rx="1.6"/><rect x="17.1" y="8" width="3.4" height="8" rx="1.6"/></svg></button>
+  </div>
+</div>
+
+<!-- F · stempel ring -->
+<div class="cand">
+  <div class="badge">F</div>
+  <div class="info"><b>Stempel-Ring ⭕</b><small>Lautsprecher im gestrichelten Kreis — wie deine GEPRÜFT-Stempel. Sehr „Heft“.</small></div>
+  <div class="group"><span class="grouplabel">klein</span>
+    <button class="icon-button small"><span class="ringwrap"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M14.2 8.3a5.2 5.2 0 0 1 0 7.4" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg></span></button>
+    <button class="icon-button small speaking"><span class="ringwrap"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M14.2 8.3a5.2 5.2 0 0 1 0 7.4" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg></span></button>
+  </div>
+  <div class="group"><span class="grouplabel">groß</span>
+    <button class="icon-button big"><span class="ringwrap"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M14.2 8.3a5.2 5.2 0 0 1 0 7.4" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span></button>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

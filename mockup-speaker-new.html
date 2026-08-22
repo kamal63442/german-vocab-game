@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo — Neues Speaker-Icon</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box}
+body{margin:0;padding:28px 18px;background:#e8dfc4;font-family:"Nunito",system-ui,sans-serif;color:#23324d;
+  background-image:linear-gradient(rgba(120,148,191,.35) 1px,transparent 1px);background-size:100% 21px;}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px;}
+h1{font-family:"Kalam",cursive;font-size:1.9rem;margin:0 0 2px;transform:rotate(-1deg);}
+.note{margin:0;font-size:.85rem;font-weight:600;color:#4c5f7d;}
+.card{border:2px solid #23324d;border-radius:10px;background:#fbf7ec;box-shadow:3px 3px 0 rgba(35,50,77,.16);padding:14px 16px;}
+.card h2{font-family:"Kalam",cursive;font-size:1.05rem;margin:0 0 10px;}
+.row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.tag{font-size:.58rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#4c5f7d;width:110px;}
+.bad{opacity:.75}
+.vs{font-family:"Kalam",cursive;color:#c0392b;font-weight:700;}
+
+/* ==== app-exact button styles ==== */
+.icon-button{display:inline-flex;align-items:center;justify-content:center;height:38px;min-width:38px;padding:0;border:2px solid #23324d;border-radius:8px;background:#f6efdc;color:#23324d;font-weight:700;transition:.15s ease;box-shadow:2px 2px 0 rgba(35,50,77,.12);}
+.icon-button.speaking{background:rgba(240,180,41,.2);border-color:#f0b429;}
+.big{height:80px;min-width:80px;border-radius:16px;}
+.big svg{width:38px;height:38px;}
+
+/* in-context quiz bits */
+.verb-row{display:flex;align-items:center;gap:8px;}
+.verb-word{font-family:"Kalam",cursive;font-weight:700;font-size:1.6rem;line-height:1;transform:rotate(-1deg);}
+.kicker{color:#c0392b;font-family:"Kalam",cursive;font-size:.68rem;font-weight:700;}
+.prompt{font-size:.97rem;font-weight:700;}
+.blank{color:#c0392b;border-bottom:2px dashed #c0392b;padding:0 .12em;}
+.opt{border:2px solid #23324d;border-radius:8px;background:#fbf7ec;padding:9px 12px;font-weight:700;font-size:.84rem;display:flex;gap:10px;align-items:center;max-width:340px;}
+.opt .k{width:20px;height:20px;border:2px solid rgba(35,50,77,.5);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.62rem;color:#4c5f7d;flex:none;}
+.hoerwrap{display:flex;justify-content:center;margin:10px 0 4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div>
+    <h1>Neuer Speaker ✏️ — Demo</h1>
+    <p class="note">Wellen weiter vom Kegel · Striche dicker (2.1) · Füllung stärker · klein = 20px</p>
+  </div>
+
+  <!-- 1 old vs new small -->
+  <div class="card">
+    <h2>1 · Klein im Quiz — alt vs neu</h2>
+    <div class="row" style="margin-bottom:10px;">
+      <span class="tag bad">alt ❌</span>
+      <button class="icon-button bad"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M11.2 5.3 C9.8 6.6 8.2 8 6.3 8.9 L3.4 9 C3.1 11 3.2 13 3.5 15 L6.4 15.2 C8.3 16 9.9 17.4 11.3 18.7 C11.5 14.2 11.5 9.8 11.2 5.3 Z" fill="currentColor" fill-opacity=".12"/><path d="M14.6 9.1 C15.8 10.9 15.8 13.2 14.5 14.9"/><path d="M17.8 6.6 C20.4 10 20.4 14 17.7 17.4"/></svg></button>
+      <span class="vs">→</span>
+      <span class="tag">neu ✓</span>
+      <button class="icon-button"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M11.4 5.6 C10 6.7 8.4 7.9 6.5 8.8 L3.6 8.9 C3.2 10.9 3.2 13 3.5 15.1 L6.6 15.3 C8.5 16.2 10.1 17.5 11.5 18.6 C11.8 14.3 11.8 9.9 11.4 5.6 Z" fill="currentColor" fill-opacity=".18"/><path d="M15.4 9.4 C16.5 11 16.5 13 15.3 14.7"/><path d="M18.6 6.9 C21 10 21 14 18.4 17.2"/></svg></button>
+    </div>
+    <div class="row" style="margin-bottom:10px;">
+      <span class="tag bad">alt spricht</span>
+      <button class="icon-button speaking bad"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M11.2 5.3 C9.8 6.6 8.2 8 6.3 8.9 L3.4 9 C3.1 11 3.2 13 3.5 15 L6.4 15.2 C8.3 16 9.9 17.4 11.3 18.7 C11.5 14.2 11.5 9.8 11.2 5.3 Z" fill="currentColor" fill-opacity=".12"/><path d="M14.6 9.1 C15.8 10.9 15.8 13.2 14.5 14.9"/><path d="M17.8 6.6 C20.4 10 20.4 14 17.7 17.4"/></svg></button>
+      <span class="vs">→</span>
+      <span class="tag">neu spricht</span>
+      <button class="icon-button speaking"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M11.4 5.6 C10 6.7 8.4 7.9 6.5 8.8 L3.6 8.9 C3.2 10.9 3.2 13 3.5 15.1 L6.6 15.3 C8.5 16.2 10.1 17.5 11.5 18.6 C11.8 14.3 11.8 9.9 11.4 5.6 Z" fill="currentColor" fill-opacity=".18"/><path d="M15.4 9.4 C16.5 11 16.5 13 15.3 14.7"/><path d="M18.6 6.9 C21 10 21 14 18.4 17.2"/></svg></button>
+    </div>
+  </div>
+
+  <!-- 2 in context -->
+  <div class="card">
+    <h2>2 · Im Quiz-Kontext</h2>
+    <span class="kicker">Aussagesatz · ich · irregular pattern</span>
+    <div class="verb-row" style="margin-top:4px;">
+      <div class="verb-word">SPRECHEN</div>
+      <button class="icon-button"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M11.4 5.6 C10 6.7 8.4 7.9 6.5 8.8 L3.6 8.9 C3.2 10.9 3.2 13 3.5 15.1 L6.6 15.3 C8.5 16.2 10.1 17.5 11.5 18.6 C11.8 14.3 11.8 9.9 11.4 5.6 Z" fill="currentColor" fill-opacity=".18"/><path d="M15.4 9.4 C16.5 11 16.5 13 15.3 14.7"/><path d="M18.6 6.9 C21 10 21 14 18.4 17.2"/></svg></button>
+    </div>
+    <p class="prompt" style="margin:6px 0;">Ich <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> mit meiner Lehrerin.</p>
+    <div class="opt"><span class="k">B</span>Spreche</div>
+  </div>
+
+  <!-- 3 hören big -->
+  <div class="card">
+    <h2>3 · Groß beim Hören</h2>
+    <p class="prompt">Was hast du gehört?</p>
+    <div class="hoerwrap">
+      <button class="icon-button big"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M11.4 5.6 C10 6.7 8.4 7.9 6.5 8.8 L3.6 8.9 C3.2 10.9 3.2 13 3.5 15.1 L6.6 15.3 C8.5 16.2 10.1 17.5 11.5 18.6 C11.8 14.3 11.8 9.9 11.4 5.6 Z" fill="currentColor" fill-opacity=".18"/><path d="M15.4 9.4 C16.5 11 16.5 13 15.3 14.7"/><path d="M18.6 6.9 C21 10 21 14 18.4 17.2"/></svg></button>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
