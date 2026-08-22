@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preis — 10 Design-Varianten</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box}
+body{margin:0;padding:28px 16px;background:#e8dfc4;font-family:"Nunito",system-ui,sans-serif;color:#23324d;
+  background-image:linear-gradient(rgba(120,148,191,.35) 1px,transparent 1px);background-size:100% 21px;}
+.wrap{max-width:380px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+h1{font-family:"Kalam",cursive;font-size:1.7rem;text-align:center;margin:0;transform:rotate(-1deg);}
+.note{text-align:center;font-size:.76rem;font-weight:600;color:#4c5f7d;margin:4px 0 0;}
+.frame{border:2px solid #23324d;border-radius:12px;background:#f3ecd9;box-shadow:4px 4px 0 rgba(35,50,77,.16);padding:11px 13px;}
+.qcard{border:2px solid #23324d;border-radius:8px;background:#fbf7ec;box-shadow:3px 3px 0 rgba(35,50,77,.14);padding:13px 15px;display:grid;gap:10px;}
+.kicker{color:#c0392b;font-family:"Kalam",cursive;font-size:.68rem;font-weight:700;}
+.sentence{font-family:"Kalam",cursive;font-weight:700;line-height:1.25;transform:rotate(-1deg);font-size:clamp(1.25rem,2.8vw+1.5vh,1.65rem);}
+.opts{display:grid;gap:8px;}
+.opt{border:2px solid #23324d;border-radius:8px;background:#fbf7ec;padding:8px 12px;font-weight:700;font-size:.82rem;display:flex;gap:10px;align-items:center;}
+.opt .kk{width:20px;height:20px;border:2px solid rgba(35,50,77,.5);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.62rem;color:#4c5f7d;flex:none;}
+.lbl{text-align:center;font-size:.64rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#4c5f7d;line-height:1.55;margin-top:8px;}
+.center{display:flex;justify-content:center;}
+.b-dash{display:inline-block;min-width:2.4em;height:.85em;border-bottom:3px dashed #c0392b;}
+.b-solid{display:inline-block;min-width:2.4em;height:.85em;border-bottom:3.5px solid #23324d;}
+.b-dot{display:inline-block;min-width:2.4em;height:.85em;border-bottom:3px dotted #c0392b;}
+.b-box{display:inline-block;min-width:2.6em;height:1.15em;border:2.5px dashed #c0392b;border-radius:6px;}
+.tag-yellow{border:2px dashed #23324d;background:#fff3b0;border-radius:8px;padding:3px 14px;font-family:"Kalam",cursive;font-weight:700;font-size:1.05rem;transform:rotate(-3deg);display:inline-block;}
+.tag-navy{border:2.5px solid #23324d;background:#eef2fa;border-radius:8px;padding:4px 16px;font-family:"Kalam",cursive;font-weight:700;font-size:1.05rem;transform:rotate(2deg);display:inline-block;}
+.ptag{position:relative;border:2.5px solid #23324d;background:#fff3b0;padding:6px 18px 6px 22px;font-family:"Kalam",cursive;font-weight:700;font-size:1rem;
+  clip-path:polygon(12% 0,100% 0,100% 100%,12% 100%,0 50%);}
+.ptag::before{content:"";position:absolute;left:7px;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;background:#f3ecd9;border:2px solid #23324d;}
+.receipt{background:#fff;border:2px solid #d8cdb4;border-radius:4px;padding:8px 14px;font-family:"Space Mono","Courier New",monospace;font-size:.78rem;color:#333;
+  -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#000 91deg) 50%/14px 100% exclude? ;}
+.coin{width:54px;height:54px;border-radius:50%;background:radial-gradient(circle at 32% 30%,#ffe08a,#f0b429);border:3px solid #b07d10;
+  display:flex;align-items:center;justify-content:center;font-family:"Kalam",cursive;font-weight:700;font-size:.95rem;color:#6e4f08;flex:none;}
+.sticker{position:relative;}
+.sticker .tag-yellow{position:absolute;top:-26px;right:-10px;transform:rotate(11deg);box-shadow:2px 3px 0 rgba(35,50,77,.18);}
+.inline-num{font-family:"Kalam",cursive;color:#c0392b;font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Preis — 10 Varianten</h1>
+  <p class="note">Welches Design soll die Übung bekommen?</p>
+</div>
+<script>
+const S = 'Die Jacke kostet <span class="b-dash"></span> Euro.';
+function shell(v,label){
+  return `<div style="max-width:380px;margin:0 auto 20px;">
+    <div class="frame"><div class="qcard">
+      <span class="kicker">Preis</span>${v}
+      <div class="opts">
+        <div class="opt"><span class="kk">A</span>Zwölf</div>
+        <div class="opt"><span class="kk">B</span>Zwanzig</div>
+        <div class="opt"><span class="kk">C</span>Zwei</div>
+        <div class="opt"><span class="kk">D</span>Dreißig</div>
+      </div>
+    </div></div><div class="lbl">${label}</div></div>`;
+}
+const dash='Die Jacke kostet <span class="b-dash"></span> Euro.';
+const solid='Die Jacke kostet <span class="b-solid"></span> Euro.';
+const dot='Die Jacke kostet <span class="b-dot"></span> Euro.';
+const box='Die Jacke kostet <span class="b-box"></span> Euro.';
+const V=[
+ [`${S}<div class="center" style="margin-top:-2px;"><span class="tag-yellow">12 €</span></div>`,'1 · Aktuell — Satz mit Strich, Preis-Chip unten'],
+ [`<div class="center"><span class="ptag">12&nbsp;€</span></div>${dash}`,'2 · Preisschild — echtes Etikett mit Öse'],
+ [`${solid}<div class="center"><span class="tag-navy">12 €</span></div>`,'3 · Solide Linie + blauer Chip'],
+ [`${dot}<div class="center"><span class="tag-yellow">12 €</span></div>`,'4 · Gepunktete Linie statt Strich'],
+ [`<div class="center"><span class="coin">12€</span></div><p class="sentence" style="text-align:center;">Wie schreibt man das?</p>`,'5 · Münze — große Zahl im Goldtaler'],
+ [`<div class="sticker sentence">${box}</div><div style="height:30px"></div>`,'6 · Sticker-Ecke — Preis klebt oben rechts','12'],
+ [`Die Jacke kostet <span class="b-dash"></span> Euro <span class="inline-num">(12)</span>.`,'7 · Zahl inline am Satzende, rot'],
+ [`<div class="center" style="margin-bottom:-4px;"><span class="tag-navy" style="font-size:.95rem;">🧥 Jacke</span></div>${dot}`,'8 · Artikel-Chip über der Lücke'],
+ [`${S}<div class="center" style="margin-top:-2px;"><span class="tag-yellow" style="transform:rotate(3deg);border-style:solid;">EUR 12</span></div>`,'9 · „EUR 12“ — fester Rahmen'],
+ [`${box}<div class="center" style="margin-top:-2px;"><span style="font-family:\'Kalam\',cursive;font-weight:700;color:#c0392b;font-size:1.1rem;">= 12 €</span></div>`,'10 · Kasten-Lücke + Gleichung darunter'],
+];
+document.body.insertAdjacentHTML('beforeend', V.map(([v,l,extra])=>{
+  const vv = l.startsWith('6 ·') ? v.replace('__BOX__',`<span class="tag-yellow">${extra||''} €</span>`) : v;
+  return shell(vv,l);
+}).join(''));
+// sticker variant special: place tag inside relative box
+(function(){const s=document.querySelectorAll('.sticker');s.forEach(el=>{el.style.position='relative';el.style.minHeight='60px';});
+})();
+</script>
+</body>
+</html>

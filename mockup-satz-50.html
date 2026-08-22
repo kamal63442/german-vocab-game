@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Satz-Design — 50 Varianten</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@700&display=swap');
+*{box-sizing:border-box}
+body{margin:0;padding:26px 14px;background:#e8dfc4;font-family:"Nunito",system-ui,sans-serif;color:#23324d;
+  background-image:linear-gradient(rgba(120,148,191,.35) 1px,transparent 1px);background-size:100% 21px;}
+.frame{max-width:380px;margin:0 auto 4px;border:2px solid #23324d;border-radius:12px;background:#f3ecd9;box-shadow:4px 4px 0 rgba(35,50,77,.16);padding:10px 12px;}
+.qcard{border:2px solid #23324d;border-radius:8px;background:#fbf7ec;padding:14px 15px;}
+.kicker{color:#c0392b;font-family:"Kalam",cursive;font-size:.66rem;font-weight:700;display:block;margin-bottom:8px;}
+.lbl{text-align:center;font-size:.63rem;font-weight:800;color:#4c5f7d;margin:6px auto 16px;line-height:1.5;text-transform:uppercase;letter-spacing:.04em;}
+.sent{font-family:"Kalam",cursive;font-weight:700;line-height:1.35;font-size:clamp(1.2rem,2.9vw+1.5vh,1.65rem);}
+.blk{display:inline-block;min-width:2.3em;height:.8em;border-bottom:3px dashed #c0392b;}
+.tile{display:inline-flex;width:1.25em;height:1.3em;align-items:center;justify-content:center;background:#f0d9a8;border:1.5px solid #b58e4a;border-radius:3px;margin:1px;font-size:.72em;}
+.stk{color:#fff;-webkit-text-stroke:1.5px #23324d;text-stroke:1.5px #23324d;}
+.circled{border:2px solid rgba(192,57,43,.7);border-radius:999px;padding:0 .35em;}
+.markw{background:linear-gradient(180deg,transparent 20%,#ffe9a8 20%,#ffe9a8 88%,transparent 88%);padding:0 3px;}
+.cword{border:2px solid #23324d;border-radius:6px;padding:1px 9px;display:inline-block;margin:3px 3px;}
+.cwcell{width:1.15em;height:1.25em;border:1.5px solid #23324d;display:inline-flex;align-items:center;justify-content:center;font-size:.72em;margin:1px;background:#fff;font-family:"Nunito";font-weight:700;}
+</style>
+</head>
+<body>
+<script>
+const B='<span class="blk">&nbsp;</span>';
+const T='Die Jacke kostet '+B+' Euro.';
+const F=[];
+const A=(name,cls,style='',html=T)=>F.push({name,cls,style,html});
+
+A('1 · Handschrift (aktuell)','sent');
+A('2 · Heftlinien','sent','background-image:linear-gradient(transparent 76%,#9db6d8 0 77%,transparent 77%);background-size:100% 1.5em;');
+A('3 · Kreidetafel','sent','background:linear-gradient(#2e4638,#1f3327);border:7px solid #7a5c3e;color:#f4efe4;padding:12px;text-shadow:0 0 3px rgba(255,255,255,.4);');
+A('4 · Schreibmaschine','sent',"font-family:'Space Mono',monospace;font-weight:700;letter-spacing:.04em;color:#333;background:#f6f3ec;border:1px solid #ddd;padding:10px;");
+A('5 · Zeitungsdruck','sent',"font-family:Georgia,serif;background:linear-gradient(#f7f3e8,#efe9da);color:#222;padding:12px;line-height:1.6;");
+A('6 · Farbwörter','sent','__RAINBOW__');
+A('7 · Wellenlinie','sent','text-decoration:underline wavy #c0392b 2.5px;text-underline-offset:7px;');
+A('8·9 · Textmarker','sent','__MARKER__');
+A('9 · Rotstift-Kreise','sent','__CIRCLE__');
+A('10 · Gegen-Kippung','sent','transform:rotate(2deg);');
+A('11 · Sprechblase','__BUBBLE__');
+A('12 · Buchstabenplättchen','sent','__TILES__');
+A('13 · Zeitschriften-Cutout','sent','__RANSOM__');
+A('14 · Neon','sent','background:#141418;padding:14px;border-radius:10px;color:#ff7ad9;text-shadow:0 0 8px #ff7ad9,0 0 24px rgba(255,122,217,.55);');
+A('15 · LCD','sent',"background:#101210;color:#7CFC00;font-family:'Space Mono',monospace;text-shadow:0 0 6px rgba(124,252,0,.65);padding:12px;border:3px solid #444;letter-spacing:.06em;");
+A('16 · Sticker-Letters','sent','__STICKER__');
+A('17 · Outline','sent','color:transparent;-webkit-text-stroke:2px #23324d;');
+A('18 · Retro-Schatten','sent','color:#23324d;text-shadow:3px 3px 0 #f0b429;');
+A('19 · Gradient','sent','__GRADIENT__');
+A('20 · Geprägt','sent','background:var(--panel-strong);padding:10px 14px;color:rgba(35,50,77,.9);text-shadow:-1px -1px 1px rgba(255,255,255,.85),1px 1px 1px rgba(0,0,0,.28);');
+A('21 · Bogen (SVG)','__ARC__');
+A('22 · Hüpfende Wörter','sent','__BOUNCE__');
+A('23 · Doppelter Rahmen','sent','border:4px double #23324d;padding:10px 14px;background:#fffdf4;');
+A('24 · Wörter unterstrichen','sent','__UNDERWORDS__');
+A('25 · Wortkästchen','sent','__BOXEDWORDS__');
+A('26 · Große „…"','sent','__GQUOTES__');
+A('27 · Stempel','sent','__STAMP__');
+A('28 · Bonstreifen','sent',"font-family:'Space Mono',monospace;font-size:.82em;background:#fff;border-top:2px dashed #ccc;border-bottom:2px dashed #ccc;padding:10px 14px;color:#333;letter-spacing:.03em;");
+A('29 · Polaroid','__POLAROID__');
+A('30 · Comic-Burst','sent','font-weight:800;background:linear-gradient(#ffe9a8,#ffd76a);padding:10px;border:3px solid #23324d;box-shadow:4px 4px 0 rgba(35,50,77,.3);');
+A('31 · Blueprint','sent',"background-color:#23405c;background-image:linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px);background-size:20px 20px;color:#dbe9ff;font-family:'Space Mono',monospace;padding:12px;");
+A('32 · Vintage-Etikett','sent',"font-family:Georgia,serif;font-style:italic;color:#6e4f08;background:linear-gradient(#fdf6dd,#f7ecc8);border:2px solid #d9b64a;border-radius:10px;padding:12px 16px;text-align:center;");
+A('33 · Marker auf Glas','sent','background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.7);color:#1d6fa5;font-weight:800;padding:10px;');
+A('34 · Tintenverlauf','sent','color:#23324d;text-shadow:0 0 1.2px currentColor,0 0 2.6px rgba(35,50,77,.45);');
+A('35 · Geist-Doppelsatz','sent','__GHOST__');
+A('36 · Gestickt','__STITCH__');
+A('37 · Rissiger Zettel','__TORN__');
+A('38 · Papierrolle','sent','background:linear-gradient(90deg,#d9c69a,#efe2bd 9%,#efe2bd 91%,#d9c69a);padding:12px 22px;');
+A('39 · Gravur','sent','background:#23324d;color:#f3ecd9;text-shadow:1px 1px 0 rgba(0,0,0,.9),-1px -1px 0 rgba(255,255,255,.14);padding:12px;letter-spacing:.04em;');
+A('40 · Retro-Welle','sent','background:linear-gradient(180deg,#1b1035,#33154a);padding:14px;color:#ff9de0;text-shadow:0 2px 0 #b13fa8,0 5px 14px rgba(255,157,224,.5);font-style:italic;');
+A('41 · Minimal-Kapitälchen','sent','font-weight:600;letter-spacing:.26em;text-transform:uppercase;font-size:.8em;text-align:center;');
+A('42 · Heavy Caps','sent','text-transform:uppercase;font-weight:900;letter-spacing:-.02em;font-size:.92em;');
+A('43 · Serifen-Kursiv','sent',"font-family:Georgia,serif;font-style:italic;font-size:1.08em;color:#4a3b57;");
+A('44 · Zweifarbsplit','sent','__TWOTONE__');
+A('45 · Wort-Fade','sent','__FADE__');
+A('46 · Heft-Randlinie','__RULE__');
+A('47 · Kreis-Text (SVG)','__CIRCLEPATH__');
+A('48 · Haftzettel','__STICKY__');
+A('49 · Kreuzwortraster','__CW__');
+A('50 · Karaoke-Highlight','__KARA__');
+
+const RAIN=['#23324d','#c0392b','#2f7a45','#b07d10'];
+function wordsHTML(fn){return T.split(/(<span[^>]*>&nbsp;<\/span>)/).map(part=>{
+  if(part.startsWith('<span')) return part;
+  return part.split(' ').filter(Boolean).map(fn).join(' ');}).join('');}
+
+let out='';
+F.forEach((f,i)=>{
+  let cls='sent'+(f.cls&&f.cls!=='__X__'?' '+f.cls.replace(/^__/,'').replace(/__$/,'')+' ':' '),style=f.style,body=f.html,extra='';
+  const special=(f.cls||'').match(/^__(\w+)__$/);
+  if(special){
+    const k=special[1];
+    cls='sent';
+    if(k==='RAINBOW'){let j=0;body=wordsHTML(w=>`<span style="color:${RAIN[j++%4]};">${w}</span>`);}
+    if(k==='MARKER'){body=wordsHTML(w=>`<span class="markw">${w}</span>`);}
+    if(k==='CIRCLE'){body=wordsHTML(w=>`<span class="circled">${w}</span>`);}
+    if(k==='BUBBLE'){cls='sent';extra=`<div style="background:#fff;border:2.5px solid #23324d;border-radius:14px;padding:12px 16px;position:relative;">${T}<span style="position:absolute;bottom:-10px;left:26px;border:8px solid transparent;border-top-color:#23324d;"></span></div>`;}
+    if(k==='TILES'){body=[...'DieJackekostet'].map(c=>`<span class="tile">${c}</span>`).join('')+`<span class="tile" style="background:#fff;border-style:dashed;">?</span><br>Euro`;}
+    if(k==='RANSOM'){const bg=['#23324d','#c0392b','#f0b429','#2f7a45','#fff'];let j=0;body=[...T].map(ch=>ch===' '?' ':ch==='\u00a0'?ch:`<span style="background:${bg[j++%5]};color:${j%2?'#fff':'#23324d'};padding:1px 3px;font-family:Nunito;font-weight:900;transform:rotate(${(j%2?3:-3)}deg);display:inline-block;">${ch}</span>`).join('').replaceAll('<span style="background:#fff;','#<span style="background:#fff;');}
+    if(k==='STICKER'){body=[...T].map(ch=>ch===' '?' ':`<span class="stk">${ch}</span>`).join('');}
+    if(k==='GRADIENT'){style+='background:linear-gradient(90deg,#23324d,#c0392b);-webkit-background-clip:text;background-clip:text;color:transparent;';}
+    if(k==='ARC'||k==='CIRCLEPATH'){
+      const d=k==='ARC'?'M 20 110 Q 150 20 280 110':'M 150 15 A 85 85 0 1 1 149.9 15';
+      body=`<svg viewBox="0 0 300 ${k==='ARC'?'130':'200'}" width="100%" height="${k==='ARC'?130:190}"><defs><path id="pth${i}" d="${d}" fill="none"/></defs><text font-family="Kalam" font-weight="700" font-size="24" fill="#23324d"><textPath href="#pth${i}" startOffset="50%" text-anchor="middle">Die Jacke kostet ______ Euro.</textPath></text></svg>`;
+      style+='text-align:center;';
+    }
+    if(k==='BOUNCE'){let j=0;body=wordsHTML(w=>`<span style="display:inline-block;transform:translateY(${j++%2?-4:4}px);">${w}</span>`);}
+    if(k==='UNDERWORDS'){body=wordsHTML(w=>`<span style="border-bottom:3px solid #23324d;padding-bottom:2px;">${w}</span>`);}
+    if(k==='BOXEDWORDS'){body=wordsHTML(w=>`<span class="cword">${w}</span>`);}
+    if(k==='GQUOTES'){body=`<span style="color:#c0392b;font-size:1.4em;vertical-align:-.15em;">„</span>${T}<span style="color:#c0392b;font-size:1.4em;vertical-align:-.15em;">“</span>`;}
+    if(k==='STAMP'){extra=`<div style="position:relative;border:4px solid rgba(192,57,43,.7);color:rgba(192,57,43,.92);padding:10px 14px;transform:rotate(-4deg);mix-blend-mode:multiply;"><div class="sent">${T}</div><span style="position:absolute;inset:3px;border:1.5px dashed rgba(192,57,43,.55);pointer-events:none;"></span></div>`;body='';}
+    if(k==='POLAROID'){extra=`<div style="background:#fff;padding:12px 12px 8px;box-shadow:0 5px 12px rgba(0,0,0,.16);"><div class="sent">${T}</div></div>`;body='';}
+    if(k==='GHOST'){extra=`<div style="position:relative;"><span aria-hidden="true" style="position:absolute;left:4px;top:4px;opacity:.15;color:#c0392b;" class="sent">${T}</span><div class="sent" style="position:relative;">${T}</div></div>`;body='';}
+    if(k==='STITCH'){extra=`<div style="border:2.5px dashed #c0392b;outline:2.5px dashed #23324d;outline-offset:5px;padding:12px 14px;background:#fbf7ec;"><div class="sent">${T}</div></div>`;body='';}
+    if(k==='TORN'){extra=`<div style="background:#fff;padding:14px;filter:drop-shadow(0 4px 5px rgba(0,0,0,.18));clip-path:polygon(0 6%,3% 0,97% 2%,100% 8%,99% 94%,96% 100%,4% 98%,1% 93%);"><div class="sent">${T}</div></div>`;body='';}
+    if(k==='TWOTONE'){body=wordsHTML(w=>`<span style="color:${w==='Die'||w==='Jacke'?'#23324d':'#c0392b'};">${w}</span>`);}
+    if(k==='FADE'){let j=0;body=wordsHTML(w=>`<span style="opacity:${Math.max(.35,1-(j++)*.14)};">${w}</span>`);}
+    if(k==='RULE'){extra=`<div style="position:relative;padding-left:22px;"><span style="position:absolute;top:0;bottom:-8px;left:8px;width:2.5px;background:#c0392b;"></span><div class="sent">${T}</div></div>`;body='';}
+    if(k==='STICKY'){extra=`<div style="background:#fef3a8;padding:14px 16px;transform:rotate(-2deg);box-shadow:2px 4px 8px rgba(0,0,0,.16);position:relative;"><div class="sent">${T}</div><span style="position:absolute;right:0;bottom:0;border:14px solid transparent;border-left-color:#e0cf7a;border-bottom-color:#e0cf7a;"></span></div>`;body='';}
+    if(k==='CW'){body='DIEJACKEKOSTET'.split('').map(c=>`<span class="cwcell">${c}</span>`).join('')+`<span class="cwcell" style="border-style:dashed;color:#c0392b;">?</span><br>EURO`.split('EURO')[0]+`<br>`+['E','U','R','O'].map(c=>`<span class="cwcell" style="border-style:dashed;color:#c0392b;">${c}</span>`).join('');}
+    if(k==='KARA'){body=T.replace(B,'<span style="background:linear-gradient(180deg,transparent 15%,rgba(240,180,41,.8) 15%,rgba(240,180,41,.8) 90%,transparent 90%);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>');}
+  }
+  out+=`<div class="frame"><div class="qcard"><span class="kicker">Satz · V${i+1}</span>${extra}<p class="${cls}" style="${style}">${body}</p></div></div><div class="lbl">${f.name}</div>`;
+});
+document.body.insertAdjacentHTML('beforeend',out);
+</script>
+</body>
+</html>

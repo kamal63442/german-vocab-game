@@ -75,9 +75,7 @@ html, body { overflow-x: hidden; }
 .icon-button { display: flex; align-items: center; gap: 5px; height: 38px; min-width: 34px; padding: 0 11px; border: 2px solid var(--text); border-radius: 8px; background: var(--panel); color: var(--text); font-weight: 700; transition: .15s ease; box-shadow: 2px 2px 0 rgba(35,50,77,.12); }
 .icon-button span { font-size: 1rem; }
 .icon-button small { font-size: .62rem; letter-spacing: .02em; font-weight: 700; }
-.icon-button:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel)); border-color: var(--accent); color: var(--accent-ink); }
 .icon-button.speaker-btn { display: flex; align-items: center; justify-content: center; min-width: 38px; height: 38px; padding: 0; gap: 0; background: var(--panel-strong); }
-.icon-button.speaker-btn:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
 .icon-button.speaker-btn.speaking { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
 .verb-row { display: flex; align-items: center; gap: 8px; }
 .solution-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -111,7 +109,6 @@ h1 .line { display: block; }
 .stat-suffix { font-size: .78rem; color: var(--redline); margin-left: 2px; font-family: var(--font-body); font-weight: 700; }
 .action-grid { display: grid; gap: 10px; }
 .mode-card { width: 100%; text-align: left; cursor: pointer; display: block; font-family: var(--font-body); transition: transform .12s ease; }
-.mode-card:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 rgba(35,50,77,.2); }
 .mode-card-title { font-family: var(--font-hand); font-size: 1.5rem; font-weight: 700; color: var(--text); margin: 6px 0 4px; }
 
 .primary-button, .secondary-button, .option-button, .text-button, .danger-button {
@@ -119,9 +116,7 @@ h1 .line { display: block; }
   transition: transform .12s ease, background .15s ease, border-color .15s ease, color .15s ease; font-size: .92rem;
 }
 .primary-button { padding: 0 18px; background: var(--accent); border-color: var(--text); color: var(--accent-ink); box-shadow: 3px 3px 0 rgba(35,50,77,.22); }
-.primary-button:hover { background: color-mix(in srgb, var(--accent) 82%, white 18%); transform: translate(-1px, -1px); box-shadow: 4px 4px 0 rgba(35,50,77,.22); }
 .secondary-button { padding: 0 17px; background: var(--panel); color: var(--text); }
-.secondary-button:hover, .option-button:hover { border-color: var(--redline); color: var(--redline); }
 .button-row { display: flex; gap: 10px; flex-wrap: wrap; }
 .button-row > * { flex: 1 1 140px; }
 .database-actions { margin-top: 12px; }
@@ -207,7 +202,6 @@ h1 .line { display: block; }
 }
 .empty-state { padding: 25px 18px; text-align: center; color: var(--muted); line-height: 1.6; font-size: .84rem; font-weight: 600; }
 .text-button { width: fit-content; justify-self: center; min-height: 38px; padding: 0 2px; border: 0; background: transparent; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; font-weight: 700; }
-.text-button:hover { color: var(--redline); }
 .toast-region { position: fixed; z-index: 8; top: max(15px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); width: min(calc(100% - 30px), 500px); pointer-events: none; }
 .toast { padding: 13px 15px; border: 2px solid var(--text); border-radius: 6px; background: #fff3b0; color: var(--text); font-size: .8rem; font-weight: 700; box-shadow: 3px 3px 0 rgba(35,50,77,.2); animation: toast-in .25s ease both; transform: rotate(-1deg); }
 .toast.error { color: var(--redline); border-color: var(--redline); background: #fbe4de; }
@@ -224,6 +218,15 @@ h1 .line { display: block; }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); } 20%, 40%, 60%, 80% { transform: translateX(4px); } }
 .shake { animation: shake 0.5s ease-in-out; }
 @media (min-width: 620px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } .action-grid { grid-template-columns: 1fr 1fr; } .action-grid .primary-button { grid-row: span 2; } .metric-grid { grid-template-columns: repeat(3, 1fr); } .wide-card { grid-column: span 3; } .achievement-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+/* Hover only for real pointers — prevents sticky red flash on touch */
+@media (hover: hover) and (pointer: fine) {
+  .icon-button:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel)); border-color: var(--accent); color: var(--accent-ink); }
+  .icon-button.speaker-btn:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
+  .mode-card:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 rgba(35,50,77,.2); }
+  .primary-button:hover { background: color-mix(in srgb, var(--accent) 82%, white 18%); transform: translate(-1px, -1px); box-shadow: 4px 4px 0 rgba(35,50,77,.22); }
+  .secondary-button:hover, .option-button:hover { border-color: var(--redline); color: var(--redline); }
+  .text-button:hover { color: var(--redline); }
+}
 @media (max-width: 620px) {
   .site-header { margin-bottom: 6px; padding-bottom: 6px; }
   .screen { gap: 8px; }
@@ -1337,6 +1340,16 @@ function numberToGerman(n){
   if(n===1000) return "eintausend";
   return String(n);
 }
+function numberToGermanParts(n){
+  if(n<100) return [numberToGerman(n)];
+  if(n<1000){
+    const h=Math.floor(n/100), r=n%100;
+    const hWord=h===1?"einhundert":numberToGerman(h)+"hundert";
+    if(r===0) return [hWord];
+    return [hWord+"-", numberToGerman(r)];
+  }
+  return [numberToGerman(n)];
+}
 function timeToGerman(h,m){
   h=h%12||12;
   const hWord=numberToGerman(h);
@@ -1346,24 +1359,56 @@ function timeToGerman(h,m){
   if(m===45) return "Viertel vor "+numberToGerman(h%12+1||1);
   return hWord+" Uhr "+numberToGerman(m);
 }
+const PREIS_ITEMS = [
+  { name: "Die Jacke", min: 20, max: 100 },
+  { name: "Das Brot", min: 2, max: 6 },
+  { name: "Die Pizza", min: 5, max: 15 },
+  { name: "Das Gemüse", min: 3, max: 8 },
+  { name: "Der Kaffee", min: 2, max: 5 },
+  { name: "Das Wasser", min: 1, max: 4 },
+  { name: "Der Käse", min: 3, max: 9 },
+  { name: "Der Tee", min: 2, max: 6 },
+  { name: "Die Milch", min: 1, max: 3 },
+  { name: "Der Apfel", min: 1, max: 4 },
+  { name: "Das Buch", min: 8, max: 30 },
+  { name: "Der Ball", min: 10, max: 40 },
+  { name: "Die Schokolade", min: 2, max: 6 },
+  { name: "Das Fahrrad", min: 150, max: 900 },
+  { name: "Das Handy", min: 100, max: 900 }
+];
 function createZahlenQuestion(range, allNumbers, progress, difficulty){
   const [min,max]=ZAHLEN_RANGES[range]||[0,100];
   const type=sample(ZAHLEN_EXERCISES);
-  const n=Math.floor(Math.random()*(max-min+1))+min;
-  const word=numberToGerman(n);
+  let n=Math.floor(Math.random()*(max-min+1))+min;
+  let word=numberToGerman(n);
   let question, solution, correct, options, explanation, extra={};
   if(type==="digit-word"){
     correct=word; options=balancedShuffle(correct, shuffle(allNumbers).slice(0,20).map(x=>numberToGerman(x)).filter(w=>w!==correct).slice(0,3));
     question=String(n); solution=word; explanation=`${n} = "${word}".`;
   } else if(type==="word-digit"){
     correct=String(n); options=balancedShuffle(correct, shuffle(allNumbers).slice(0,20).map(x=>String(x)).filter(x=>x!==correct).slice(0,3));
-    question=word; solution=String(n); explanation=`"${word}" = ${n}.`;
+    question=word; solution=String(n); explanation=`"${word}" = ${n}.`; extra.wordParts=numberToGermanParts(n);
   } else if(type==="hoeren"){
     correct=word; options=balancedShuffle(correct, shuffle(allNumbers).slice(0,20).map(x=>numberToGerman(x)).filter(w=>w!==correct).slice(0,3));
     question="Was hast du gehört?"; solution=word; explanation=`Gehört: "${word}" = ${n}.`; extra.isHoeren=true; extra.hoerWord=word;
   } else if(type==="preis"){
-    correct=word; options=balancedShuffle(correct, shuffle(allNumbers).slice(0,20).map(x=>numberToGerman(x)).filter(w=>w!==correct).slice(0,3));
-    question=`Die Jacke kostet ___ Euro.`; solution=`Die Jacke kostet ${word} Euro.`; explanation=`${n} € = ${word} Euro.`; extra.priceTag=`${n} €`;
+    const item=sample(PREIS_ITEMS);
+    n=Math.floor(Math.random()*(item.max-item.min+1))+item.min;
+    correct=word=numberToGerman(n);
+    let lo=item.min, hi=item.max, span=Math.max(1,item.max-item.min);
+    let d=[], guard=40;
+    while(d.length<3){
+      while(d.length<3&&guard--){
+        const dn=Math.floor(Math.random()*(hi-lo+1))+lo;
+        if(dn===n||dn<=0) continue;
+        const dw=numberToGerman(dn);
+        if(!d.includes(dw)) d.push(dw);
+      }
+      lo=Math.max(0,lo-span); hi=Math.min(1000,hi+span); span*=2;
+      if(hi-lo>4000) break;
+    }
+    options=balancedShuffle(correct,d.slice(0,3));
+    question=`${item.name} kostet ___ Euro.`; solution=`${item.name} kostet ${word} Euro.`; explanation=`${n} € = ${word} Euro.`; extra.priceTag=`${n} €`;
   } else {
     const h=Math.floor(Math.random()*12)+1, mins=[0,15,30,45][Math.floor(Math.random()*4)];
     const timeWord=timeToGerman(h,mins);
@@ -1949,7 +1994,10 @@ function renderZahlenQuiz({ session, question, mode, remainingSeconds }) {
   const promptHtml = question.isHoeren ? `${escapeHtml(question.question)}${hoerBtn}` : escapeHtml(question.question).replace("___",'<span class="blank">______</span>');
   const isBigType = question.type === "digit-word" || question.type === "word-digit" || question.type === "preis";
   const priceChip = question.priceTag ? `<div style="display:flex;justify-content:center;margin:2px 0;"><span style="border:2px dashed var(--text);background:#fff3b0;border-radius:8px;padding:3px 14px;font-family:var(--font-hand);font-weight:700;font-size:1.05rem;transform:rotate(-3deg);">${escapeHtml(question.priceTag)}</span></div>` : "";
-  const bigWord = isBigType ? `<div class="verb-word" style="font-size:clamp(1.4rem,3.4vw+2vh,2.4rem)">${escapeHtml(question.question).replace("___",'<span class="blank">______</span>')}</div>` : "";
+  const bigWord = isBigType ? (() => { const t = question.question;
+    if(question.type === "digit-word") return `<div style="display:flex;justify-content:center;margin:4px 0;"><span style="border:2.5px dashed var(--text);background:#fff3b0;border-radius:12px;padding:8px 30px;font-family:var(--font-hand);font-weight:700;font-size:clamp(1.7rem,3vw+1.5vh,2.3rem);transform:rotate(-2deg);">${escapeHtml(t)}</span></div>`;
+    if(question.type === "preis") return `<div class="verb-word" style="font-size:clamp(1.5rem,3.4vw+2vh,2.35rem)">${escapeHtml(t).replace("___",'<span style="display:inline-block;min-width:2.4em;height:.85em;border-bottom:3px dashed var(--redline);">&nbsp;</span>')}</div>`;
+    const parts = question.wordParts || [t]; const html = parts.map(p => escapeHtml(p).replace("___",'<span class="blank">______</span>')).join("<br>"); return `<div class="verb-word" style="font-size:clamp(1.5rem,3.4vw+2vh,2.35rem)">${html}</div>`; })() : "";
   const promptBlock = isBigType ? "" : `<p class="prompt">${promptHtml}</p>`;
   return `<section class="screen"><div class="quiz-meta"><span>${mode==="exam"?"ZAHLEN EXAM":"ZAHLEN LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress><article class="question-card"><span class="kicker">${typeLabel}</span>${clock}${priceChip}${bigWord}${promptBlock}<div class="options">${question.options.map((o,i)=>optionButton(o,i,session.currentAnswer, question.type==="word-digit"?"none":"first")).join("")}</div>${answered?`<div class="feedback ${correct?"":"wrong-feedback"}"><strong>${correct?"Richtig! +10":"Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span></div>`:""}${answered?`<button type="button" class="primary-button" data-action="next-question">${index===session.questions.length?"Finish Session →":"Next Question →"}</button>`:""}</article><button type="button" class="text-button" data-action="abandon-session">End session</button></section>`;
 }

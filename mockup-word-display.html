@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wort→Zahl — Anzeige-Optionen</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box}
+body{margin:0;padding:28px 16px;background:#e8dfc4;font-family:"Nunito",system-ui,sans-serif;color:#23324d;
+  background-image:linear-gradient(rgba(120,148,191,.35) 1px,transparent 1px);background-size:100% 21px;}
+.wrap{max-width:380px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+h1{font-family:"Kalam",cursive;font-size:1.7rem;text-align:center;margin:0;transform:rotate(-1deg);}
+.note{text-align:center;font-size:.76rem;font-weight:600;color:#4c5f7d;margin:2px 0 6px;}
+.frame{border:2px solid #23324d;border-radius:12px;background:#f3ecd9;box-shadow:4px 4px 0 rgba(35,50,77,.16);overflow:hidden;}
+.qmeta{display:flex;justify-content:space-between;padding:9px 14px 6px;color:#4c5f7d;font-size:.68rem;font-weight:800;}
+.meter{height:5px;border-radius:4px;background:rgba(35,50,77,.28);overflow:hidden;margin:0 14px 10px;}
+.meter i{display:block;height:100%;background:#c0392b;}
+.qcard{border:2px solid #23324d;border-radius:8px;background:#fbf7ec;box-shadow:3px 3px 0 rgba(35,50,77,.14);padding:13px 15px;display:grid;gap:9px;}
+.kicker{color:#c0392b;font-family:"Kalam",cursive;font-size:.68rem;font-weight:700;}
+.wordbox{font-family:"Kalam",cursive;font-weight:700;line-height:1.08;transform:rotate(-1deg);}
+.opt{border:2px solid #23324d;border-radius:8px;background:#fbf7ec;padding:9px 12px;font-weight:700;font-size:.84rem;display:flex;gap:10px;align-items:center;}
+.opt .k{width:20px;height:20px;border:2px solid rgba(35,50,77,.5);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.62rem;color:#4c5f7d;flex:none;}
+.opt.correct{border-color:#2f7a45;background:rgba(47,122,69,.10);}
+.lbl{text-align:center;font-size:.64rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#4c5f7d;line-height:1.5;}
+
+/* A: one line auto-shrink */
+.a .wordbox{white-space:nowrap;font-size:15px;}
+/* B: two big lines */
+.b .wordbox{font-size:clamp(1.55rem,4vw+2vh,2.2rem);}
+.b .l2{display:block;}
+/* C: structure colors */
+.c .wordbox{font-size:clamp(1.55rem,4vw+2vh,2.2rem);}
+.c .hundreds{color:#7a8aa5;}
+.c .rest{color:#23324d;border-bottom:3px solid #f0b429;}
+/* D: hyphenated wrap */
+.d .wordbox{font-size:clamp(1.35rem,3.4vw+1.8vh,1.95rem);hyphens:auto;-webkit-hyphens:auto;word-break:normal;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>„dreihundertsiebenundzwanzig“ — 4 Varianten</h1>
+  <p class="note">Gleiches Wort, gleiches Layout — welche Anzeige gefällt dir?</p>
+
+  <!-- A -->
+  <div>
+    <div class="frame"><div style="padding:11px 13px;">
+      <div class="qmeta" style="padding:0 0 6px;"><span>WORT → ZAHL // 7 OF 25</span><span style="color:#c0392b">Score 60</span></div>
+      <div class="meter"><i style="width:28%"></i></div>
+      <div class="qcard a" style="border-radius:0;box-shadow:none;padding:0;">
+        <span class="kicker">Wort → Zahl</span>
+        <div class="wordbox">dreihundertsiebenundzwanzig</div>
+        <div class="opts" style="margin-top:4px;">
+          <div class="opt correct"><span class="k">A</span>327</div>
+          <div class="opt"><span class="k">B</span>261</div>
+          <div class="opt"><span class="k">C</span>634</div>
+          <div class="opt"><span class="k">D</span>354</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="lbl" style="margin-top:8px;">A · Eine Zeile (jetzt) — automatisch verkleinert</div>
+  </div>
+
+  <!-- B -->
+  <div>
+    <div class="frame"><div style="padding:11px 13px;">
+      <div class="qmeta" style="padding:0 0 6px;"><span>WORT → ZAHL // 7 OF 25</span><span style="color:#c0392b">Score 60</span></div>
+      <div class="meter"><i style="width:28%"></i></div>
+      <div class="qcard b" style="border-radius:0;box-shadow:none;padding:0;">
+        <span class="kicker">Wort → Zahl</span>
+        <div class="wordbox">dreihundert-<span class="l2">siebenundzwanzig</span></div>
+        <div class="opts" style="margin-top:4px;">
+          <div class="opt correct"><span class="k">A</span>327</div>
+          <div class="opt"><span class="k">B</span>261</div>
+          <div class="opt"><span class="k">C</span>634</div>
+          <div class="opt"><span class="k">D</span>354</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="lbl" style="margin-top:8px;">B · Zwei große Zeilen — Umbruch an der Wortfuge</div>
+  </div>
+
+  <!-- C -->
+  <div>
+    <div class="frame"><div style="padding:11px 13px;">
+      <div class="qmeta" style="padding:0 0 6px;"><span>WORT → ZAHL // 7 OF 25</span><span style="color:#c0392b">Score 60</span></div>
+      <div class="meter"><i style="width:28%"></i></div>
+      <div class="qcard c" style="border-radius:0;box-shadow:none;padding:0;">
+        <span class="kicker">Wort → Zahl</span>
+        <div class="wordbox"><span class="hundreds">dreihundert·</span><br><span class="rest">siebenundzwanzig</span></div>
+        <div class="opts" style="margin-top:4px;">
+          <div class="opt correct"><span class="k">A</span>327</div>
+          <div class="opt"><span class="k">B</span>261</div>
+          <div class="opt"><span class="k">C</span>634</div>
+          <div class="opt"><span class="k">D</span>354</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="lbl" style="margin-top:8px;">C · Struktur-Farben — Hunderter hell, Rest betont<br><span style="text-transform:none;letter-spacing:0;">(zeigt, wie die Zahl aufgebaut ist: 300 + 27)</span></div>
+  </div>
+
+  <!-- D -->
+  <div>
+    <div class="frame"><div style="padding:11px 13px;">
+      <div class="qmeta" style="padding:0 0 6px;"><span>WORT → ZAHL // 7 OF 25</span><span style="color:#c0392b">Score 60</span></div>
+      <div class="meter"><i style="width:28%"></i></div>
+      <div class="qcard d" style="border-radius:0;box-shadow:none;padding:0;">
+        <span class="kicker">Wort → Zahl</span>
+        <div class="wordbox">dreihundertsiebenundzwanzig</div>
+        <div class="opts" style="margin-top:4px;">
+          <div class="opt correct"><span class="k">A</span>327</div>
+          <div class="opt"><span class="k">B</span>261</div>
+          <div class="opt"><span class="k">C</span>634</div>
+          <div class="opt"><span class="k">D</span>354</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="lbl" style="margin-top:8px;">D · Silbentrennung — normale Größe, Umbruch mit Bindestrich</div>
+  </div>
+
+</div>
+<script>
+// D: insert soft hyphen points so hyphens:auto can break German compounds in Safari
+document.querySelectorAll(".d .wordbox").forEach(function(el){
+  el.innerHTML = el.textContent.replace(/(hundert)(?=[a-z])/,"$1&shy;").replace(/(?<=[a-z])(?=(?:zwanzig|drei\u00dfig|zig|zehn))/,"&shy;");
+});
+</script>
+</body>
+</html>

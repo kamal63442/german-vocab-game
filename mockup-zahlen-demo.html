@@ -22,7 +22,7 @@ h1{font-family:"Kalam",cursive;font-size:1.8rem;margin:0;text-align:center;trans
 .qcard{border:2px solid #23324d;border-radius:8px;background:#fbf7ec;box-shadow:3px 3px 0 rgba(35,50,77,.14);padding:13px 15px;display:grid;gap:9px;}
 .kicker{color:#c0392b;font-family:"Kalam",cursive;font-size:.68rem;font-weight:700;}
 .bigword{font-family:"Kalam",cursive;font-weight:700;line-height:1.05;transform:rotate(-1deg);word-break:break-word;
-  font-size:clamp(1.4rem, 3.4vw + 2vh, 2.4rem);}
+  font-size:clamp(1.5rem, 3.4vw + 2vh, 2.35rem);}
 .prompt{font-size:.97rem;font-weight:700;line-height:1.5;}
 .blank{color:#c0392b;border-bottom:2px dashed #c0392b;padding:0 .12em;}
 .opts{display:grid;gap:8px;}
@@ -65,7 +65,7 @@ h1{font-family:"Kalam",cursive;font-size:1.8rem;margin:0;text-align:center;trans
     <div class="frame">
       <div class="qcard">
         <span class="kicker">Wort → Zahl</span>
-        <div class="bigword">achtundzwanzig</div>
+        <div class="bigword" style="white-space:nowrap;" data-fit>dreihundertsiebenundzwanzig</div>
         <div class="opts">
           <div class="opt"><span class="k">A</span>243</div>
           <div class="opt"><span class="k">B</span>82</div>
@@ -103,7 +103,7 @@ h1{font-family:"Kalam",cursive;font-size:1.8rem;margin:0;text-align:center;trans
       <div class="qcard">
         <span class="kicker">Preis</span>
         <div style="display:flex;justify-content:center;margin:2px 0;"><span style="border:2px dashed #23324d;background:#fff3b0;border-radius:8px;padding:3px 14px;font-family:'Kalam',cursive;font-weight:700;font-size:1.05rem;transform:rotate(-3deg);">12 €</span></div>
-        <div class="bigword">Die Jacke kostet <span class="blank">______</span> Euro.</div>
+        <div class="bigword">Die Jacke kostet <span style="display:inline-block;min-width:2.4em;height:.85em;border-bottom:3px dashed #c0392b;">&nbsp;</span> Euro.</div>
         <div class="opts">
           <div class="opt"><span class="k">A</span>Zwölf</div>
           <div class="opt"><span class="k">B</span>Zwanzig</div>
@@ -136,6 +136,12 @@ h1{font-family:"Kalam",cursive;font-size:1.8rem;margin:0;text-align:center;trans
 </div>
 
 <script>
+// same fit logic as the app: shrink long single words to one line (96% width)
+document.querySelectorAll(".bigword[data-fit]").forEach(function(el){
+  var fs = parseFloat(getComputedStyle(el).fontSize);
+  var target = el.clientWidth * 0.96, guard = 80;
+  while (el.scrollWidth > target && fs > 11 && guard--) { fs -= 1; el.style.fontSize = fs + "px"; }
+});
 // same math as app's analogClockSVG for 02:30
 (function(){
   const hour=2, minute=30, cx=60, cy=60, r=52;
