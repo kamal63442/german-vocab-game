@@ -1736,7 +1736,7 @@ function startPossessiveSession(mode) {
   if (typeof PossessiveEngine !== 'undefined' && PossessiveEngine.generateQuestion) {
     const raw = [];
     for (let i = 0; i < count; i++) {
-      const wantPara = Math.random() < 0.50; // 50/50 — fully shuffled
+      const wantPara = Math.random() < 0.30; // 30% paragraph / 70% singles — shuffled
       if (wantPara) {
         const q = PossessiveEngine.generateQuestion('both', { difficulty, builder: 'paragraph' });
         const filledPara = q.blanks.reduce((acc, b) => acc.replace('___', b.correctForm), q.paragraph);
@@ -1761,7 +1761,7 @@ function startPossessiveSession(mode) {
         const q = PossessiveEngine.generateQuestion('both', { difficulty });
         raw.push({
           noun: q.meta.word,
-          meaning: q.meta.word,
+          meaning: q.meta.en || q.meta.word,
           owner: { id: q.meta.personId, label: ({ich:'ich → mein',du:'du → dein',er:'er → sein',sie_sg:'sie → ihr',wir:'wir → unser',ihr_pl:'ihr → euer',sie_pl:'sie → ihr',Sie:'Sie → Ihr'})[q.meta.personId] || q.meta.personId, stem: q.meta.stem },
           grammarCase: q.caseType === 'nom' ? 'nominative' : 'accusative',
           caseLabel: q.caseType === 'nom' ? 'Nominativ' : 'Akkusativ',
