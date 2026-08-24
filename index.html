@@ -286,6 +286,7 @@ body.no-animations *, body.no-animations *::before, body.no-animations *::after 
   <main id="app" tabindex="-1"></main>
 </div>
 <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+<script src="possessivartikel-engine.js"></script>
 <script>
 // Mascot Controller - "Der Stift"
 const Mascot = (() => {
@@ -1606,9 +1607,37 @@ function renderPossessiveQuiz({ session, question, mode, remainingSeconds }) {
   const index = session.index + 1;
   const timer = mode === "exam" ? `<span class="timer">◷ ${formatTime(remainingSeconds)}</span>` : `<span class="quiz-score">Score ${session.score}</span>`;
   const nounSpeaker = speakerButton(question.noun, "Pronounce noun", "speak-noun");
-  const sentenceSpeaker = speakerButton(question.solutionSentence, "Pronounce full sentence", "speak-sentence");
-   return `<section class="screen"><div class="quiz-meta"><span>${mode === "exam" ? "POSSESSIV EXAM" : "POSSESSIV LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress>
-    <article class="question-card"><span class="kicker">${question.caseLabel} · ${question.owner.label}</span><p class="prompt">${escapeHtml(question.sentence).replace("______", '<span class="blank">______</span>')}</p><p class="meaning verb-row">${escapeHtml(question.noun)} ${nounSpeaker} — ${escapeHtml(question.meaning)}</p>
+  const sentenceSpeaker = speakerButton(question.solutionSentence || question.paragraph || "", "Pronounce full sentence", "speak-sentence");
+  // Paragraph mode — C · Sticky paragraph (story stays on top while blanks scroll)
+  if (question.isParagraph) {
+    const paraAnswered = Boolean(session.currentAnswer?.blanks);
+    const para = question.paragraph || question.mainLine || "";
+    let paraHtml = escapeHtml(para);
+    question.blanks.forEach((_, i) => {
+      const num = ['①','②','③','④'][i] || (i+1);
+      paraHtml = paraHtml.replace('___', `<span class="blank" style="padding:0 .25em">${num}</span>`);
+    });
+    const blanksHtml = question.blanks.map((b, bi) => {
+      const ans = session.currentAnswer?.blanks?.[bi];
+      const opts = b.options.map((opt, oi) => {
+        const sel = ans?.selected === opt;
+        const isCorrect = b.correctForm === opt;
+        const cls = ans ? (isCorrect ? 'correct' : sel ? 'wrong' : 'muted-option') : '';
+        return `<button class="option-button ${cls}" type="button" data-action="para-answer" data-blank="${bi}" data-answer="${escapeHtml(opt)}" ${ans ? 'disabled' : ''}><span class="option-key">${String.fromCharCode(65+oi)}</span><span>${escapeHtml(opt)}</span></button>`;
+      }).join('');
+      return `<div style="border:1px dashed rgba(35,50,77,.25);border-radius:8px;padding:8px;display:grid;gap:6px;background:color-mix(in srgb,var(--panel-strong) 70%,transparent)"><div style="font-weight:800;font-size:.78rem;color:var(--muted)">Lücke ${bi+1} — ${escapeHtml(b.label)}</div><div class="options">${opts}</div></div>`;
+    }).join('');
+    const allAnswered = paraAnswered && session.currentAnswer.blanks.every(b => b !== null);
+    const allCorrect = allAnswered && session.currentAnswer.blanks.every((b, i) => b.selected === question.blanks[i].correctForm);
+    const paraFeedback = allAnswered ? `<div class="feedback ${allCorrect ? '' : 'wrong-feedback'}"><strong>${allCorrect ? 'Richtig! +' + (question.blanks.length*10) : 'Nochmal!'}</strong><span>${question.blanks.map((b, i) => `${i+1}. ${b.explanation}`).join(' ')}</span><span class="solution-row">Vollständiger Absatz: ${escapeHtml(question.blanks.reduce((acc, b) => acc.replace('___', b.correctForm), question.paragraph))} ${sentenceSpeaker}</span></div>` : '';
+    return `<section class="screen" style="align-items:start"><div style="position:sticky;top:0;z-index:3;background:var(--bg);padding:6px 0 8px;margin:-6px 0 8px;border-bottom:1px solid transparent"><div class="quiz-meta"><span>${mode === "exam" ? "POSSESSIV EXAM" : "POSSESSIV LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}" style="margin-top:6px;display:block;width:100%"></progress></div>
+    <article class="question-card" style="overflow:visible;align-self:start"><div style="position:sticky;top:42px;z-index:2;background:var(--panel);margin:-14px -14px 10px;padding:12px 14px;border-bottom:2px dashed rgba(35,50,77,.2);border-radius:7px 7px 0 0"><span class="kicker">${question.caseLabel} · ${question.owner.label}</span><p class="prompt" style="font-size:.98rem;line-height:1.6;margin-top:6px">${paraHtml}</p></div>${blanksHtml}${paraFeedback}${allAnswered ? `<button type="button" class="primary-button" data-action="next-question">${index === session.questions.length ? "Finish Session →" : "Next Question →"}</button>` : ''}</article><button type="button" class="text-button" data-action="abandon-session">End session</button></section>`;
+  }
+  const rawSentence = question.sentence || question.mainLine || "";
+  const promptHtml = escapeHtml(rawSentence).replace(/___/g, '<span class="blank">______</span>');
+  const setupHtml = question.setupLine ? `<p class="setup-line" style="color:var(--muted);font-weight:600;font-size:.92rem">${escapeHtml(question.setupLine)}</p>` : "";
+   return `<section class="screen" style="align-items:start"><div style="position:sticky;top:0;z-index:3;background:var(--bg);padding:6px 0 8px;margin:-6px 0 8px;border-bottom:1px solid transparent"><div class="quiz-meta"><span>${mode === "exam" ? "POSSESSIV EXAM" : "POSSESSIV LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}" style="margin-top:6px;display:block;width:100%"></progress></div>
+    <article class="question-card"><span class="kicker">${question.caseLabel} · ${question.owner.label}</span>${setupHtml}<p class="prompt">${promptHtml}</p><p class="meaning verb-row">${escapeHtml(question.noun)} ${nounSpeaker} — ${escapeHtml(question.meaning || question.noun)}</p>
       <div class="options">${question.options.map((option, i) => optionButton(option, i, session.currentAnswer)).join("")}</div>
       ${answered ? possessiveFeedbackWithSpeaker(question, correct, sentenceSpeaker) : ""}
       ${answered ? `<button type="button" class="primary-button" data-action="next-question">${index === session.questions.length ? "Finish Session →" : "Next Question →"}</button>` : ""}
@@ -1773,7 +1802,7 @@ async function inflate(data) {
 // ---- storage.js (works both as a Claude artifact and as a standalone deployed page) ----
 const STORAGE_KEY = "german-conjugation-master-v1";
 const defaults = {
-  settings: { animations: true, sound: true },
+  settings: { animations: true, sound: true, difficulty: "hard" },
   stats: { total: 0, correct: 0, wrong: 0, currentStreak: 0, bestStreak: 0, score: 0, totalTimeMs: 0, correctVerbs: {}, missedVerbs: {} },
   achievements: [],
   progress: { usedVerbKeys: [] },
@@ -1948,9 +1977,66 @@ function startVocabSession(mode, level, kind = "vocab") {
   render("practice");
 }
 function startPossessiveSession(mode) {
-  if (!possessiveNouns.length) return toast("No possessive-article data is available yet.", "error");
-  const difficulty = state.settings.difficulty || "medium";
+  const difficulty = "hard";
   const count = mode === "exam" ? 50 : 20;
+  // ---- Engine v2: generated questions (no hardcoded bank) — shuffled singles + paragraphs ----
+  if (typeof PossessiveEngine !== 'undefined' && PossessiveEngine.generateQuestion) {
+    const raw = [];
+    for (let i = 0; i < count; i++) {
+      const wantPara = Math.random() < 0.50; // 50/50 — fully shuffled
+      if (wantPara) {
+        const q = PossessiveEngine.generateQuestion('both', { difficulty, builder: 'paragraph' });
+        const filledPara = q.blanks.reduce((acc, b) => acc.replace('___', b.correctForm), q.paragraph);
+        raw.push({
+          isParagraph: true,
+          paragraph: q.paragraph,
+          mainLine: q.paragraph,
+          sentence: q.paragraph,
+          solutionSentence: filledPara,
+          blanks: q.blanks,
+          blankCount: q.blankCount,
+          noun: `Absatz · ${q.blankCount} Lücken`,
+          meaning: `Paragraph · ${q.blankCount} blanks`,
+          owner: { id: 'para', label: `Paragraph · ${q.blankCount} Lücken` },
+          caseLabel: 'Absatz',
+          grammarCase: 'mixed',
+          correct: q.blanks[0].correctForm,
+          signature: `para|${q.blanks.map(b=>b.correctForm).join('-')}|${Math.random().toString(36).slice(2,6)}`,
+          _engine: q
+        });
+      } else {
+        const q = PossessiveEngine.generateQuestion('both', { difficulty });
+        raw.push({
+          noun: q.meta.word,
+          meaning: q.meta.word,
+          owner: { id: q.meta.personId, label: ({ich:'ich → mein',du:'du → dein',er:'er → sein',sie_sg:'sie → ihr',wir:'wir → unser',ihr_pl:'ihr → euer',sie_pl:'sie → ihr',Sie:'Sie → Ihr'})[q.meta.personId] || q.meta.personId, stem: q.meta.stem },
+          grammarCase: q.caseType === 'nom' ? 'nominative' : 'accusative',
+          caseLabel: q.caseType === 'nom' ? 'Nominativ' : 'Akkusativ',
+          correct: q.correctForm,
+          correctForm: q.correctForm,
+          options: q.options,
+          correctIndex: q.correctIndex,
+          sentence: q.mainLine,
+          mainLine: q.mainLine,
+          solutionSentence: q.mainLine.replace('___', q.correctForm),
+          setupLine: q.setupLine,
+          explanation: q.explanation,
+          signature: `${q.meta.word}|${q.meta.personId}|${q.caseType}|${q.mainLine}`,
+          _engine: q
+        });
+      }
+    }
+    const questions = shuffle(raw);
+    saveState(state);
+    activeSession = {
+      kind: "possessive", mode, questions, index: 0, answers: [], currentAnswer: null, score: 0, currentStreak: 0, requeued: new Set(),
+      startedAt: performance.now(), questionStartedAt: performance.now(), endsAt: mode === "exam" ? Date.now() + 10 * 60 * 1000 : null
+    };
+    if (mode === "exam") { stopTimer(); timerId = window.setInterval(tickExam, 1000); }
+    render("practice");
+    return;
+  }
+  if (!possessiveNouns.length) return toast("No possessive-article data is available yet.", "error");
   // For exam with 50 questions but only 34 nouns, reuse nouns with different owner/case combos
   let deck;
   if (count > possessiveNouns.length) {
@@ -2058,6 +2144,7 @@ async function handleAction(event) {
     else startSession(mode);
   }
   if (action === "answer") answer(button.dataset.answer);
+  if (action === "para-answer") { const bi = parseInt(button.dataset.blank, 10); paraAnswer(bi, button.dataset.answer); return; }
   if (action === "next-question") nextQuestion();
   if (action === "play-again") {
     const s = activeSession || lastSession;
@@ -2086,9 +2173,43 @@ async function handleAction(event) {
     setTimeout(clearSpeaking, 6000);
   }
 }
+function paraAnswer(blankIndex, selected) {
+  if (!activeSession) return;
+  const question = activeSession.questions[activeSession.index];
+  if (!question?.isParagraph) return;
+  if (!activeSession.currentAnswer) activeSession.currentAnswer = { blanks: Array(question.blanks.length).fill(null), paragraph: true };
+  if (activeSession.currentAnswer.blanks[blankIndex]) return;
+  const blank = question.blanks[blankIndex];
+  const correct = selected === blank.correctForm;
+  activeSession.currentAnswer.blanks[blankIndex] = { selected, correct, correctAnswer: blank.correctForm };
+  const allAnswered = activeSession.currentAnswer.blanks.every(b => b !== null);
+  if (allAnswered) {
+    const correctCount = activeSession.currentAnswer.blanks.filter(b => b.correct).length;
+    const allCorrect = correctCount === question.blanks.length;
+    const elapsedMs = Math.max(0, performance.now() - activeSession.questionStartedAt);
+    activeSession.answers.push({ question, selected: activeSession.currentAnswer.blanks.map(b=>b.selected).join(', '), correct: allCorrect, elapsedMs, correctCount, blankCount: question.blanks.length });
+    activeSession.score += correctCount * 10;
+    if (allCorrect) activeSession.currentStreak = (activeSession.currentStreak || 0) + 1; else activeSession.currentStreak = 0;
+    const key = normalizeVerbKey(question.noun);
+    recordAnswer(state, { key, correct: allCorrect, elapsedMs });
+    if (!allCorrect && !activeSession.requeued.has(question.signature)) {
+      activeSession.requeued.add(question.signature);
+      const insertAt = Math.min(activeSession.index + 3 + Math.floor(Math.random() * 3), activeSession.questions.length);
+      activeSession.questions.splice(insertAt, 0, question);
+    }
+    sound(allCorrect ? "correct" : "wrong");
+    if (!allCorrect) triggerWrongFeedback();
+    if (window.Mascot) { if (allCorrect) { if (activeSession.currentStreak >= 5) Mascot.streak(); else Mascot.correct(); } else Mascot.wrong(); }
+  } else {
+    sound(correct ? "correct" : "wrong");
+    if (!correct) triggerWrongFeedback();
+  }
+  renderActiveQuestion();
+}
 function answer(selected) {
   if (!activeSession || activeSession.currentAnswer) return;
   const question = activeSession.questions[activeSession.index];
+  if (question.isParagraph) return; // paragraph uses paraAnswer
   const correct = selected === question.correct;
   const elapsedMs = Math.max(0, performance.now() - activeSession.questionStartedAt);
   activeSession.currentAnswer = { selected, correct, correctAnswer: question.correct, elapsedMs };
@@ -2125,6 +2246,8 @@ function triggerWrongFeedback() {
 }
 function nextQuestion() {
   if (!activeSession?.currentAnswer) return;
+  const q = activeSession.questions[activeSession.index];
+  if (q.isParagraph && !activeSession.currentAnswer.blanks?.every(b => b !== null)) return;
   if (activeSession.index + 1 >= activeSession.questions.length) return finishSession(false);
   activeSession.index += 1; activeSession.currentAnswer = null; activeSession.questionStartedAt = performance.now(); renderActiveQuestion();
 }
