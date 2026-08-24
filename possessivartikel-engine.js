@@ -12,7 +12,7 @@
  *                         (easy = gender errors, medium = + person errors, hard = mixed).
  *
  * Usage:
- *   const q = generateQuestion('both');                       // default medium
+ *   const q = generateQuestion('both');                       // default hard
  *   const q = generateQuestion('akk', {difficulty:'hard'});   // akkusativ only, hard
  *   const q = generateQuestion('nom', {difficulty:'easy'});
  *   q.setupLine / q.mainLine / q.options / q.correctIndex /
@@ -239,7 +239,7 @@
   ];
 
   registerBuilder('paragraph', function (ctx) {
-    const difficulty = ctx.difficulty || 'medium';
+    const difficulty = ctx.difficulty || 'hard';
     const template = pick(PARAGRAPH_TEMPLATES);
     const blanks = template.slots.map((slot, idx) => {
       const person = pick(PERSONS);
@@ -337,7 +337,7 @@
     opts = opts || {};
     // Paragraph has its own mixed-case flow — ignore caseType and delegate
     if (opts.builder === 'paragraph') {
-      const difficulty = opts.difficulty || 'medium';
+      const difficulty = opts.difficulty || 'hard';
       const built = BUILDERS['paragraph']({ difficulty });
       // top-level paragraph question: multiple blanks
       const paragraph = built.paragraph || built.mainLine;
@@ -363,7 +363,7 @@
     const actualCase = (!caseType || caseType === 'both')
       ? (Math.random() < 0.5 ? 'nom' : 'akk')
       : caseType;
-    const difficulty = opts.difficulty || 'medium';
+    const difficulty = opts.difficulty || 'hard';
 
     const person = pick(PERSONS);
     const entry = pick(NOUNS);

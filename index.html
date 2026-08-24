@@ -870,7 +870,7 @@ function createDeck(verbs, progress, count) {
   return chosen;
 }
 
-function createQuestion(verb, overrides = {}, progress = null, allVerbs = null, difficulty = "medium") {
+function createQuestion(verb, overrides = {}, progress = null, allVerbs = null, difficulty = "hard") {
   const recent = progress?.recentQuestions || [];
   let result;
   let attempt = 0;
@@ -910,7 +910,7 @@ function shuffleBagSequence(items, count) {
   return sequence.slice(0, count);
 }
 
-function createSessionQuestions(verbs, mode, progress = null, allVerbs = null, difficulty = "medium") {
+function createSessionQuestions(verbs, mode, progress = null, allVerbs = null, difficulty = "hard") {
   const pronounSequence = shuffleBagSequence(PRONOUNS, verbs.length);
   return verbs.map((verb, index) => createQuestion(verb, { pronoun: pronounSequence[index] }, progress, allVerbs, difficulty));
 }
@@ -996,7 +996,7 @@ function capitalizeInitial(sentence) {
 
 function assemble(...parts) { return parts.filter(Boolean).join(" ").replace(/\s+([?.!,])/g, "$1"); }
 
-function buildOptions(verb, correct, allVerbs, difficulty = "medium") {
+function buildOptions(verb, correct, allVerbs, difficulty = "hard") {
   if (difficulty === "easy") {
     // Obviously-wrong distractors: conjugated forms pulled from unrelated verbs.
     const pool = (allVerbs || []).filter(v => v.verb !== verb.verb);
@@ -1057,7 +1057,7 @@ function createVocabDeck(words, progress, count) {
   return chosen;
 }
 
-function buildVocabOptions(entry, allWords, difficulty = "medium", isReverse = false) {
+function buildVocabOptions(entry, allWords, difficulty = "hard", isReverse = false) {
   let distractorPool;
   if (isReverse) {
     // Reverse: English meaning shown, German words as options
@@ -1086,7 +1086,7 @@ function buildVocabOptions(entry, allWords, difficulty = "medium", isReverse = f
   }
 }
 
-function createVocabQuestion(entry, allWords, progress = null, difficulty = "medium", isReverse = false) {
+function createVocabQuestion(entry, allWords, progress = null, difficulty = "hard", isReverse = false) {
   const recent = progress?.recentVocabQuestions || [];
   let options;
   let signature;
@@ -1121,7 +1121,7 @@ function createVocabQuestion(entry, allWords, progress = null, difficulty = "med
   };
 }
 
-function createVocabSessionQuestions(deck, allWords, progress = null, difficulty = "medium", isReverse = false) {
+function createVocabSessionQuestions(deck, allWords, progress = null, difficulty = "hard", isReverse = false) {
   return deck.map(entry => createVocabQuestion(entry, allWords, progress, difficulty, isReverse));
 }
 
@@ -1238,7 +1238,7 @@ function buildSentenceData(owner, noun, grammarCase, correct) {
   };
 }
 
-function buildPossessiveOptions(owner, noun, grammarCase, correct, difficulty = "medium") {
+function buildPossessiveOptions(owner, noun, grammarCase, correct, difficulty = "hard") {
   const candidates = new Set();
   const genders = ["m", "f", "n", "pl"];
   const otherGenders = genders.filter(g => g !== noun.gender);
@@ -1274,7 +1274,7 @@ function buildPossessiveOptions(owner, noun, grammarCase, correct, difficulty = 
   return balancedShuffle(correct, options.slice(0, 3));
 }
 
-function createPossessiveQuestion(noun, allNouns, progress = null, difficulty = "medium") {
+function createPossessiveQuestion(noun, allNouns, progress = null, difficulty = "hard") {
   const recent = progress?.recentPossessiveQuestions || [];
   let result;
   let attempt = 0;
@@ -1311,7 +1311,7 @@ function createPossessiveDeck(nouns, progress, count) {
   return chosen;
 }
 
-function createPossessiveSessionQuestions(deck, allNouns, progress = null, difficulty = "medium") {
+function createPossessiveSessionQuestions(deck, allNouns, progress = null, difficulty = "hard") {
   return deck.map(noun => createPossessiveQuestion(noun, allNouns, progress, difficulty));
 }
 
@@ -1424,7 +1424,7 @@ function createZahlenQuestion(range, allNumbers, progress, difficulty){
 }
 function createZahlenDeck(range, allNumbers, progress, count){
   const deck=[];
-  for(let i=0;i<count;i++) deck.push(createZahlenQuestion(range, allNumbers, progress, "medium"));
+  for(let i=0;i<count;i++) deck.push(createZahlenQuestion(range, allNumbers, progress, "hard"));
   return deck;
 }
 function analogClockSVG(hour, minute){
@@ -1802,7 +1802,7 @@ async function inflate(data) {
 // ---- storage.js (works both as a Claude artifact and as a standalone deployed page) ----
 const STORAGE_KEY = "german-conjugation-master-v1";
 const defaults = {
-  settings: { animations: true, sound: true, difficulty: "hard" },
+  settings: { animations: true, sound: true },
   stats: { total: 0, correct: 0, wrong: 0, currentStreak: 0, bestStreak: 0, score: 0, totalTimeMs: 0, correctVerbs: {}, missedVerbs: {} },
   achievements: [],
   progress: { usedVerbKeys: [] },
@@ -1942,7 +1942,7 @@ function render(screen) {
 function startSession(mode) {
   const verbs = getVerbs();
   if (!verbs.length) return toast("No verb records are available yet.", "error");
-  const difficulty = state.settings.difficulty || "medium";
+  const difficulty = "hard";
   const count = Math.min(mode === "exam" ? 50 : 20, verbs.length);
   const deck = createDeck(verbs, state.progress || (state.progress = { usedVerbKeys: [] }), count);
   const questions = createSessionQuestions(deck, mode, state.progress, verbs, difficulty);
@@ -1958,7 +1958,7 @@ function startVocabSession(mode, level, kind = "vocab") {
   const isReverse = kind === "vocab-reverse" || level === "both";
   const words = level === "b1" ? b1GlossaryWords : (level === "both" ? [...glossaryWords, ...b1GlossaryWords] : glossaryWords);
   if (!words.length) return toast("No glossary words are available yet.", "error");
-  const difficulty = state.settings.difficulty || "medium";
+  const difficulty = "hard";
   const count = Math.min(mode === "exam" ? 50 : 20, words.length);
   const progressKey = isReverse ? "usedVocabKeysReverse" : (level === "b1" ? "usedVocabKeysB1" : "usedVocabKeys");
   const recentKey = isReverse ? "recentVocabQuestionsReverse" : (level === "b1" ? "recentVocabQuestionsB1" : "recentVocabQuestions");
@@ -2057,7 +2057,7 @@ function startPossessiveSession(mode) {
   render("practice");
 }
 function startZahlenSession(mode, range) {
-  const difficulty = state.settings.difficulty || "medium";
+  const difficulty = "hard";
   const count = mode === "exam" ? 50 : 20;
   const allNumbers = Array.from({length: 1001}, (_,i)=>i);
   const deck = createZahlenDeck(range, allNumbers, state.progress, count);
