@@ -1911,6 +1911,11 @@ async function handleAction(event) {
     if (await confirmation("Reset all local progress?", "This removes statistics, achievements, and any imported workbook from this browser.", "Reset Everything")) { state = await resetState(); document.body.classList.remove("no-animations"); activeSession = null; stopTimer(); render("home"); updatePunchHoles(); toast("Local progress reset."); }
   }
   if (action.startsWith("speak") && activeSession) {
+    if (window.speechSynthesis && speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+      document.querySelectorAll('.speaking').forEach(b => b.classList.remove('speaking'));
+      return;
+    }
     const btn = button;
     btn.classList.add("speaking");
     const clearSpeaking = () => btn.classList.remove("speaking");

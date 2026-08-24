@@ -197,75 +197,436 @@
   });
 
   // Paragraph — natural story with 3 or 4 mixed blanks (Nom+Akk), random persons per blank.
-  const PARAGRAPH_TEMPLATES = [
-    {
-      blanks: 3,
-      text: 'Mia wohnt in Hamburg. ___ Bruder Paul ist 14 und sehr sportlich, aber ___ Schwester Lena ist sehr klug. Am Abend liest sie ___ spannendes Buch auf dem Sofa.',
-      slots: [
-        { word:'Bruder', gender:'m',  caseType:'nom', label:'Bruder (m, Nominativ)' },
-        { word:'Schwester', gender:'f', caseType:'nom', label:'Schwester (f, Nominativ)' },
-        { word:'Buch', gender:'n', caseType:'akk', label:'Buch (n, Akkusativ)' }
-      ]
-    },
-    {
-      blanks: 4,
-      text: 'Paul wohnt in Köln. ___ Vater arbeitet als Lehrer, ___ Mutter kocht jeden Abend leckeres Essen. Er liebt ___ Hund über alles und vermisst ___ Großeltern am Wochenende sehr.',
-      slots: [
-        { word:'Vater', gender:'m', caseType:'nom', label:'Vater (m, Nominativ)' },
-        { word:'Mutter', gender:'f', caseType:'nom', label:'Mutter (f, Nominativ)' },
-        { word:'Hund', gender:'m', caseType:'akk', label:'Hund (m, Akkusativ)' },
-        { word:'Großeltern', gender:'pl', caseType:'akk', label:'Großeltern (pl, Akkusativ)' }
-      ]
-    },
-    {
-      blanks: 3,
-      text: 'Ben wohnt in Berlin. ___ Opa ist alt aber sehr lustig, ___ Oma kocht wunderbar. Wir lieben ___ Haus sehr.',
-      slots: [
-        { word:'Opa', gender:'m', caseType:'nom', label:'Opa (m, Nominativ)' },
-        { word:'Oma', gender:'f', caseType:'nom', label:'Oma (f, Nominativ)' },
-        { word:'Haus', gender:'n', caseType:'akk', label:'Haus (n, Akkusativ)' }
-      ]
-    },
-    {
-      blanks: 4,
-      text: 'Lena wohnt in Wien. ___ Freund Max ist sehr nett, ___ Freundin Sara ist sehr lustig. Sie suchen jeden Tag ___ alten Schlüssel im Haus und lesen abends ___ spannende Bücher.',
-      slots: [
-        { word:'Freund', gender:'m', caseType:'nom', label:'Freund (m, Nominativ)' },
-        { word:'Freundin', gender:'f', caseType:'nom', label:'Freundin (f, Nominativ)' },
-        { word:'Schlüssel', gender:'m', caseType:'akk', label:'Schlüssel (m, Akkusativ)' },
-        { word:'Bücher', gender:'pl', caseType:'akk', label:'Bücher (pl, Akkusativ)' }
-      ]
+  // Generative paragraph — 30+ unique stories, not 4 fixed texts.
+  // Each paragraph: intro (no blank) + 3–4 sentences, each with one blank, mixed Nom/Akk, one owner per paragraph.
+  function buildParagraphSentences(person, difficulty) {
+    const city = pick(CITIES);
+    const name = person.id === 'er' ? pick(MALE_NAMES) : person.id === 'sie_sg' ? pick(FEMALE_NAMES) : person.id === 'ich' ? 'Ich' : person.id === 'du' ? 'Du' : pick(MALE_NAMES.concat(FEMALE_NAMES));
+    const intro = person.id === 'ich' ? `Ich wohne in ${city}.` : person.id === 'du' ? `Du wohnst in ${city}.` : `${name} wohnt in ${city}.`;
+    const sentences = [intro];
+    const blanks = [];
+    const usedWords = new Set();
+    const blankCount = Math.random() < 0.5 ? 3 : 4;
+    // Create 3–4 sentences, each with one blank, mixed cases, varied nouns (no repeats)
+    for (let i = 0; i < blankCount; i++) {
+      const isNom = i < 2 ? true : Math.random() < 0.5; // first 2 are nom (family), rest mixed
+      const pool = NOUNS.filter(n => (isNom ? n.cat === 'person' : true) && !usedWords.has(n.sg));
+      const entry = pick(pool.length ? pool : NOUNS);
+      usedWords.add(entry.sg);
+      const number = Math.random() < 0.2 ? 'pl' : 'sg';
+      const gender = number === 'pl' ? 'pl' : entry.gender;
+      const word = number === 'pl' ? entry.pl : entry.sg;
+      const caseType = isNom ? 'nom' : (Math.random() < 0.5 ? 'nom' : 'akk');
+      const ending = endingFor(gender, caseType);
+      const correctForm = formOf(person.stem, ending);
+      const distractors = buildDistractors({ stem: person.stem, ending, correctForm, difficulty });
+      const options = shuffle([correctForm, ...distractors]);
+      let sent = '';
+      if (caseType === 'nom') {
+        const adj = pick(entry.adj);
+        const verb = gender === 'pl' ? 'sind' : 'ist';
+        sent = `___ ${word} ${verb} ${adj}.`;
+      } else {
+        const verbPool = entry.cat === 'person' ? PERSON_VERBS : THING_VERBS;
+        const verbInf = pick(verbPool);
+        const conj = VERB_FORMS[verbInf][person.conjCat];
+        // keep subject as pronoun/name for variety, but possessive stays with paragraph owner
+        const subj = person.id === 'ich' ? 'Ich' : person.id === 'du' ? 'Du' : name;
+        sent = `${subj} ${conj} ___ ${word}.`;
+      }
+      // Add connector for flow (except first)
+      if (i > 0 && Math.random() < 0.4) {
+        const connectors = ['Aber', 'Und', 'Denn', 'Außerdem'];
+        const conn = pick(connectors);
+        // lowercase only the pronoun start (Ich/Du), never the name
+        const firstWord = sent.split(' ')[0];
+        const lowered = (firstWord === 'Ich' || firstWord === 'Du')
+          ? firstWord.toLowerCase()
+          : firstWord; // keep names capitalized
+        sent = conn + ' ' + lowered + sent.slice(firstWord.length);
+      }
+      sentences.push(sent);
+      blanks.push({
+        id: i + 1,
+        word, en: entry.en, gender, caseType,
+        label: `${word} (${genderLabel(gender)}, ${caseType === 'nom' ? 'Nominativ' : 'Akkusativ'})`,
+        personId: person.id, stem: person.stem, ending, correctForm, options,
+        correctIndex: options.indexOf(correctForm),
+        explanation: `${person.desc}. „${word}" ist ${genderLabel(gender)} — ${caseType === 'nom' ? 'als Subjekt (Nominativ)' : 'als Akkusativobjekt'} lautet die Form: ${correctForm}.`
+      });
     }
+    return { text: sentences.join(' '), blanks };
+  }
+
+  const PARAGRAPH_TEMPLATES = []; // generative builder replaces fixed templates
+
+  // ==============================
+  // GENERATIVE PARAGRAPHS — scene-based stories
+  // ==============================
+
+  // Verb forms for scene verbs (keyed by third-person singular "er" only —
+  // paragraphs use named protagonists, so only er/sie_sg forms are needed).
+  const SCENE_VERBS = {
+    backt: 'backt', spielt: 'spielt', singen: 'singen', sitzt: 'sitzt', sucht: 'sucht',
+    läuft: 'läuft', wirft: 'wirft', findet: 'findet', kauft: 'kauft', trägt: 'trägt',
+    kocht: 'kocht', bringt: 'bringt', vergisst: 'vergisst', besucht: 'besucht', geht: 'geht',
+    ist: 'ist', hat: 'hat'
+  };
+  const SCENE_VERB_CONJ = {
+    'startet':   { ich:'starte',  du:'startest', er:'startet',  wir:'starten',  ihr:'startet',  sie:'starten'  },
+    'räumt':     { ich:'räume',   du:'räumst',   er:'räumt',    wir:'räumen',   ihr:'räumt',    sie:'räumen'   },
+    'fahren':    { ich:'fahre',   du:'fährst',   er:'fährt',    wir:'fahren',   ihr:'fahrt',     sie:'fahren'   },
+    'plant':     { ich:'plane',   du:'planst',   er:'plant',    wir:'planen',   ihr:'plant',    sie:'planen'   },
+    'haben':     { ich:'habe',    du:'hast',     er:'hat',      wir:'haben',    ihr:'habt',     sie:'haben'    },
+    'fährt':     { ich:'fahre',   du:'fährst',   er:'fährt',    wir:'fahren',   ihr:'fahrt',     sie:'fahren'   },
+    'trainiert': { ich:'trainiere',du:'trainierst',er:'trainiert',wir:'trainieren',ihr:'trainiert',sie:'trainieren' },
+    'ziehen':    { ich:'ziehe',   du:'ziehst',   er:'zieht',    wir:'ziehen',   ihr:'zieht',    sie:'ziehen'   }
+  };
+
+
+  // Scene: returns { sentences: [...], slots: [{gender, caseType, word}] }
+  // Each sentence may contain one "___" blank. First sentence usually has none.
+  const PARAGRAPH_SCENES = [
+    {
+      icon: 'Geburtstag',
+      sentences(female) {
+        return [
+          s => `${s} hat Geburtstag.`,
+          s => `___ Oma backt einen Kuchen, ___ Vater spielt Musik.`,
+          s => `Alle singen für ___ Schwester.`
+        ];
+      },
+      slots: [
+        { word: 'Oma', gender: 'f', caseType: 'nom' },
+        { word: 'Vater', gender: 'm', caseType: 'nom' },
+        { word: 'Schwester', gender: 'f', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Schule',
+      sentences() {
+        return [
+          s => `${s} ist in der Schule.`,
+          s => `___ Lehrer ist nett, ___ Freundin sitzt in der ersten Reihe.`,
+          s => `Nach dem Unterricht sucht ${'{NAME}'} ___ Schlüssel.`
+        ];
+      },
+      slots: [
+        { word: 'Lehrer', gender: 'm', caseType: 'nom' },
+        { word: 'Freundin', gender: 'f', caseType: 'nom' },
+        { word: 'Schlüssel', gender: 'm', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Park',
+      sentences() {
+        return [
+          s => `${s} geht in den Park.`,
+          s => `___ Hund läuft schnell, ___ Freundin wirft einen Ball.`,
+          s => `Auf der Bank findet ${'{NAME}'} ___ Fahrradhelm.`
+        ];
+      },
+      slots: [
+        { word: 'Hund', gender: 'm', caseType: 'nom' },
+        { word: 'Freundin', gender: 'f', caseType: 'nom' },
+        { word: 'Fahrradhelm', gender: 'm', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Einkaufen',
+      sentences() {
+        return [
+          s => `${s} kauft im Supermarkt ein.`,
+          s => `___ Tasche ist schwer, ___ Bruder trägt die Bücher.`,
+          s => `Zu Hause sucht ${'{NAME}'} ___ Geldbörse.`
+        ];
+      },
+      slots: [
+        { word: 'Tasche', gender: 'f', caseType: 'nom' },
+        { word: 'Bruder', gender: 'm', caseType: 'nom' },
+        { word: 'Geldbörse', gender: 'f', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Wochenende',
+      sentences() {
+        return [
+          s => `${s} besucht ___ Großeltern.`,
+          s => `___ Opa kocht Suppe, ___ Tante bringt Kuchen mit.`,
+          s => `Am Bahnhof vergisst ${'{NAME}'} ___ Handy.`
+        ];
+      },
+      slots: [
+        { word: 'Großeltern', gender: 'pl', caseType: 'akk' },
+        { word: 'Opa', gender: 'm', caseType: 'nom' },
+        { word: 'Tante', gender: 'f', caseType: 'nom' },
+        { word: 'Handy', gender: 'n', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Sport',
+      sentences() {
+        return [
+          s => `${s} spielt Fußball im Verein.`,
+          s => `___ Trainer ist streng, ___ Mannschaft trainiert zweimal pro Woche.`,
+          s => `Am Samstag gewinnt ${'{NAME}'} mit ___ Tor das Spiel.`
+        ];
+      },
+      slots: [
+        { word: 'Trainer', gender: 'm', caseType: 'nom' },
+        { word: 'Mannschaft', gender: 'f', caseType: 'nom' },
+        { word: 'Tor', gender: 'n', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Kochen',
+      sentences() {
+        return [
+          s => `${s} kocht am Wochenende.`,
+          s => `___ Mutter hilft in der Küche, ___ Bruder deckt den Tisch.`,
+          s => `Zum Dessert reicht ${'{NAME}'} ___ Lieblingsspeise.`
+        ];
+      },
+      slots: [
+        { word: 'Mutter', gender: 'f', caseType: 'nom' },
+        { word: 'Bruder', gender: 'm', caseType: 'nom' },
+        { word: 'Lieblingsspeise', gender: 'f', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Arzt',
+      sentences() {
+        return [
+          s => `${s} ist beim Arzt.`,
+          s => `___ Hals tut weh, ___ Fieber ist hoch.`,
+          s => `Der Doktor gibt ${'{NAME}'} ___ Rezept für ___ Hustensaft.`
+        ];
+      },
+      slots: [
+        { word: 'Hals', gender: 'm', caseType: 'nom' },
+        { word: 'Fieber', gender: 'n', caseType: 'nom' },
+        { word: 'Rezept', gender: 'n', caseType: 'akk' },
+        { word: 'Hustensaft', gender: 'm', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Kino',
+      sentences() {
+        return [
+          s => `${s} geht ins Kino.`,
+          s => `___ Freunde wählen einen Film, ___ Schwester kauft Popcorn.`,
+          s => `Im Dunkeln verliert ${'{NAME}'} ___ Platz.`
+        ];
+      },
+      slots: [
+        { word: 'Freunde', gender: 'pl', caseType: 'nom' },
+        { word: 'Schwester', gender: 'f', caseType: 'nom' },
+        { word: 'Platz', gender: 'm', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Garten',
+      sentences() {
+        return [
+          s => `${s} arbeitet im Garten.`,
+          s => `___ Blumen brauchen Wasser, ___ Rasen ist hoch.`,
+          s => `Am Abend ruht ${'{NAME}'} auf ___ Bank aus.`
+        ];
+      },
+      slots: [
+        { word: 'Blumen', gender: 'pl', caseType: 'nom' },
+        { word: 'Rasen', gender: 'm', caseType: 'nom' },
+        { word: 'Bank', gender: 'f', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Mein Tag',
+      sentences() {
+        return [
+          s => `${'{SUBJ}'} startet in den Tag.`,
+          s => `___ Kaffee ist fertig, ___ Zeitung liegt am Tisch.`,
+          s => `Vor der Arbeit prüft ${'{NAME}'} ___ Termine.`
+        ];
+      },
+      slots: [
+        { word: 'Kaffee', gender: 'm', caseType: 'nom' },
+        { word: 'Zeitung', gender: 'f', caseType: 'nom' },
+        { word: 'Termine', gender: 'pl', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Dein Zimmer',
+      sentences() {
+        return [
+          s => `${'{SUBJ}'} räumt das Zimmer auf.`,
+          s => `___ Bücher kommen ins Regal, ___ Kleidung in den Schrank.`,
+          s => `Danach staubsaugt ${'{NAME}'} ___ Boden.`
+        ];
+      },
+      slots: [
+        { word: 'Bücher', gender: 'pl', caseType: 'nom' },
+        { word: 'Kleidung', gender: 'f', caseType: 'akk' },
+        { word: 'Boden', gender: 'm', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Unser Ausflug',
+      sentences() {
+        return [
+          s => `${'{SUBJ}'} fahren an den See.`,
+          s => `___ Picknickkorb ist voll, ___ Fahrräder stehen am Haus.`,
+          s => `Unterwegs besuchen ${'{SUBJ}'} ___ Großeltern.`
+        ];
+      },
+      slots: [
+        { word: 'Picknickkorb', gender: 'm', caseType: 'nom' },
+        { word: 'Fahrräder', gender: 'pl', caseType: 'nom' },
+        { word: 'Großeltern', gender: 'pl', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Euer Fest',
+      sentences() {
+        return [
+          s => `${'{SUBJ}'} plant ein Sommerfest.`,
+          s => `___ Nachbarn helfen mit, ___ Kinder spielen im Garten.`,
+          s => `Am Abend grillt ${'{SUBJ}'} ___ Würstchen.`
+        ];
+      },
+      slots: [
+        { word: 'Nachbarn', gender: 'pl', caseType: 'nom' },
+        { word: 'Kinder', gender: 'pl', caseType: 'nom' },
+        { word: 'Würstchen', gender: 'pl', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Ihr Termin',
+      sentences() {
+        return [
+          s => `${'{SUBJ}'} haben einen Termin beim Amt.`,
+          s => `___ Unterlagen sind komplett, ___ Nummer wird aufgerufen.`,
+          s => `Nach einer Stunde bekommt ${'{NAME}'} ___ neuen Pass.`
+        ];
+      },
+      slots: [
+        { word: 'Unterlagen', gender: 'pl', caseType: 'nom' },
+        { word: 'Nummer', gender: 'f', caseType: 'nom' },
+        { word: 'Pass', gender: 'm', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Meine Reise',
+      sentences() {
+        return [
+          s => `${'{SUBJ}'} fährt mit dem Zug.`,
+          s => `___ Reservierung ist bestätigt, ___ Koffer ist schwer.`,
+          s => `Im Zug liest ${'{NAME}'} ___ Lieblingsbuch.`
+        ];
+      },
+      slots: [
+        { word: 'Reservierung', gender: 'f', caseType: 'nom' },
+        { word: 'Koffer', gender: 'm', caseType: 'nom' },
+        { word: 'Lieblingsbuch', gender: 'n', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Dein Sport',
+      sentences() {
+        return [
+          s => `${'{SUBJ}'} trainiert im Fitnessstudio.`,
+          s => `___ Trainer zeigt neue Übungen, ___ Muskeln schmerzen am nächsten Tag.`,
+          s => `Trotzdem erreicht ${'{NAME}'} ___ Ziel.`
+        ];
+      },
+      slots: [
+        { word: 'Trainer', gender: 'm', caseType: 'nom' },
+        { word: 'Muskeln', gender: 'pl', caseType: 'nom' },
+        { word: 'Ziel', gender: 'n', caseType: 'akk' }
+      ]
+    },
+    {
+      icon: 'Unser Umzug',
+      sentences() {
+        return [
+          s => `${'{SUBJ}'} ziehen in eine neue Wohnung.`,
+          s => `___ Kartons stapeln sich im Flur, ___ Möbel kommen mit dem LKW.`,
+          s => `Am ersten Abend fehlt ${'{SUBJ}'} ___ WLAN-Router.`
+        ];
+      },
+      slots: [
+        { word: 'Kartons', gender: 'pl', caseType: 'nom' },
+        { word: 'Möbel', gender: 'pl', caseType: 'nom' },
+        { word: 'WLAN-Router', gender: 'm', caseType: 'akk' }
+      ]
+    },
   ];
 
   registerBuilder('paragraph', function (ctx) {
     const difficulty = ctx.difficulty || 'hard';
-    const template = pick(PARAGRAPH_TEMPLATES);
-    const blanks = template.slots.map((slot, idx) => {
-      const person = pick(PERSONS);
-      const ending = endingFor(slot.gender, slot.caseType);
-      const correctForm = formOf(person.stem, ending);
-      const distractors = buildDistractors({ stem: person.stem, ending, correctForm, difficulty });
+    // Owner pool: named protagonists + pronoun owners for variety
+    const OWNERS = [
+      { id: 'er',     stem: 'sein',  subj: '{NAME}',  desc: 'er → sein' },
+      { id: 'sie_sg', stem: 'ihr',   subj: '{NAME}',  desc: 'sie → ihr' },
+      { id: 'ich',    stem: 'mein',  subj: 'Ich',     desc: 'ich → mein', verbCat: 'ich' },
+      { id: 'du',     stem: 'dein',  subj: 'Du',      desc: 'du → dein', verbCat: 'du' },
+      { id: 'wir',    stem: 'unser', subj: 'Wir',     desc: 'wir → unser', verbCat: 'wir' },
+      { id: 'ihr_pl', stem: 'euer',  subj: 'Ihr',     desc: 'ihr → euer', verbCat: 'ihr' },
+      { id: 'Sie',    stem: 'Ihr',   subj: 'Sie',     desc: 'Sie → Ihr', verbCat: 'sie' }
+    ];
+    const owner = pick(OWNERS);
+    const person = PERSONS.find(pp => pp.id === owner.id) || PERSONS[0];
+    const name = (owner.id === 'er' || owner.id === 'sie_sg') ? (owner.id === 'er' ? pick(MALE_NAMES) : pick(FEMALE_NAMES)) : '';
+    const scene = pick(PARAGRAPH_SCENES);
+    const ending = person.stem; // 'sein' or 'ihr'
+    const formFor = (gender, caseType) => formOf(person.stem, endingFor(gender, caseType));
+    // Determine if the owner is female (sie_sg)
+    const female = owner.id === 'sie_sg';
+
+    // Build sentences: replace {SUBJ} (subject) and {NAME} (name fallback = subject)
+    const subj = owner.subj === '{NAME}' ? name : owner.subj;
+    const nameOrSubj = name || subj;
+    const sentenceFns = scene.sentences(female);
+    const textParts = sentenceFns.map((fn, si) => {
+      let s = fn(nameOrSubj)
+        .replace(/\{SUBJ\}/g, subj)
+        .replace(/\{NAME\}/g, nameOrSubj);
+      // Fix verb conjugation in first sentence for non-er/sie_sg subjects
+      if (si === 0 && owner.verbCat && SCENE_VERB_CONJ) {
+        for (const [base, forms] of Object.entries(SCENE_VERB_CONJ)) {
+          if (s.includes(base)) {
+            s = s.replace(base, forms[owner.verbCat] || base);
+            break;
+          }
+        }
+      }
+      return s;
+    });
+
+    const blanks = scene.slots.map((slot, idx) => {
+      const correctForm = formFor(slot.gender, slot.caseType);
+      const distractors = buildDistractors({ stem: person.stem, ending: endingFor(slot.gender, slot.caseType), correctForm, difficulty });
       const options = shuffle([correctForm, ...distractors]);
       return {
         id: idx + 1,
         word: slot.word,
         gender: slot.gender,
         caseType: slot.caseType,
-        label: slot.label,
-        personId: person.id,
-        stem: person.stem,
-        ending,
-        correctForm,
-        options,
+        label: `${slot.word} (${genderLabel(slot.gender)}, ${slot.caseType === 'nom' ? 'Nominativ' : 'Akkusativ'})`,
+        personId: person.id, stem: person.stem,
+        ending: endingFor(slot.gender, slot.caseType),
+        correctForm, options,
         correctIndex: options.indexOf(correctForm),
         explanation: `${person.desc}. „${slot.word}" ist ${genderLabel(slot.gender)} — ${slot.caseType === 'nom' ? 'als Subjekt (Nominativ)' : 'als Akkusativobjekt'} lautet die Form: ${correctForm}.`
       };
     });
+
+    // Interleave blanks into text: each "___" gets replaced in order
+    let finalText = textParts.join(' ');
+    // blanks are already in order matching "___" occurrences
     return {
       setupLine: '',
-      mainLine: template.text,
-      paragraph: template.text,
+      mainLine: finalText,
+      paragraph: finalText,
       blanks,
       isParagraph: true,
       explanation: blanks.map(b => b.explanation).join(' '),
