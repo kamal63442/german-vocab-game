@@ -1,0 +1,13 @@
+{
+  "possessive": {
+    "correct": "Richtig! +10",
+    "wrong": "Nochmal!",
+    "explanation": "Erklärung",
+    "paragraph": "Absatz"
+  },
+  "general": {
+    "next": "Next Question →",
+    "finish": "Finish Session →",
+    "score": "Score"
+  }
+}

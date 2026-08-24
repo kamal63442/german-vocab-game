@@ -39,49 +39,49 @@
   // adj = curated adjectives so sentences stay semantically natural.
   const NOUNS = [
     // --- persons: masculin ---
-    { sg:'Bruder',   pl:'Brüder',    gender:'m', cat:'person', adj:['klein','groß','nett','lustig','klug','sportlich'] },
-    { sg:'Vater',    pl:'Väter',     gender:'m', cat:'person', adj:['nett','streng','freundlich','lustig','groß'] },
-    { sg:'Onkel',    pl:'Onkel',     gender:'m', cat:'person', adj:['nett','lustig','freundlich','alt'] },
-    { sg:'Sohn',     pl:'Söhne',     gender:'m', cat:'person', adj:['klein','groß','nett','lustig','klug'] },
-    { sg:'Freund',   pl:'Freunde',   gender:'m', cat:'person', adj:['nett','lustig','freundlich','klug','sportlich'] },
-    { sg:'Opa',      pl:'Opas',      gender:'m', cat:'person', adj:['alt','nett','lustig','freundlich'] },
-    { sg:'Nachbar',  pl:'Nachbarn',  gender:'m', cat:'person', adj:['nett','freundlich','leise','lustig'] },
-    { sg:'Kollege',  pl:'Kollegen',  gender:'m', cat:'person', adj:['nett','freundlich','klug','fleißig'] },
+    { sg:'Bruder', en:'brother',   pl:'Brüder',    gender:'m', cat:'person', adj:['klein','groß','nett','lustig','klug','sportlich'] },
+    { sg:'Vater', en:'father',    pl:'Väter',     gender:'m', cat:'person', adj:['nett','streng','freundlich','lustig','groß'] },
+    { sg:'Onkel', en:'uncle',    pl:'Onkel',     gender:'m', cat:'person', adj:['nett','lustig','freundlich','alt'] },
+    { sg:'Sohn', en:'son',     pl:'Söhne',     gender:'m', cat:'person', adj:['klein','groß','nett','lustig','klug'] },
+    { sg:'Freund', en:'friend',   pl:'Freunde',   gender:'m', cat:'person', adj:['nett','lustig','freundlich','klug','sportlich'] },
+    { sg:'Opa', en:'grandpa',      pl:'Opas',      gender:'m', cat:'person', adj:['alt','nett','lustig','freundlich'] },
+    { sg:'Nachbar', en:'neighbor',  pl:'Nachbarn',  gender:'m', cat:'person', adj:['nett','freundlich','leise','lustig'] },
+    { sg:'Kollege', en:'colleague',  pl:'Kollegen',  gender:'m', cat:'person', adj:['nett','freundlich','klug','fleißig'] },
     // --- persons: feminin ---
-    { sg:'Mutter',    pl:'Mütter',      gender:'f', cat:'person', adj:['nett','streng','freundlich','klug','lustig'] },
-    { sg:'Schwester', pl:'Schwestern',  gender:'f', cat:'person', adj:['klein','groß','nett','lustig','klug','sportlich'] },
-    { sg:'Tante',     pl:'Tanten',      gender:'f', cat:'person', adj:['nett','lustig','freundlich','alt'] },
-    { sg:'Tochter',   pl:'Töchter',     gender:'f', cat:'person', adj:['klein','groß','nett','lustig','klug'] },
-    { sg:'Freundin',  pl:'Freundinnen', gender:'f', cat:'person', adj:['nett','lustig','freundlich','klug','sportlich'] },
-    { sg:'Oma',       pl:'Omas',        gender:'f', cat:'person', adj:['alt','nett','lustig','freundlich'] },
-    { sg:'Kollegin',  pl:'Kolleginnen', gender:'f', cat:'person', adj:['nett','freundlich','klug','fleißig'] },
+    { sg:'Mutter', en:'mother',    pl:'Mütter',      gender:'f', cat:'person', adj:['nett','streng','freundlich','klug','lustig'] },
+    { sg:'Schwester', en:'sister', pl:'Schwestern',  gender:'f', cat:'person', adj:['klein','groß','nett','lustig','klug','sportlich'] },
+    { sg:'Tante', en:'aunt',     pl:'Tanten',      gender:'f', cat:'person', adj:['nett','lustig','freundlich','alt'] },
+    { sg:'Tochter', en:'daughter',   pl:'Töchter',     gender:'f', cat:'person', adj:['klein','groß','nett','lustig','klug'] },
+    { sg:'Freundin', en:'friend',  pl:'Freundinnen', gender:'f', cat:'person', adj:['nett','lustig','freundlich','klug','sportlich'] },
+    { sg:'Oma', en:'grandma',       pl:'Omas',        gender:'f', cat:'person', adj:['alt','nett','lustig','freundlich'] },
+    { sg:'Kollegin', en:'colleague',  pl:'Kolleginnen', gender:'f', cat:'person', adj:['nett','freundlich','klug','fleißig'] },
     // --- persons: neutral ---
-    { sg:'Kind', pl:'Kinder', gender:'n', cat:'person', adj:['klein','süß','laut','lustig','klug'] },
-    { sg:'Baby', pl:'Babys',  gender:'n', cat:'person', adj:['klein','süß','laut'] },
+    { sg:'Kind', en:'child', en:'child', pl:'Kinder', gender:'n', cat:'person', adj:['klein','süß','laut','lustig','klug'] },
+    { sg:'Baby', en:'baby', pl:'Babys',  gender:'n', cat:'person', adj:['klein','süß','laut'] },
     // --- things: masculin ---
-    { sg:'Hund',      pl:'Hunde',     gender:'m', cat:'thing', adj:['klein','groß','süß','laut','brav','treu'] },
-    { sg:'Mantel',    pl:'Mäntel',    gender:'m', cat:'thing', adj:['neu','alt','warm','schön','teuer'] },
-    { sg:'Schlüssel', pl:'Schlüssel', gender:'m', cat:'thing', adj:['neu','alt','klein','wichtig'] },
-    { sg:'Computer',  pl:'Computer',  gender:'m', cat:'thing', adj:['neu','alt','teuer','schnell','modern','kaputt'] },
-    { sg:'Vogel',     pl:'Vögel',     gender:'m', cat:'thing', adj:['klein','süß','laut','schön'] },
-    { sg:'Stuhl',     pl:'Stühle',    gender:'m', cat:'thing', adj:['neu','alt','schön','bequem','teuer'] },
-    { sg:'Tisch',     pl:'Tische',    gender:'m', cat:'thing', adj:['neu','alt','groß','klein','schön'] },
+    { sg:'Hund', en:'dog',      pl:'Hunde',     gender:'m', cat:'thing', adj:['klein','groß','süß','laut','brav','treu'] },
+    { sg:'Mantel', en:'coat',    pl:'Mäntel',    gender:'m', cat:'thing', adj:['neu','alt','warm','schön','teuer'] },
+    { sg:'Schlüssel', en:'key', en:'key', pl:'Schlüssel', gender:'m', cat:'thing', adj:['neu','alt','klein','wichtig'] },
+    { sg:'Computer', en:'computer',  pl:'Computer',  gender:'m', cat:'thing', adj:['neu','alt','teuer','schnell','modern','kaputt'] },
+    { sg:'Vogel', en:'bird',     pl:'Vögel',     gender:'m', cat:'thing', adj:['klein','süß','laut','schön'] },
+    { sg:'Stuhl', en:'chair',     pl:'Stühle',    gender:'m', cat:'thing', adj:['neu','alt','schön','bequem','teuer'] },
+    { sg:'Tisch', en:'table',     pl:'Tische',    gender:'m', cat:'thing', adj:['neu','alt','groß','klein','schön'] },
     // --- things: feminin ---
-    { sg:'Katze',   pl:'Katzen',   gender:'f', cat:'thing', adj:['klein','süß','faul','schön'] },
-    { sg:'Tasche',  pl:'Taschen',  gender:'f', cat:'thing', adj:['neu','alt','klein','groß','schön','teuer'] },
-    { sg:'Uhr',     pl:'Uhren',    gender:'f', cat:'thing', adj:['neu','alt','klein','teuer','schön','kaputt'] },
-    { sg:'Lampe',   pl:'Lampen',   gender:'f', cat:'thing', adj:['neu','alt','schön','teuer','kaputt'] },
-    { sg:'Flasche', pl:'Flaschen', gender:'f', cat:'thing', adj:['neu','alt','klein','groß','leer'] },
-    { sg:'Jacke',   pl:'Jacken',   gender:'f', cat:'thing', adj:['neu','alt','schön','teuer','warm'] },
+    { sg:'Katze', en:'cat',   pl:'Katzen',   gender:'f', cat:'thing', adj:['klein','süß','faul','schön'] },
+    { sg:'Tasche', en:'bag',  pl:'Taschen',  gender:'f', cat:'thing', adj:['neu','alt','klein','groß','schön','teuer'] },
+    { sg:'Uhr', en:'clock',     pl:'Uhren',    gender:'f', cat:'thing', adj:['neu','alt','klein','teuer','schön','kaputt'] },
+    { sg:'Lampe', en:'lamp',   pl:'Lampen',   gender:'f', cat:'thing', adj:['neu','alt','schön','teuer','kaputt'] },
+    { sg:'Flasche', en:'bottle', en:'bottle', pl:'Flaschen', gender:'f', cat:'thing', adj:['neu','alt','klein','groß','leer'] },
+    { sg:'Jacke', en:'jacket',   pl:'Jacken',   gender:'f', cat:'thing', adj:['neu','alt','schön','teuer','warm'] },
     // --- things: neutral ---
-    { sg:'Auto',    pl:'Autos',    gender:'n', cat:'thing', adj:['neu','alt','schnell','teuer','klein','groß','kaputt'] },
-    { sg:'Buch',    pl:'Bücher',   gender:'n', cat:'thing', adj:['neu','alt','spannend','langweilig','dick','dünn'] },
-    { sg:'Fahrrad', pl:'Fahrräder',gender:'n', cat:'thing', adj:['neu','alt','schnell','kaputt','teuer'] },
-    { sg:'Handy',   pl:'Handys',   gender:'n', cat:'thing', adj:['neu','alt','teuer','modern','kaputt'] },
-    { sg:'Haus',    pl:'Häuser',   gender:'n', cat:'thing', adj:['neu','alt','groß','klein','schön','modern'] },
-    { sg:'Zimmer',  pl:'Zimmer',   gender:'n', cat:'thing', adj:['klein','groß','schön','hell','gemütlich'] },
-    { sg:'Fenster', pl:'Fenster',  gender:'n', cat:'thing', adj:['neu','alt','groß','klein','sauber'] },
-    { sg:'Sofa',    pl:'Sofas',    gender:'n', cat:'thing', adj:['neu','alt','bequem','schön','teuer'] }
+    { sg:'Auto', en:'car',    pl:'Autos',    gender:'n', cat:'thing', adj:['neu','alt','schnell','teuer','klein','groß','kaputt'] },
+    { sg:'Buch', en:'book',    pl:'Bücher',   gender:'n', cat:'thing', adj:['neu','alt','spannend','langweilig','dick','dünn'] },
+    { sg:'Fahrrad', en:'bicycle', pl:'Fahrräder',gender:'n', cat:'thing', adj:['neu','alt','schnell','kaputt','teuer'] },
+    { sg:'Handy', en:'phone',   pl:'Handys',   gender:'n', cat:'thing', adj:['neu','alt','teuer','modern','kaputt'] },
+    { sg:'Haus', en:'house',    pl:'Häuser',   gender:'n', cat:'thing', adj:['neu','alt','groß','klein','schön','modern'] },
+    { sg:'Zimmer', en:'room',  pl:'Zimmer',   gender:'n', cat:'thing', adj:['klein','groß','schön','hell','gemütlich'] },
+    { sg:'Fenster', en:'window', pl:'Fenster',  gender:'n', cat:'thing', adj:['neu','alt','groß','klein','sauber'] },
+    { sg:'Sofa', en:'sofa',    pl:'Sofas',    gender:'n', cat:'thing', adj:['neu','alt','bequem','schön','teuer'] }
   ];
 
   // Verb conjugations — keyed by conjCat (sie_sg uses 'er' forms, Sie/sie_pl use 'sie' forms).
@@ -396,7 +396,7 @@
       caseType: actualCase,
       difficulty,
       builder: builderName,
-      meta: { personId: person.id, stem: person.stem, gender, number, word, ending }
+      meta: { personId: person.id, stem: person.stem, gender, number, word, en: entry.en, ending }
     };
   }
 

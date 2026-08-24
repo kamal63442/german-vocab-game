@@ -13,260 +13,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Übungsheft">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
-
-:root {
-  --bg: #f3ecd9;
-  --bg-deep: #e8dfc4;
-  --panel: #fbf7ec;
-  --panel-strong: #f6efdc;
-  --line: rgba(35, 50, 77, .24);
-  --line-strong: rgba(35, 50, 77, .5);
-  --grid: rgba(120, 148, 191, .55);
-  --margin-rule: #c0392b;
-  --text: #23324d;
-  --muted: #4c5f7d;
-  --accent: #f0b429;
-  --accent-ink: #23324d;
-  --approved: #2f7a45;
-  --redline: #c0392b;
-  --font-hand: "Kalam", cursive;
-  --font-body: "Nunito", system-ui, sans-serif;
-  font-family: var(--font-body);
-  color: var(--text);
-  background: var(--bg);
-  color-scheme: light;
-}
-
-* { box-sizing: border-box; }
-html, body { height: 100%; overscroll-behavior: none; touch-action: pan-y; }
-html { background: var(--bg); }
-body {
-  margin: 0; min-width: 320px; height: 100dvh; overflow: hidden; color: var(--text);
-  background-color: var(--bg);
-  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 21px 21px;
-  background-attachment: fixed;
-}
-button, input { font: inherit; }
-button { color: inherit; cursor: pointer; }
-button:focus-visible, input:focus-visible { outline: 2px solid var(--redline); outline-offset: 3px; }
-
-/* Notebook margin rule and loose-leaf punch holes */
-.margin-rule { position: absolute; top: 0; bottom: 0; left: clamp(24px, 6vw, 38px); width: 2px; background: var(--margin-rule); opacity: .8; pointer-events: none; }
-.punch-hole { position: absolute; left: 9px; width: 11px; height: 11px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--line-strong); box-shadow: inset 0 0 0 2px var(--bg); pointer-events: none; }
-.hole-1 { top: 15%; }
-.hole-2 { top: 49%; }
-.hole-3 { top: 83%; }
-
-html, body { overflow-x: hidden; }
-.app-shell {
-  position: relative; display: flex; flex-direction: column; height: 100dvh; width: min(100%, 900px); margin: 0 auto;
-  padding: max(14px, env(safe-area-inset-top)) clamp(14px, 4vw, 26px) max(10px, env(safe-area-inset-bottom)) clamp(38px, 9vw, 54px);
-  background: color-mix(in srgb, var(--bg) 55%, transparent);
-}
-
-.site-header { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: clamp(8px, 2vh, 16px); padding-bottom: clamp(7px, 1.4vh, 12px); border-bottom: 2px dashed var(--line-strong); }
-.brand { display: flex; align-items: baseline; gap: 7px; padding: 0; border: 0; background: transparent; color: var(--text); font-family: var(--font-hand); font-size: 1.2rem; font-weight: 700; }
-.brand-mark { color: var(--accent); font-size: 1.2rem; transform: rotate(-8deg); display: inline-block; }
-.header-meta { flex: 1 1 auto; min-width: 0; color: var(--muted); font-size: .68rem; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; font-weight: 600; }
-.header-actions { display: flex; gap: 8px; flex: 0 0 auto; }
-.icon-button { display: flex; align-items: center; gap: 5px; height: 38px; min-width: 34px; padding: 0 11px; border: 2px solid var(--text); border-radius: 8px; background: var(--panel); color: var(--text); font-weight: 700; transition: .15s ease; box-shadow: 2px 2px 0 rgba(35,50,77,.12); }
-.icon-button span { font-size: 1rem; }
-.icon-button small { font-size: .62rem; letter-spacing: .02em; font-weight: 700; }
-.icon-button.speaker-btn { display: flex; align-items: center; justify-content: center; min-width: 38px; height: 38px; padding: 0; gap: 0; background: var(--panel-strong); }
-.icon-button.speaker-btn.speaking { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
-.verb-row { display: flex; align-items: center; gap: 8px; }
-.solution-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.hidden { display: none !important; }
-main { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; animation: screen-in .3s ease both; scrollbar-width: none; }
-main::-webkit-scrollbar { width: 0; height: 0; display: none; }
-#app:focus { outline: none; }
-.screen { display: grid; gap: clamp(10px, 1.8vh, 17px); padding-bottom: 4px; }
-.hero { min-height: clamp(90px, 18vh, 170px); display: flex; flex-direction: column; justify-content: center; padding: clamp(6px, 1.5vh, 16px) 2px clamp(8px, 2vh, 20px); }
-.hero-tags { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-.hero-tag { border: 2px solid var(--line-strong); border-radius: 8px 8px 3px 3px; padding: 5px 11px; font-size: .68rem; font-weight: 700; color: var(--muted); background: var(--panel); }
-.eyebrow, .kicker { color: var(--redline); font-size: .72rem; letter-spacing: .04em; font-weight: 700; font-family: var(--font-hand); }
-h1, h2, h3, p { margin: 0; }
-h1 { margin: clamp(2px, .8vh, 6px) 0 clamp(4px, 1vh, 10px); color: var(--text); font-family: var(--font-hand); font-weight: 700; font-size: clamp(1.9rem, 6vw + 3.5vh, 3.9rem); line-height: 1; letter-spacing: .01em; transform: rotate(-1deg); }
-h1 .line { display: block; }
-.subtitle { max-width: 38ch; color: var(--muted); line-height: 1.55; font-size: .87rem; font-weight: 600; }
-
-.panel, .stat-card, .question-card, .review-item, .achievement, .empty-state {
-  position: relative; border: 2px solid var(--text); border-radius: 7px; background: var(--panel);
-  box-shadow: 3px 3px 0 rgba(35, 50, 77, .14);
-}
-.panel { padding: clamp(12px, 2.2vh, 17px); }
-.section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-.section-title > * { min-width: 0; overflow-wrap: anywhere; }
-.section-title h2 { font-family: var(--font-hand); color: var(--text); font-size: 1.05rem; font-weight: 700; }
-.section-title span { color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
-.stats-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
-.stat-card { min-height: clamp(64px, 10vh, 90px); padding: clamp(9px, 1.6vh, 12px); display: flex; flex-direction: column; justify-content: space-between; }
-.stat-label { color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-size: .61rem; font-weight: 700; }
-.stat-value { color: var(--text); font-family: var(--font-hand); font-weight: 700; font-size: 1.8rem; }
-.stat-suffix { font-size: .78rem; color: var(--redline); margin-left: 2px; font-family: var(--font-body); font-weight: 700; }
-.action-grid { display: grid; gap: 10px; }
-.mode-card { width: 100%; text-align: left; cursor: pointer; display: block; font-family: var(--font-body); transition: transform .12s ease; }
-.mode-card-title { font-family: var(--font-hand); font-size: 1.5rem; font-weight: 700; color: var(--text); margin: 6px 0 4px; }
-
-.primary-button, .secondary-button, .option-button, .text-button, .danger-button {
-  min-height: clamp(44px, 6.5vh, 50px); border-radius: 8px; border: 2px solid var(--text); font-weight: 700; letter-spacing: 0;
-  transition: transform .12s ease, background .15s ease, border-color .15s ease, color .15s ease; font-size: .92rem;
-}
-.primary-button { padding: 0 18px; background: var(--accent); border-color: var(--text); color: var(--accent-ink); box-shadow: 3px 3px 0 rgba(35,50,77,.22); }
-.secondary-button { padding: 0 17px; background: var(--panel); color: var(--text); }
-.button-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.button-row > * { flex: 1 1 140px; }
-.database-actions { margin-top: 12px; }
-
-.icon-button.active { border-color: var(--text); color: var(--text); background: color-mix(in srgb, var(--accent) 55%, var(--panel)); }
-.difficulty-option.active { border-color: var(--text); background: color-mix(in srgb, var(--accent) 45%, var(--panel)); color: var(--text); }
-.brand.active .brand-mark { transform: rotate(0deg); }
-.brand.active span:last-child { text-decoration: underline wavy var(--redline); text-underline-offset: 4px; }
-
-.progress-meter, .bar-meter {
-  width: 100%; height: 8px; overflow: hidden; border: 0; border-radius: 4px; appearance: none; -webkit-appearance: none;
-  background: color-mix(in srgb, var(--line-strong) 55%, transparent);
-}
-.progress-meter::-webkit-progress-bar, .bar-meter::-webkit-progress-bar { background: transparent; }
-.progress-meter::-webkit-progress-value, .bar-meter::-webkit-progress-value { background: var(--redline); border-radius: 4px; }
-.progress-meter::-moz-progress-bar, .bar-meter::-moz-progress-bar { background: var(--redline); border-radius: 4px; }
-.quiz-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--muted); font-size: .74rem; letter-spacing: .02em; font-weight: 700; }
-.quiz-meta span { min-width: 0; overflow-wrap: anywhere; }
-.quiz-score { color: var(--redline); }
-.question-card { padding: clamp(14px, 3vh, 30px) clamp(16px, 5vw, 30px); display: grid; gap: clamp(10px, 1.8vh, 16px); }
-.verb-word { color: var(--text); font-family: var(--font-hand); font-weight: 700; font-size: clamp(1.9rem, 5vw + 3.5vh, 3.8rem); line-height: 1; word-break: break-word; transform: rotate(-1deg); }
-.meaning { color: var(--muted); font-size: .86rem; font-style: italic; font-weight: 600; }
-.prompt { font-size: clamp(1.02rem, 4.3vw, 1.4rem); line-height: 1.5; color: var(--text); font-weight: 600; overflow-wrap: anywhere; }
-.blank { color: var(--redline); border-bottom: 2px dashed var(--redline); padding: 0 .15em .12em; }
-.options { display: grid; gap: 10px; }
-.option-button { width: 100%; display: grid; grid-template-columns: 30px 1fr; align-items: center; text-align: left; padding: 0 14px; background: var(--panel); overflow-wrap: anywhere; }
-.option-button > span:last-child { min-width: 0; }
-.option-key { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 2px solid var(--line-strong); border-radius: 50%; color: var(--muted); font-size: .7rem; font-weight: 700; }
-.option-button:disabled { cursor: default; }
-.option-button.correct { border-color: var(--approved); background: color-mix(in srgb, var(--approved) 14%, var(--panel)); color: var(--text); }
-.option-button.correct .option-key { border-color: var(--approved); color: var(--approved); }
-.option-button.wrong { border-color: var(--redline); background: color-mix(in srgb, var(--redline) 14%, var(--panel)); color: var(--text); }
-.option-button.wrong .option-key { border-color: var(--redline); color: var(--redline); }
-.option-button.muted-option { opacity: .45; }
-.feedback { display: grid; gap: 8px; border-left: 3px solid var(--approved); padding: 12px 14px; background: color-mix(in srgb, var(--approved) 8%, var(--panel)); font-size: .84rem; line-height: 1.5; border-radius: 0 6px 6px 0; font-weight: 600; }
-.feedback > * { min-width: 0; overflow-wrap: anywhere; }
-.feedback.wrong-feedback { border-color: var(--redline); background: color-mix(in srgb, var(--redline) 8%, var(--panel)); }
-.feedback strong {
-  display: inline-block; width: fit-content; font-family: var(--font-hand); color: var(--approved); transform: rotate(-2deg);
-  font-size: 1.1rem; font-weight: 700;
-}
-.feedback.wrong-feedback strong { color: var(--redline); transform: rotate(2deg); text-decoration: underline wavy var(--redline); text-underline-offset: 4px; }
-.timer { color: var(--redline); font-weight: 800; }
-.page-heading { display: flex; align-items: start; justify-content: space-between; gap: 12px; margin: 2px 0 6px; }
-.page-heading h1 { font-size: clamp(1.3rem, 3.4vw + 2.5vh, 2.2rem); margin: 0; overflow-wrap: break-word; }
-.page-copy { color: var(--muted); line-height: 1.55; font-size: .85rem; font-weight: 600; overflow-wrap: anywhere; }
-.metric-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.wide-card { grid-column: span 2; }
-.bar-list { display: grid; gap: 12px; }
-.bar-row { display: grid; grid-template-columns: minmax(80px, .75fr) 1.8fr auto; align-items: center; gap: 9px; color: var(--muted); font-size: .78rem; font-weight: 700; }
-.bar-row span { min-width: 0; overflow-wrap: anywhere; }
-.bar-row.bad .bar-meter::-webkit-progress-value { background: var(--redline); }
-.bar-row.bad .bar-meter::-moz-progress-bar { background: var(--redline); }
-.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 15px 0; border-bottom: 1px dashed var(--line-strong); }
-.setting-row:last-child { border-bottom: 0; }
-.setting-row strong { display: block; color: var(--text); font-size: .88rem; font-weight: 800; }
-.setting-row small { display: block; color: var(--muted); margin-top: 4px; font-size: .72rem; line-height: 1.4; font-weight: 600; }
-.switch { position: relative; width: 45px; height: 25px; flex: 0 0 auto; }
-.switch input { position: absolute; opacity: 0; }
-.switch span { position: absolute; inset: 0; border: 2px solid var(--line-strong); border-radius: 13px; background: var(--bg-deep); transition: .2s; }
-.switch span::after { content: ""; position: absolute; top: 2px; left: 2px; width: 17px; height: 17px; border-radius: 50%; background: var(--muted); transition: .2s; }
-.switch input:checked + span { background: color-mix(in srgb, var(--accent) 30%, var(--bg-deep)); border-color: var(--text); }
-.switch input:checked + span::after { transform: translateX(18px); background: var(--redline); }
-.file-input { width: 100%; border: 2px dashed var(--line-strong); border-radius: 8px; padding: 11px; color: var(--muted); font-size: .76rem; background: var(--panel); font-weight: 600; }
-.danger-button { padding: 0 15px; color: var(--redline); border-color: var(--redline); background: color-mix(in srgb, var(--redline) 8%, var(--panel)); }
-.achievement-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
-.achievement { padding: clamp(10px, 1.8vh, 14px); min-height: clamp(96px, 15vh, 138px); display: grid; align-content: space-between; gap: 8px; }
-.achievement.locked { opacity: .4; filter: grayscale(1); box-shadow: none; }
-.achievement-icon { color: var(--redline); font-size: 1.5rem; }
-.achievement strong { color: var(--text); font-size: .85rem; font-weight: 800; }
-.achievement small { color: var(--muted); line-height: 1.4; font-size: .68rem; font-weight: 600; }
-.review-item { padding: 15px; display: grid; gap: 7px; }
-.review-item.correct-review { border-left: 4px solid var(--approved); }
-.review-item.wrong-review { border-left: 4px solid var(--redline); }
-.review-head { display: flex; justify-content: space-between; gap: 10px; color: var(--text); font-weight: 800; }
-.review-head > * { min-width: 0; overflow-wrap: anywhere; }
-.review-item p { color: var(--muted); font-size: .78rem; line-height: 1.5; font-weight: 600; }
-.review-item code { color: var(--text); font-family: inherit; font-weight: 800; }
-.grade {
-  display: block; width: fit-content; margin: 0 auto; padding: 10px 26px; border: 3px solid var(--redline); border-radius: 50%;
-  color: var(--redline); font-family: var(--font-hand); font-weight: 700; font-size: 3rem; text-align: center; transform: rotate(-6deg);
-  background: color-mix(in srgb, var(--redline) 5%, var(--panel));
-}
-.empty-state { padding: 25px 18px; text-align: center; color: var(--muted); line-height: 1.6; font-size: .84rem; font-weight: 600; }
-.text-button { width: fit-content; justify-self: center; min-height: 38px; padding: 0 2px; border: 0; background: transparent; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; font-weight: 700; }
-.toast-region { position: fixed; z-index: 8; top: max(15px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); width: min(calc(100% - 30px), 500px); pointer-events: none; }
-.toast { padding: 13px 15px; border: 2px solid var(--text); border-radius: 6px; background: #fff3b0; color: var(--text); font-size: .8rem; font-weight: 700; box-shadow: 3px 3px 0 rgba(35,50,77,.2); animation: toast-in .25s ease both; transform: rotate(-1deg); }
-.toast.error { color: var(--redline); border-color: var(--redline); background: #fbe4de; }
-.modal { position: fixed; z-index: 7; inset: 0; display: grid; place-items: center; padding: 18px; background: rgba(35, 50, 77, .5); backdrop-filter: blur(2px); }
-.modal-card { width: min(100%, 440px); padding: 20px; border: 2px solid var(--text); border-radius: 8px; background: var(--panel-strong); box-shadow: 4px 4px 0 rgba(35,50,77,.2); }
-.modal-card h2 { color: var(--text); font-family: var(--font-hand); font-size: 1.3rem; margin-bottom: 10px; font-weight: 700; }
-.modal-card p { color: var(--muted); line-height: 1.55; font-size: .82rem; margin-bottom: 17px; font-weight: 600; }
-
-.confetti-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9; overflow: hidden; }
-.confetti-piece { position: absolute; top: -20px; width: 9px; height: 14px; opacity: .95; border-radius: 2px; animation-name: confetti-fall; animation-timing-function: ease-in; animation-fill-mode: forwards; }
-@keyframes confetti-fall { to { transform: translate(var(--drift), 112vh) rotate(var(--rot)); opacity: .3; } }
-@keyframes screen-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@keyframes toast-in { from { opacity: 0; transform: translateY(-12px) rotate(-1deg); } to { opacity: 1; transform: rotate(-1deg); } }
-@keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); } 20%, 40%, 60%, 80% { transform: translateX(4px); } }
-.shake { animation: shake 0.5s ease-in-out; }
-@media (min-width: 620px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } .action-grid { grid-template-columns: 1fr 1fr; } .action-grid .primary-button { grid-row: span 2; } .metric-grid { grid-template-columns: repeat(3, 1fr); } .wide-card { grid-column: span 3; } .achievement-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
-/* Hover only for real pointers — prevents sticky red flash on touch */
-@media (hover: hover) and (pointer: fine) {
-  .icon-button:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel)); border-color: var(--accent); color: var(--accent-ink); }
-  .icon-button.speaker-btn:hover { background: color-mix(in srgb, var(--accent) 20%, var(--panel-strong)); border-color: var(--accent); color: var(--accent-ink); }
-  .mode-card:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 rgba(35,50,77,.2); }
-  .primary-button:hover { background: color-mix(in srgb, var(--accent) 82%, white 18%); transform: translate(-1px, -1px); box-shadow: 4px 4px 0 rgba(35,50,77,.22); }
-  .secondary-button:hover, .option-button:hover { border-color: var(--redline); color: var(--redline); }
-  .text-button:hover { color: var(--redline); }
-}
-@media (max-width: 620px) {
-  .site-header { margin-bottom: 6px; padding-bottom: 6px; }
-  .screen { gap: 8px; }
-  .quiz-meta { font-size: .65rem; }
-  .progress-meter { height: 5px; }
-  .question-card { padding: 10px 14px; gap: 8px; }
-  .verb-word { font-size: clamp(1.3rem, 3vw + 1.8vh, 2rem); }
-  .meaning { font-size: .78rem; }
-  .prompt { font-size: .9rem; line-height: 1.35; }
-  .options { gap: 6px; }
-  .option-button, .primary-button, .text-button { min-height: 38px; }
-  .feedback { padding: 8px 10px; font-size: .75rem; }
-  .feedback strong { font-size: .9rem; }
-}
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
-body.no-animations *, body.no-animations *::before, body.no-animations *::after { animation: none !important; transition: none !important; }
-
-/* ---- Das Lebendige Heft (Concept 2) ---- */
-.screen { position: relative; }
-.punch-hole.filled { display: flex; align-items: center; justify-content: center; font-size: 8px; line-height: 1; color: #c0392b; background: #fff3b0; border-color: var(--accent); box-shadow: inset 0 0 0 2px #fff3b0, 0 0 0 1.5px var(--accent); }
-.review-item .stamp { position: absolute; right: 10px; top: -9px; border: 2.5px solid var(--approved); color: var(--approved); background: color-mix(in srgb, var(--panel) 72%, transparent); border-radius: 8px; font-family: var(--font-hand); font-weight: 700; font-size: .78rem; letter-spacing: .09em; padding: 1px 8px; transform: rotate(7deg); opacity: .95; pointer-events: none; z-index: 2; white-space: nowrap; }
-.review-item .stamp::after { content: ""; position: absolute; inset: 2px; border: 1px dashed color-mix(in srgb, var(--approved) 55%, transparent); border-radius: 5px; }
-.review-item .stamp-no { border-color: var(--redline); color: var(--redline); transform: rotate(-7deg); }
-.review-item .stamp-no::after { border-color: color-mix(in srgb, var(--redline) 55%, transparent); }
-.smudge-word { position: relative; text-decoration: line-through; text-decoration-color: rgba(192,57,43,.65); text-decoration-thickness: 2px; }
-.smudge-word::before { content: ""; position: absolute; left: -5px; right: -5px; top: -3px; bottom: -3px; background: radial-gradient(closest-side, rgba(90,90,90,.22), rgba(90,90,90,.06) 70%, transparent); transform: rotate(-3deg); border-radius: 60% 40% 55% 45%; }
-.mode-card.dogear { --s: 16px; clip-path: polygon(0 0, calc(100% - var(--s)) 0, 100% var(--s), 100% 100%, 0 100%); }
-.mode-card.dogear::before { content: ""; position: absolute; top: 0; right: 0; width: var(--s); height: var(--s); background: linear-gradient(225deg, var(--bg) 48%, rgba(35,50,77,.28) 52%, var(--panel-strong) 58%, transparent 64%); border-left: 2px solid rgba(35,50,77,.35); border-bottom: 2px solid rgba(35,50,77,.25); filter: drop-shadow(-2px 2px 1px rgba(35,50,77,.12)); z-index: 1; }
-.done-tag { position: absolute; top: 9px; right: 26px; font-family: var(--font-hand); color: var(--approved); font-size: .72rem; font-weight: 700; transform: rotate(6deg); pointer-events: none; }
-.coffee-stain { position: absolute; right: -30px; top: 42%; width: 118px; height: 118px; border-radius: 50%; border: 8px solid rgba(139,90,43,.10); pointer-events: none; z-index: 0; }
-.coffee-stain::after { content: ""; position: absolute; inset: 8px; border-radius: 50%; border: 3px solid rgba(139,90,43,.07); }
-.ink-row { display: flex; align-items: center; gap: 12px; }
-.ink-bottle { width: 32px; height: 42px; flex: none; border: 2.5px solid var(--text); border-radius: 4px 4px 9px 9px; background: var(--panel-strong); position: relative; overflow: hidden; }
-.ink-bottle::before { content: ""; position: absolute; left: 11px; top: -6px; width: 9px; height: 8px; background: var(--text); }
-.ink-bottle span { position: absolute; left: 0; right: 0; bottom: 0; display: block; height: var(--ink, 0%); background: repeating-linear-gradient(-45deg, #2b3a67, #2b3a67 5px, #33447a 5px, #33447a 10px); }
-.ink-meter { flex: 1; min-width: 0; height: 12px; border: 2px solid var(--text); border-radius: 6px; background: var(--panel-strong); overflow: hidden; }
-.ink-meter span { display: block; height: 100%; width: var(--ink, 0%); background: repeating-linear-gradient(-45deg, #c0392b, #c0392b 6px, #d0453a 6px, #d0453a 12px); }
-.torn-edge { height: 12px; margin: 4px -4px 0; background: linear-gradient(-45deg, transparent 7px, var(--bg-deep) 0) 0 0/14px 14px repeat-x, linear-gradient(45deg, transparent 7px, var(--bg-deep) 0) 7px 0/14px 14px repeat-x; opacity: .85; }
-
-</style>
+<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 <div class="app-shell">
@@ -1563,7 +1310,7 @@ function renderQuiz({ session, question, mode, remainingSeconds }) {
 
 function feedbackWithSpeaker(question, correct) {
   const sentenceSpeaker = speakerButton(question.solutionSentence, "Pronounce full sentence", "speak-sentence");
-  return `<div class="feedback ${correct ? "" : "wrong-feedback"}"><strong>${correct ? "Richtig! +10" : "Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span><span class="solution-row">Full sentence: ${escapeHtml(question.solutionSentence)} ${sentenceSpeaker}</span></div>`;
+  return `<div class="feedback" aria-live="polite" ${correct ? "" : "wrong-feedback"}"><strong>${correct ? "Richtig! +10" : "Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span><span class="solution-row">Full sentence: ${escapeHtml(question.solutionSentence)} ${sentenceSpeaker}</span></div>`;
 }
 function capitalize(str) {
   return str.charAt(0).toLocaleUpperCase("de-DE") + str.slice(1).toLocaleLowerCase("de-DE");
@@ -1599,7 +1346,7 @@ function renderVocabQuiz({ session, question, mode, remainingSeconds }) {
 }
 function vocabFeedbackWithSpeaker(question, correct) {
   const germanSpeaker = question.isReverse ? speakerButton(question.correct, "Pronounce German answer", "speak-german-answer") : "";
-  return `<div class="feedback ${correct ? "" : "wrong-feedback"}"><strong>${correct ? "Richtig! +10" : "Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span>${germanSpeaker ? `<span class="solution-row">${germanSpeaker}</span>` : ""}</div>`;
+  return `<div class="feedback" aria-live="polite" ${correct ? "" : "wrong-feedback"}"><strong>${correct ? "Richtig! +10" : "Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span>${germanSpeaker ? `<span class="solution-row">${germanSpeaker}</span>` : ""}</div>`;
 }
 function renderPossessiveQuiz({ session, question, mode, remainingSeconds }) {
   const answered = Boolean(session.currentAnswer);
@@ -1629,7 +1376,7 @@ function renderPossessiveQuiz({ session, question, mode, remainingSeconds }) {
     }).join('');
     const allAnswered = paraAnswered && session.currentAnswer.blanks.every(b => b !== null);
     const allCorrect = allAnswered && session.currentAnswer.blanks.every((b, i) => b.selected === question.blanks[i].correctForm);
-    const paraFeedback = allAnswered ? `<div class="feedback ${allCorrect ? '' : 'wrong-feedback'}"><strong>${allCorrect ? 'Richtig! +' + (question.blanks.length*10) : 'Nochmal!'}</strong><span>${question.blanks.map((b, i) => `${i+1}. ${b.explanation}`).join(' ')}</span><span class="solution-row">Vollständiger Absatz: ${escapeHtml(question.blanks.reduce((acc, b) => acc.replace('___', b.correctForm), question.paragraph))} ${sentenceSpeaker}</span></div>` : '';
+    const paraFeedback = allAnswered ? `<div class="feedback" aria-live="polite" ${allCorrect ? '' : 'wrong-feedback'}"><strong>${allCorrect ? 'Richtig! +' + (question.blanks.length*10) : 'Nochmal!'}</strong><span>${question.blanks.map((b, i) => `${i+1}. ${b.explanation}`).join(' ')}</span><span class="solution-row">Vollständiger Absatz: ${escapeHtml(question.blanks.reduce((acc, b) => acc.replace('___', b.correctForm), question.paragraph))} ${sentenceSpeaker}</span></div>` : '';
     return `<section class="screen" style="align-items:start"><div style="position:sticky;top:0;z-index:3;background:var(--bg);padding:6px 0 8px;margin:-6px 0 8px;border-bottom:1px solid transparent"><div class="quiz-meta"><span>${mode === "exam" ? "POSSESSIV EXAM" : "POSSESSIV LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}" style="margin-top:6px;display:block;width:100%"></progress></div>
     <article class="question-card" style="overflow:visible;align-self:start"><div style="position:sticky;top:42px;z-index:2;background:var(--panel);margin:-14px -14px 10px;padding:12px 14px;border-bottom:2px dashed rgba(35,50,77,.2);border-radius:7px 7px 0 0"><span class="kicker">${question.caseLabel} · ${question.owner.label}</span><p class="prompt" style="font-size:.98rem;line-height:1.6;margin-top:6px">${paraHtml}</p></div>${blanksHtml}${paraFeedback}${allAnswered ? `<button type="button" class="primary-button" data-action="next-question">${index === session.questions.length ? "Finish Session →" : "Next Question →"}</button>` : ''}</article><button type="button" class="text-button" data-action="abandon-session">End session</button></section>`;
   }
@@ -1644,7 +1391,7 @@ function renderPossessiveQuiz({ session, question, mode, remainingSeconds }) {
     </article><button type="button" class="text-button" data-action="abandon-session">End session</button></section>`;
 }
 function possessiveFeedbackWithSpeaker(question, correct, sentenceSpeaker) {
-  return `<div class="feedback ${correct ? "" : "wrong-feedback"}"><strong>${correct ? "Richtig! +10" : "Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span><span class="solution-row">Full sentence: ${escapeHtml(question.solutionSentence)} ${sentenceSpeaker}</span></div>`;
+  return `<div class="feedback" aria-live="polite" ${correct ? "" : "wrong-feedback"}"><strong>${correct ? "Richtig! +10" : "Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span><span class="solution-row">Full sentence: ${escapeHtml(question.solutionSentence)} ${sentenceSpeaker}</span></div>`;
 }
 function renderStatistics(stats) {
   const data = summary(stats);
@@ -1801,6 +1548,12 @@ async function inflate(data) {
 
 // ---- storage.js (works both as a Claude artifact and as a standalone deployed page) ----
 const STORAGE_KEY = "german-conjugation-master-v1";
+const STORAGE_KEYS = {
+  possessive: "german-possessive-v2",
+  vocab: "german-vocab-v2",
+  zahlen: "german-zahlen-v2",
+  conjugation: "german-conjugation-v2"
+};
 const defaults = {
   settings: { animations: true, sound: true },
   stats: { total: 0, correct: 0, wrong: 0, currentStreak: 0, bestStreak: 0, score: 0, totalTimeMs: 0, correctVerbs: {}, missedVerbs: {} },
@@ -2086,7 +1839,7 @@ function renderZahlenQuiz({ session, question, mode, remainingSeconds }) {
     if(question.type === "preis") return `<div class="verb-word" style="font-size:clamp(1.5rem,3.4vw+2vh,2.35rem)">${escapeHtml(t).replace("___",'<span style="display:inline-block;min-width:2.4em;height:.85em;border-bottom:3px dashed var(--redline);">&nbsp;</span>')}</div>`;
     const parts = question.wordParts || [t]; const html = parts.map(p => escapeHtml(p).replace("___",'<span class="blank">______</span>')).join("<br>"); return `<div class="verb-word" style="font-size:clamp(1.5rem,3.4vw+2vh,2.35rem)">${html}</div>`; })() : "";
   const promptBlock = isBigType ? "" : `<p class="prompt">${promptHtml}</p>`;
-  return `<section class="screen"><div class="quiz-meta"><span>${mode==="exam"?"ZAHLEN EXAM":"ZAHLEN LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress><article class="question-card"><span class="kicker">${typeLabel}</span>${clock}${priceChip}${bigWord}${promptBlock}<div class="options">${question.options.map((o,i)=>optionButton(o,i,session.currentAnswer, question.type==="word-digit"?"none":"first")).join("")}</div>${answered?`<div class="feedback ${correct?"":"wrong-feedback"}"><strong>${correct?"Richtig! +10":"Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span></div>`:""}${answered?`<button type="button" class="primary-button" data-action="next-question">${index===session.questions.length?"Finish Session →":"Next Question →"}</button>`:""}</article><button type="button" class="text-button" data-action="abandon-session">End session</button></section>`;
+  return `<section class="screen"><div class="quiz-meta"><span>${mode==="exam"?"ZAHLEN EXAM":"ZAHLEN LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress><article class="question-card"><span class="kicker">${typeLabel}</span>${clock}${priceChip}${bigWord}${promptBlock}<div class="options">${question.options.map((o,i)=>optionButton(o,i,session.currentAnswer, question.type==="word-digit"?"none":"first")).join("")}</div>${answered?`<div class="feedback" aria-live="polite" ${correct?"":"wrong-feedback"}"><strong>${correct?"Richtig! +10":"Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span></div>`:""}${answered?`<button type="button" class="primary-button" data-action="next-question">${index===session.questions.length?"Finish Session →":"Next Question →"}</button>`:""}</article><button type="button" class="text-button" data-action="abandon-session">End session</button></section>`;
 }
 function renderActiveQuestion() {
   if (!activeSession) return render("home");
