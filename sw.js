@@ -1,5 +1,14 @@
-const CACHE_NAME = "uebungsheft-v4";
-const APP_SHELL = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
+const CACHE_NAME = "uebungsheft-v5";
+const APP_SHELL = [
+  "./",
+  "./index.html",
+  "./css/styles.css",
+  "./data/b1plus-glossary.json",
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./apple-touch-icon.png"
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
