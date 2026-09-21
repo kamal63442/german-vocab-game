@@ -19,6 +19,7 @@ check(data.entries?.every(entry => String(entry.german || '').trim() && String(e
 
 const chapters = [...new Set(data.entries?.map(entry => entry.chapter?.number))].sort((a, b) => a - b);
 check(JSON.stringify(chapters) === JSON.stringify([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), `Expected chapters 1–10, found ${chapters.join(', ')}.`);
+check(chapters.every(chapter => data.entries.filter(entry => entry.chapter?.number === chapter).length > 20), 'Every B1+ chapter should contain more than the old 20-question practice limit.');
 check(html.includes('data-level="b1plus"'), 'B1+ practice card is missing.');
 check(html.includes('data-action="open-b1plus-glossary"'), 'Full glossary entry point is missing.');
 check(html.includes('renderB1PlusGlossary'), 'Full glossary renderer is missing.');
@@ -30,6 +31,10 @@ check(levelSelect.includes('Mittelstufe Plus'), 'B1+ practice card should be lab
 check(!levelSelect.includes('open-b1plus-glossary'), 'Full glossary should not appear in the main Wortschatz list.');
 check(sessionSelect.indexOf('Prüfung') < sessionSelect.indexOf('open-b1plus-glossary'), 'Full glossary must appear below Prüfung in the B1+ screen.');
 check(sessionSelect.includes('vocabLevel === "b1plus"'), 'Full glossary must be limited to the B1+ screen.');
+check(html.includes('function renderB1PlusChapterSelect()'), 'B1+ chapter selection screen is missing.');
+check(html.includes('data-action="choose-b1plus-chapter"'), 'B1+ chapter buttons are missing.');
+check(html.includes('const count = isB1PlusChapterPractice ? words.length'), 'B1+ chapter practice must include every entry in the selected chapter.');
+check(html.includes('entry.chapter === selectedChapter'), 'B1+ practice must filter questions to the selected chapter.');
 
 console.log(`B1+ entries: ${data.entries?.length ?? 0}`);
 console.log(`Chapters: ${chapters.join(', ')}`);
