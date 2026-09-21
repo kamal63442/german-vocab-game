@@ -1,35 +1,12 @@
 {
   "document": {
-    "title": "Aspekte neu B1plus – Glossar Deutsch–Englisch",
+    "title": "Mittelstufe Plus – Deutsch–Englisch",
     "language_pair": {
       "source": "de",
       "target": "en"
     },
-    "source_file": "aspekte-neu-b1plus-glossar_englisch1.pdf",
-    "source_sha256": "53b572f7ea7569162c452023118bd81eee0d8eaecdc3dd0a41df533afa5fe0e4",
-    "source_size_bytes": 646096,
-    "source_pdf_metadata": {
-      "Author": "Bergmann Annerose",
-      "CreationDate": "D:20161209140414+01'00'",
-      "Creator": "Microsoft® Word 2010",
-      "ModDate": "D:20161209140414+01'00'",
-      "Producer": "Acrobat Distiller 11.0 (Windows)",
-      "Title": "aspekte-neu-b1plus-glossar_englisch.pdf"
-    },
-    "page_count": 58,
-    "cleaning": {
-      "removed": [
-        "repeated top title banner",
-        "repeated footer title and page number"
-      ],
-      "preserved": [
-        "chapter, module, portrait, and grammar headings",
-        "activity references",
-        "German headwords, grammar forms, examples, and notes",
-        "English translations, examples, and notes",
-        "source page and line provenance"
-      ]
-    }
+    "entry_count": 2782,
+    "chapter_count": 10
   },
   "schema": {
     "entries": "Logical glossary records assembled from wrapped column lines.",

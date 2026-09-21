@@ -12,7 +12,10 @@ const check = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
-check(data.document?.page_count === 58, 'Expected all 58 source pages.');
+check(data.document?.title === 'Mittelstufe Plus – Deutsch–Englisch', 'Expected generic B1+ glossary metadata.');
+check(data.document?.entry_count === 2782, 'Expected the document entry count.');
+check(data.document?.chapter_count === 10, 'Expected the document chapter count.');
+check(JSON.stringify(Object.keys(data.document || {}).sort()) === JSON.stringify(['chapter_count', 'entry_count', 'language_pair', 'title']), 'Document metadata must contain only generic glossary fields.');
 check(Array.isArray(data.entries), 'Expected an entries array.');
 check(data.entries?.length === 2782, `Expected 2,782 entries, found ${data.entries?.length ?? 0}.`);
 check(data.entries?.every(entry => String(entry.german || '').trim() && String(entry.english || '').trim()), 'Every entry must contain German and English text.');
@@ -21,6 +24,7 @@ const chapters = [...new Set(data.entries?.map(entry => entry.chapter?.number))]
 check(JSON.stringify(chapters) === JSON.stringify([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), `Expected chapters 1–10, found ${chapters.join(', ')}.`);
 check(chapters.every(chapter => data.entries.filter(entry => entry.chapter?.number === chapter).length > 20), 'Every B1+ chapter should contain more than the old 20-question practice limit.');
 check(html.includes('data-level="b1plus"'), 'B1+ practice card is missing.');
+check(html.includes('Mittelstufe Plus · Deutsch–Englisch'), 'The glossary should use the generic Mittelstufe Plus label.');
 check(html.includes('data-action="open-b1plus-glossary"'), 'Full glossary entry point is missing.');
 check(html.includes('renderB1PlusGlossary'), 'Full glossary renderer is missing.');
 check(serviceWorker.includes('./data/b1plus-glossary.json'), 'B1+ glossary is missing from the offline cache.');

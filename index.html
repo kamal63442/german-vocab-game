@@ -1333,7 +1333,7 @@ function renderB1PlusGlossary() {
     return `<button type="button" class="chapter-tab ${pressed ? "active" : ""}" data-action="filter-b1plus-chapter" data-chapter="${value}" aria-pressed="${pressed}">${value === "all" ? "Alle" : `Kapitel ${value}`}</button>`;
   }).join("");
   return `<section class="screen">
-    <div><div class="page-heading"><h1>B1+ GLOSSAR</h1></div><p class="page-copy">Aspekte neu B1plus · Deutsch–Englisch · ${B1_PLUS_ENTRY_COUNT.toLocaleString("en-US")} Einträge</p></div>
+    <div><div class="page-heading"><h1>B1+ GLOSSAR</h1></div><p class="page-copy">Mittelstufe Plus · Deutsch–Englisch · ${B1_PLUS_ENTRY_COUNT.toLocaleString("en-US")} Einträge</p></div>
     <section class="panel glossary-controls" aria-label="Glossary filters">
       <label class="glossary-search-label" for="b1plus-search">Glossar durchsuchen</label>
       <input id="b1plus-search" class="glossary-search" type="search" data-b1plus-search value="${escapeHtml(b1PlusGlossaryFilter.query)}" placeholder="German or English word" autocomplete="off" spellcheck="false" aria-describedby="b1plus-result-count">
