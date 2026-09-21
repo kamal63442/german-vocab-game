@@ -1356,6 +1356,7 @@ function refreshB1PlusGlossaryResults() {
 
 function renderSessionTypeSelect(kind, vocabLevel) {
   const isReverse = kind === "vocab-reverse" || vocabLevel === "both";
+  const isB1Plus = kind === "vocab" && vocabLevel === "b1plus";
   const label = isReverse ? "Wortschatz (English → German)"
     : kind === "conjugation" ? "A1 Konjugation"
     : kind === "possessive" ? "A1 Possessivartikel"
@@ -1364,9 +1365,9 @@ function renderSessionTypeSelect(kind, vocabLevel) {
   return `<section class="screen">
     <div><div class="page-heading"><h1>${label.toUpperCase()}</h1></div><p class="page-copy">Practice loop or timed exam?</p></div>
     <button type="button" class="panel mode-card" data-action="start-session" data-mode="practice" data-kind="${kind}" data-level="${vocabLevel}">
-      <span class="kicker">Endlos</span>
+      <span class="kicker">${isB1Plus ? "Kapitelweise" : "Endlos"}</span>
       <h2 class="mode-card-title">Übungsmodus</h2>
-      <p class="page-copy">No timer, unlimited questions.</p>
+      <p class="page-copy">${isB1Plus ? "Choose a chapter and practise every entry in it." : "No timer, unlimited questions."}</p>
     </button>
     <button type="button" class="panel mode-card" data-action="start-session" data-mode="exam" data-kind="${kind}" data-level="${vocabLevel}">
       <span class="kicker">10 Minuten</span>
@@ -1379,6 +1380,31 @@ function renderSessionTypeSelect(kind, vocabLevel) {
       <p class="page-copy">Browse and search every German–English entry by chapter.</p>
     </button>` : ""}
     <button type="button" class="text-button" data-nav="${pendingKind === "vocab" ? "vocab-level-select" : "practice"}">← Back</button>
+  </section>`;
+}
+
+function b1PlusChapterSummaries() {
+  const chapters = new Map();
+  b1PlusGlossaryEntries.forEach(entry => {
+    const number = entry.chapter?.number;
+    if (!number) return;
+    const summary = chapters.get(number) || { number, title: entry.chapter.title, count: 0 };
+    summary.count += 1;
+    chapters.set(number, summary);
+  });
+  return [...chapters.values()].sort((a, b) => a.number - b.number);
+}
+
+function renderB1PlusChapterSelect() {
+  const chapterCards = b1PlusChapterSummaries().map(chapter => `<button type="button" class="panel mode-card" data-action="choose-b1plus-chapter" data-chapter="${chapter.number}">
+    <span class="kicker">Kapitel ${chapter.number} · ${chapter.count.toLocaleString("en-US")} Fragen</span>
+    <h2 class="mode-card-title">${escapeHtml(chapter.title)}</h2>
+    <p class="page-copy">Alle Wörter dieses Kapitels in einer Sitzung.</p>
+  </button>`).join("");
+  return `<section class="screen">
+    <div><div class="page-heading"><h1>B1+ ÜBUNGSMODUS</h1></div><p class="page-copy">Wähle ein Kapitel. Du übst jeden Eintrag dieses Kapitels.</p></div>
+    ${chapterCards}
+    <button type="button" class="text-button" data-nav="session-type-select">← Back to B1+ Wortschatz</button>
   </section>`;
 }
 const SKETCHY_SPEAKER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M11.4 5.6 C10 6.7 8.4 7.9 6.5 8.8 L3.6 8.9 C3.2 10.9 3.2 13 3.5 15.1 L6.6 15.3 C8.5 16.2 10.1 17.5 11.5 18.6 C11.8 14.3 11.8 9.9 11.4 5.6 Z" fill="currentColor" fill-opacity=".18"/><path d="M15.4 9.4 C16.5 11 16.5 13 15.3 14.7"/><path d="M18.6 6.9 C21 10 21 14 18.4 17.2"/></svg>`;
@@ -1427,9 +1453,10 @@ function renderVocabQuiz({ session, question, mode, remainingSeconds }) {
   const timer = mode === "exam" ? `<span class="timer">◷ ${formatTime(remainingSeconds)}</span>` : `<span class="quiz-score">Score ${session.score}</span>`;
   const isReverse = question.isReverse;
   const prompt = isReverse ? "What is the German word?" : "What does this word mean?";
+  const chapterLabel = session.chapter ? ` · KAPITEL ${session.chapter}` : "";
   const speakWordText = question.word;
   const wordSpeaker = speakerButton(speakWordText, isReverse ? "Pronounce English meaning" : "Pronounce word", "speak-word");
-   return `<section class="screen"><div class="quiz-meta"><span>${mode === "exam" ? (isReverse ? "VOCAB EXAM (EN→DE)" : "VOCAB EXAM") : (isReverse ? "VOCAB LOOP (EN→DE)" : "VOCAB LOOP")} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress>
+   return `<section class="screen"><div class="quiz-meta"><span>${mode === "exam" ? (isReverse ? "VOCAB EXAM (EN→DE)" : "VOCAB EXAM") : (isReverse ? "VOCAB LOOP (EN→DE)" : `VOCAB LOOP${chapterLabel}`)} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress>
     <article class="question-card"><span class="kicker">${question.posLabel} · Wortschatz${isReverse ? " (EN→DE)" : ""}</span><div class="verb-row"><div class="verb-word">${escapeHtml(capitalizeFirst(question.word))}</div>${wordSpeaker}</div><p class="prompt">${prompt}</p>
       <div class="options">${question.options.map((option, i) => optionButton(option, i, session.currentAnswer, "first")).join("")}</div>
       ${answered ? vocabFeedbackWithSpeaker(question, correct) : ""}
@@ -1836,12 +1863,13 @@ function render(screen) {
   }
   activeScreen = screen;
   document.body.classList.toggle("glossary-open", screen === "b1plus-glossary");
-  updateNavigation((screen === "mode-select" || screen === "session-type-select" || screen === "vocab-level-select" || screen === "b1plus-glossary") ? "practice" : screen);
+  updateNavigation((screen === "mode-select" || screen === "session-type-select" || screen === "vocab-level-select" || screen === "b1plus-glossary" || screen === "b1plus-chapter-select") ? "practice" : screen);
   const verbs = getVerbs();
   if (screen === "home") app.innerHTML = renderHome({ stats: state.stats, verbCount: verbs.length, wordCountA1: glossaryWords.length, wordCountB1: b1GlossaryWords.length, wordCountB1Plus: B1_PLUS_ENTRY_COUNT });
   else if (screen === "mode-select") app.innerHTML = renderModeSelect();
   else if (screen === "vocab-level-select") app.innerHTML = renderVocabLevelSelect();
   else if (screen === "b1plus-glossary" && b1PlusGlossaryEntries.length) app.innerHTML = renderB1PlusGlossary();
+  else if (screen === "b1plus-chapter-select" && b1PlusGlossaryEntries.length) app.innerHTML = renderB1PlusChapterSelect();
   else if (screen === "session-type-select") app.innerHTML = renderSessionTypeSelect(pendingKind, pendingVocabLevel);
   else if (screen === "statistics") app.innerHTML = renderStatistics(state.stats);
   else if (screen === "settings") app.innerHTML = renderSettings(state.settings, state.customVerbs?.length || 0);
@@ -1867,16 +1895,20 @@ function startSession(mode) {
   if (mode === "exam") { stopTimer(); timerId = window.setInterval(tickExam, 1000); }
   render(mode);
 }
-async function startVocabSession(mode, level, kind = "vocab") {
+async function startVocabSession(mode, level, kind = "vocab", chapterNumber = null) {
   const isReverse = kind === "vocab-reverse" || level === "both";
   if (level === "b1plus") {
     try { await loadB1PlusGlossary(); }
     catch (error) { toast(error.message || "The B1+ glossary could not be loaded.", "error"); return; }
   }
-  const words = level === "b1plus" ? b1PlusGlossaryWords : level === "b1" ? b1GlossaryWords : (level === "both" ? [...glossaryWords, ...b1GlossaryWords] : glossaryWords);
+  const selectedChapter = Number(chapterNumber);
+  const isB1PlusChapterPractice = level === "b1plus" && mode === "practice" && Number.isInteger(selectedChapter) && selectedChapter > 0;
+  const words = isB1PlusChapterPractice
+    ? b1PlusGlossaryWords.filter(entry => entry.chapter === selectedChapter)
+    : level === "b1plus" ? b1PlusGlossaryWords : level === "b1" ? b1GlossaryWords : (level === "both" ? [...glossaryWords, ...b1GlossaryWords] : glossaryWords);
   if (!words.length) return toast("No glossary words are available yet.", "error");
   const difficulty = "hard";
-  const count = Math.min(mode === "exam" ? 50 : 20, words.length);
+  const count = isB1PlusChapterPractice ? words.length : Math.min(mode === "exam" ? 50 : 20, words.length);
   const progressKey = isReverse ? "usedVocabKeysReverse" : (level === "b1plus" ? "usedVocabKeysB1Plus" : level === "b1" ? "usedVocabKeysB1" : "usedVocabKeys");
   const recentKey = isReverse ? "recentVocabQuestionsReverse" : (level === "b1plus" ? "recentVocabQuestionsB1Plus" : level === "b1" ? "recentVocabQuestionsB1" : "recentVocabQuestions");
   if (!state.progress) state.progress = { usedVerbKeys: [] };
@@ -1887,7 +1919,7 @@ async function startVocabSession(mode, level, kind = "vocab") {
   state.progress[recentKey] = deckProgress.recentVocabQuestions;
   saveState(state);
   activeSession = {
-    kind: "vocab", mode, level: isReverse ? "both" : (level || "a1"), direction: isReverse ? "reverse" : "forward", questions, index: 0, answers: [], currentAnswer: null, score: 0, currentStreak: 0, requeued: new Set(),
+    kind: "vocab", mode, level: isReverse ? "both" : (level || "a1"), chapter: isB1PlusChapterPractice ? selectedChapter : null, direction: isReverse ? "reverse" : "forward", questions, index: 0, answers: [], currentAnswer: null, score: 0, currentStreak: 0, requeued: new Set(),
     startedAt: performance.now(), questionStartedAt: performance.now(), endsAt: mode === "exam" ? Date.now() + 10 * 60 * 1000 : null
   };
   if (mode === "exam") { stopTimer(); timerId = window.setInterval(tickExam, 1000); }
@@ -2066,17 +2098,26 @@ async function handleAction(event) {
   if (action === "start-session") {
     const mode = button.dataset.mode;
     const kind = button.dataset.kind || "vocab";
+    if (kind === "vocab" && pendingVocabLevel === "b1plus" && mode === "practice") {
+      button.disabled = true;
+      button.setAttribute("aria-busy", "true");
+      try { await loadB1PlusGlossary(); render("b1plus-chapter-select"); }
+      catch (error) { toast(error.message || "The B1+ glossary could not be loaded.", "error"); }
+      finally { button.disabled = false; button.removeAttribute("aria-busy"); }
+      return;
+    }
     if (kind === "vocab" || kind === "vocab-reverse") await startVocabSession(mode, pendingVocabLevel, kind);
     else if (kind === "possessive") startPossessiveSession(mode);
     else if (kind === "zahlen") startZahlenSession(mode, pendingZahlenRange);
     else startSession(mode);
   }
+  if (action === "choose-b1plus-chapter") { await startVocabSession("practice", "b1plus", "vocab", button.dataset.chapter); return; }
   if (action === "answer") answer(button.dataset.answer);
   if (action === "para-answer") { const bi = parseInt(button.dataset.blank, 10); paraAnswer(bi, button.dataset.answer); return; }
   if (action === "next-question") nextQuestion();
   if (action === "play-again") {
     const s = activeSession || lastSession;
-    if (s?.kind === "vocab") await startVocabSession(s.mode, s.level, s.direction === "reverse" ? "vocab-reverse" : "vocab");
+    if (s?.kind === "vocab") await startVocabSession(s.mode, s.level, s.direction === "reverse" ? "vocab-reverse" : "vocab", s.chapter);
     else if (s?.kind === "possessive") startPossessiveSession(s.mode);
     else if (s?.kind === "zahlen") startZahlenSession(s.mode, s.range || pendingZahlenRange);
     else startSession(s?.mode || "practice");
