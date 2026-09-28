@@ -11,3 +11,5 @@ verify_possessive.js
 
 qr.png
 qrcode.png
+# Universal AI Memory V4 local cache
+.ai-memory/

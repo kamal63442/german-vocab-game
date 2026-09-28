@@ -109,7 +109,7 @@ h1 .line { display: block; }
 .chapter-tab:active { transform: translateY(2px); }
 .chapter-tab:disabled, .chapter-tab[aria-busy="true"] { cursor: not-allowed; opacity: .5; }
 .glossary-result-count { color: var(--muted); font-size: .75rem; font-weight: 800; }
-#b1plus-glossary-results { display: grid; gap: 18px; }
+#a2-glossary-results, #b1plus-glossary-results { display: grid; gap: 18px; }
 .glossary-chapter { display: grid; gap: 12px; }
 .glossary-chapter > h2 { padding-bottom: 6px; border-bottom: 2px dashed var(--redline); color: var(--text); font-family: var(--font-hand); font-size: 1.35rem; }
 .glossary-section { display: grid; gap: 6px; }

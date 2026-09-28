@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Mein Übungsheft</title>
-<meta name="description" content="German A1–B1+ practice notebook: verb conjugation, possessive articles, vocabulary games, and a complete B1+ glossary. Works offline.">
+<meta name="description" content="German A1–B1+ practice notebook: verb conjugation, possessive articles, vocabulary games, and complete A2 and B1+ glossaries. Works offline.">
 <meta name="theme-color" content="#f3ecd9">
 <link rel="manifest" href="manifest.json?v=2">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -1216,13 +1216,13 @@ function updatePunchHoles() {
     else { el.classList.remove("filled"); el.textContent = ""; }
   });
 }
-function renderHome({ stats, verbCount, wordCountA1, wordCountB1, wordCountB1Plus }) {
+function renderHome({ stats, verbCount, wordCountA1, wordCountA2, wordCountB1, wordCountB1Plus }) {
   const accuracy = percent(stats.correct, stats.total);
-  const totalWords = wordCountA1 + wordCountB1 + wordCountB1Plus;
+  const totalWords = wordCountA1 + wordCountA2 + wordCountB1 + wordCountB1Plus;
   const inkPct = stats.total % 100;
   return `<section class="screen">
     <span class="coffee-stain" aria-hidden="true"></span>
-    <div class="hero"><span class="eyebrow">Deutschheft · Übung 1</span><h1><span class="line">MEIN</span><span class="line">ÜBUNGSHEFT</span></h1><p class="subtitle">Verbs, vocabulary, possessive articles and numbers — all in one notebook.</p><div class="hero-tags"><span class="hero-tag">✎ Konjugation · ${verbCount}</span><span class="hero-tag">📖 Wortschatz · ${totalWords.toLocaleString("en-US")} (A1: ${wordCountA1.toLocaleString("en-US")} + B1: ${wordCountB1.toLocaleString("en-US")} + B1+: ${wordCountB1Plus.toLocaleString("en-US")})</span><span class="hero-tag">🔤 Possessivartikel · ${(possessiveNouns.length * POSSESSIVE_OWNERS.length * 2).toLocaleString("en-US")}</span><span class="hero-tag">🔢 Zahlen · ${(100*5).toLocaleString("en-US")}+ Fragen</span></div></div>
+    <div class="hero"><span class="eyebrow">Deutschheft · Übung 1</span><h1><span class="line">MEIN</span><span class="line">ÜBUNGSHEFT</span></h1><p class="subtitle">Verbs, vocabulary, possessive articles and numbers — all in one notebook.</p><div class="hero-tags"><span class="hero-tag">✎ Konjugation · ${verbCount}</span><span class="hero-tag">📖 Wortschatz · ${totalWords.toLocaleString("en-US")} (A1: ${wordCountA1.toLocaleString("en-US")} + A2: ${wordCountA2.toLocaleString("en-US")} + B1: ${wordCountB1.toLocaleString("en-US")} + B1+: ${wordCountB1Plus.toLocaleString("en-US")})</span><span class="hero-tag">🔤 Possessivartikel · ${(possessiveNouns.length * POSSESSIVE_OWNERS.length * 2).toLocaleString("en-US")}</span><span class="hero-tag">🔢 Zahlen · ${(100*5).toLocaleString("en-US")}+ Fragen</span></div></div>
     <section class="panel ink-row"><div class="ink-bottle"><span style="--ink:${inkPct}%"></span></div><div class="ink-meter"><span style="--ink:${inkPct}%"></span></div><div style="min-width:0"><div style="font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);">Tintenfüller</div><div style="font-weight:800;font-size:.85rem;">${100 - inkPct} Fragen bis die Seite voll ist.</div></div></section>
     <section class="panel"><div class="section-title"><h2>YOUR PROGRESS</h2><span>saved on this device</span></div><div class="stats-grid">
       ${statCard("Accuracy", `${accuracy}`, "%")}${statCard("Current streak", stats.currentStreak)}${statCard("Best streak", stats.bestStreak)}${statCard("Answered", stats.total)}
@@ -1258,6 +1258,11 @@ function renderVocabLevelSelect() {
       <h2 class="mode-card-title">Grundstufe</h2>
       <p class="page-copy">Everyday words and phrases.</p>
     </button>
+    <button type="button" class="panel mode-card" data-action="choose-vocab-level" data-level="a2">
+      <span class="kicker">A2 · ${A2_ENTRY_COUNT.toLocaleString("en-US")} Einträge</span>
+      <h2 class="mode-card-title">Grundstufe Plus</h2>
+      <p class="page-copy">Practise vocabulary from all twelve chapters.</p>
+    </button>
     <button type="button" class="panel mode-card" data-action="choose-vocab-level" data-level="b1">
       <span class="kicker">B1 · 1,806 Wörter</span>
       <h2 class="mode-card-title">Mittelstufe</h2>
@@ -1279,8 +1284,80 @@ function renderVocabLevelSelect() {
 
 function sectionLabel(section) {
   if (!section) return "Weitere Wörter";
+  if (typeof section === "string") return section;
   if (section.type === "module") return `Modul ${section.number} · ${section.title}`;
   return section.title;
+}
+
+function filteredA2Entries() {
+  const query = cleanText(a2GlossaryFilter.query).toLocaleLowerCase("de-DE");
+  return a2GlossaryEntries.filter(entry => {
+    const inChapter = a2GlossaryFilter.chapter === "all" || String(entry.chapter?.number) === a2GlossaryFilter.chapter;
+    const searchable = `${entry.german} ${entry.english} ${sectionLabel(entry.section)}`.toLocaleLowerCase("de-DE");
+    return inChapter && (!query || searchable.includes(query));
+  });
+}
+
+function renderA2Results(entries) {
+  if (!entries.length) return `<div class="empty-state">No matching A2 entries. Try another word or chapter.</div>`;
+  const chapters = new Map();
+  entries.forEach(entry => {
+    const chapterNumber = entry.chapter?.number || 0;
+    if (!chapters.has(chapterNumber)) chapters.set(chapterNumber, { chapter: entry.chapter, sections: new Map() });
+    const chapter = chapters.get(chapterNumber);
+    const sectionKey = entry.section || "other";
+    if (!chapter.sections.has(sectionKey)) chapter.sections.set(sectionKey, { section: entry.section, entries: [] });
+    chapter.sections.get(sectionKey).entries.push(entry);
+  });
+  return [...chapters.values()].map(({ chapter, sections }) => {
+    const sectionTables = [...sections.values()].map(({ section, entries: sectionEntries }, sectionIndex) => {
+      const headingId = `a2-${chapter.number}-${sectionIndex}`;
+      const rows = sectionEntries.map(entry => `<tr>
+        <td class="glossary-activity">${entry.activity ? escapeHtml(entry.activity) : `<span aria-hidden="true">—</span><span class="sr-only">No exercise number</span>`}</td>
+        <td lang="de">${escapeHtml(entry.german)}</td>
+        <td lang="en">${escapeHtml(entry.english)}</td>
+      </tr>`).join("");
+      return `<section class="glossary-section">
+        <h3 id="${headingId}">${escapeHtml(sectionLabel(section))}</h3>
+        <table class="glossary-table" aria-labelledby="${headingId}">
+          <colgroup><col class="activity-column"><col><col></colgroup>
+          <thead><tr><th scope="col">Übung</th><th scope="col">Deutsch</th><th scope="col">English</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </section>`;
+    }).join("");
+    return `<section class="glossary-chapter"><h2>Kapitel ${chapter.number} · ${escapeHtml(chapter.title)}</h2>${sectionTables}</section>`;
+  }).join("");
+}
+
+function renderA2Glossary() {
+  const chapters = [...new Map(a2GlossaryEntries.map(entry => [entry.chapter.number, entry.chapter])).values()];
+  const entries = filteredA2Entries();
+  const chapterButtons = [{ number: "all", title: "Alle" }, ...chapters].map(chapter => {
+    const value = String(chapter.number);
+    const pressed = a2GlossaryFilter.chapter === value;
+    return `<button type="button" class="chapter-tab ${pressed ? "active" : ""}" data-action="filter-a2-chapter" data-chapter="${value}" aria-pressed="${pressed}">${value === "all" ? "Alle" : `Kapitel ${value}`}</button>`;
+  }).join("");
+  return `<section class="screen">
+    <div><div class="page-heading"><h1>A2 GLOSSAR</h1></div><p class="page-copy">Grundstufe Plus · Deutsch–Englisch · ${A2_ENTRY_COUNT.toLocaleString("en-US")} Einträge</p></div>
+    <section class="panel glossary-controls" aria-label="Glossary filters">
+      <label class="glossary-search-label" for="a2-search">Glossar durchsuchen</label>
+      <input id="a2-search" class="glossary-search" type="search" data-a2-search value="${escapeHtml(a2GlossaryFilter.query)}" placeholder="German or English word" autocomplete="off" spellcheck="false" aria-describedby="a2-result-count">
+      <div class="chapter-tabs" role="group" aria-label="Filter by chapter">${chapterButtons}</div>
+      <p id="a2-result-count" class="glossary-result-count" role="status" aria-live="polite">${entries.length.toLocaleString("en-US")} of ${A2_ENTRY_COUNT.toLocaleString("en-US")} entries</p>
+    </section>
+    <div id="a2-glossary-results">${renderA2Results(entries)}</div>
+    <button type="button" class="text-button" data-nav="session-type-select">← Back to A2 Wortschatz</button>
+  </section>`;
+}
+
+function refreshA2GlossaryResults() {
+  const results = document.querySelector("#a2-glossary-results");
+  const count = document.querySelector("#a2-result-count");
+  if (!results || !count) return;
+  const entries = filteredA2Entries();
+  results.innerHTML = renderA2Results(entries);
+  count.textContent = `${entries.length.toLocaleString("en-US")} of ${A2_ENTRY_COUNT.toLocaleString("en-US")} entries`;
 }
 
 function filteredB1PlusEntries() {
@@ -1356,18 +1433,20 @@ function refreshB1PlusGlossaryResults() {
 
 function renderSessionTypeSelect(kind, vocabLevel) {
   const isReverse = kind === "vocab-reverse" || vocabLevel === "both";
+  const isA2 = kind === "vocab" && vocabLevel === "a2";
   const isB1Plus = kind === "vocab" && vocabLevel === "b1plus";
+  const isChapterGlossary = isA2 || isB1Plus;
   const label = isReverse ? "Wortschatz (English → German)"
     : kind === "conjugation" ? "A1 Konjugation"
     : kind === "possessive" ? "A1 Possessivartikel"
     : kind === "zahlen" ? "Zahlen"
-    : (vocabLevel === "b1plus" ? "B1+ Wortschatz" : vocabLevel === "b1" ? "B1 Wortschatz" : "A1 Wortschatz");
+    : (vocabLevel === "b1plus" ? "B1+ Wortschatz" : vocabLevel === "b1" ? "B1 Wortschatz" : vocabLevel === "a2" ? "A2 Wortschatz" : "A1 Wortschatz");
   return `<section class="screen">
     <div><div class="page-heading"><h1>${label.toUpperCase()}</h1></div><p class="page-copy">Practice loop or timed exam?</p></div>
     <button type="button" class="panel mode-card" data-action="start-session" data-mode="practice" data-kind="${kind}" data-level="${vocabLevel}">
-      <span class="kicker">${isB1Plus ? "Kapitelweise" : "Endlos"}</span>
+      <span class="kicker">${isChapterGlossary ? "Kapitelweise" : "Endlos"}</span>
       <h2 class="mode-card-title">Übungsmodus</h2>
-      <p class="page-copy">${isB1Plus ? "Choose a chapter and practise every entry in it." : "No timer, unlimited questions."}</p>
+      <p class="page-copy">${isChapterGlossary ? "Choose a chapter and practise every entry in it." : "No timer, unlimited questions."}</p>
     </button>
     <button type="button" class="panel mode-card" data-action="start-session" data-mode="exam" data-kind="${kind}" data-level="${vocabLevel}">
       <span class="kicker">10 Minuten</span>
@@ -1376,6 +1455,11 @@ function renderSessionTypeSelect(kind, vocabLevel) {
     </button>
     ${kind === "vocab" && vocabLevel === "b1plus" ? `<button type="button" class="panel mode-card glossary-card" data-action="open-b1plus-glossary">
       <span class="kicker">B1+ · Nachschlagen</span>
+      <h2 class="mode-card-title">Ganzes Glossar</h2>
+      <p class="page-copy">Browse and search every German–English entry by chapter.</p>
+    </button>` : ""}
+    ${kind === "vocab" && vocabLevel === "a2" ? `<button type="button" class="panel mode-card glossary-card" data-action="open-a2-glossary">
+      <span class="kicker">A2 · Nachschlagen</span>
       <h2 class="mode-card-title">Ganzes Glossar</h2>
       <p class="page-copy">Browse and search every German–English entry by chapter.</p>
     </button>` : ""}
@@ -1405,6 +1489,31 @@ function renderB1PlusChapterSelect() {
     <div><div class="page-heading"><h1>B1+ ÜBUNGSMODUS</h1></div><p class="page-copy">Wähle ein Kapitel. Du übst jeden Eintrag dieses Kapitels.</p></div>
     ${chapterCards}
     <button type="button" class="text-button" data-nav="session-type-select">← Back to B1+ Wortschatz</button>
+  </section>`;
+}
+
+function a2ChapterSummaries() {
+  const chapters = new Map();
+  a2GlossaryEntries.forEach(entry => {
+    const number = entry.chapter?.number;
+    if (!number) return;
+    const summary = chapters.get(number) || { number, title: entry.chapter.title, count: 0 };
+    summary.count += 1;
+    chapters.set(number, summary);
+  });
+  return [...chapters.values()].sort((a, b) => a.number - b.number);
+}
+
+function renderA2ChapterSelect() {
+  const chapterCards = a2ChapterSummaries().map(chapter => `<button type="button" class="panel mode-card" data-action="choose-a2-chapter" data-chapter="${chapter.number}">
+    <span class="kicker">Kapitel ${chapter.number} · ${chapter.count.toLocaleString("en-US")} Fragen</span>
+    <h2 class="mode-card-title">${escapeHtml(chapter.title)}</h2>
+    <p class="page-copy">Alle Wörter dieses Kapitels in einer Sitzung.</p>
+  </button>`).join("");
+  return `<section class="screen">
+    <div><div class="page-heading"><h1>A2 ÜBUNGSMODUS</h1></div><p class="page-copy">Wähle ein Kapitel. Du übst jeden Eintrag dieses Kapitels.</p></div>
+    ${chapterCards}
+    <button type="button" class="text-button" data-nav="session-type-select">← Back to A2 Wortschatz</button>
   </section>`;
 }
 const SKETCHY_SPEAKER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M11.4 5.6 C10 6.7 8.4 7.9 6.5 8.8 L3.6 8.9 C3.2 10.9 3.2 13 3.5 15.1 L6.6 15.3 C8.5 16.2 10.1 17.5 11.5 18.6 C11.8 14.3 11.8 9.9 11.4 5.6 Z" fill="currentColor" fill-opacity=".18"/><path d="M15.4 9.4 C16.5 11 16.5 13 15.3 14.7"/><path d="M18.6 6.9 C21 10 21 14 18.4 17.2"/></svg>`;
@@ -1527,7 +1636,7 @@ function rankingPanel(title, rows, missed) {
 function renderSettings(settings, customCount) {
   return `<section class="screen"><div><div class="page-heading"><h1>SETTINGS</h1></div><p class="page-copy">This notebook stays private. Your work lives in this browser.</p></div>
     <section class="panel">${Object.entries(settingsMeta).map(([key, meta]) => `<label class="setting-row"><span><strong>${meta.title}</strong><small>${meta.description}</small></span><span class="switch"><input type="checkbox" data-setting="${key}" ${settings[key] ? "checked" : ""}><span></span></span></label>`).join("")}</section>
-    <section class="panel"><div class="section-title"><h2>ABOUT</h2><span>v2.0</span></div><p class="page-copy">Mein Übungsheft is an offline-first practice book for German A1–B1+: verb conjugation, vocabulary, possessive articles, and a complete B1+ glossary. Works offline, no account, no tracking.</p></section>
+    <section class="panel"><div class="section-title"><h2>ABOUT</h2><span>v2.0</span></div><p class="page-copy">Mein Übungsheft is an offline-first practice book for German A1–B1+: verb conjugation, vocabulary, possessive articles, and complete A2 and B1+ glossaries. Works offline, no account, no tracking.</p></section>
     <button type="button" class="danger-button" data-action="reset-progress">Reset all progress</button>
   </section>`;
 }
@@ -1741,11 +1850,19 @@ function storeImportedVerbs(state, rows) {
 
 // ---- app.js (adapted: bundled verbs instead of fetch, no service worker/install prompt) ----
 const app = document.querySelector("#app");
+const A2_DATA_URL = "./data/a2-glossary.json";
+const A2_ENTRY_COUNT = 1486;
 const B1_PLUS_DATA_URL = "./data/b1plus-glossary.json";
 const B1_PLUS_ENTRY_COUNT = 2782;
 let state = null;
 let bundledVerbs = [];
 let glossaryWords = [];
+let a2GlossaryDocument = null;
+let a2GlossaryEntries = [];
+let a2GlossaryWords = [];
+let a2GlossaryPromise = null;
+let a2GlossaryFilter = { query: "", chapter: "all" };
+let a2SearchTimer = null;
 let b1GlossaryWords = [];
 let b1PlusGlossaryDocument = null;
 let b1PlusGlossaryEntries = [];
@@ -1781,6 +1898,7 @@ async function boot() {
   initEdgeSwipe();
   document.addEventListener("click", handleAction);
   document.addEventListener("change", handleSetting);
+  document.addEventListener("input", handleA2Search);
   document.addEventListener("input", handleB1PlusSearch);
   render("home");
   updatePunchHoles();
@@ -1791,6 +1909,57 @@ function inferGlossaryPos(german, english) {
   if (/^(der|die|das|der\/die)\b/i.test(german)) return "noun";
   if (/^to\b/i.test(english)) return "verb";
   return "other";
+}
+
+async function loadA2Glossary() {
+  if (a2GlossaryEntries.length) return a2GlossaryEntries;
+  if (!a2GlossaryPromise) {
+    a2GlossaryPromise = fetch(A2_DATA_URL).then(async response => {
+      if (!response.ok) throw new Error(`A2 glossary could not be loaded (${response.status}).`);
+      const data = await response.json();
+      if (!Array.isArray(data.entries) || data.entries.length !== A2_ENTRY_COUNT) throw new Error("The A2 glossary data is incomplete.");
+      if (data.entries.some(entry => !String(entry.german || "").trim() || !String(entry.english || "").trim())) throw new Error("The A2 glossary contains an incomplete entry.");
+      a2GlossaryDocument = data.document || null;
+      a2GlossaryEntries = data.entries;
+      a2GlossaryWords = data.entries.map(entry => ({
+        key: `a2:${entry.id}`,
+        word: entry.german,
+        meaning: entry.english,
+        pos: inferGlossaryPos(entry.german, entry.english),
+        chapter: entry.chapter?.number,
+        section: entry.section,
+        activity: entry.activity
+      }));
+      return a2GlossaryEntries;
+    }).catch(error => {
+      a2GlossaryPromise = null;
+      throw error;
+    });
+  }
+  return a2GlossaryPromise;
+}
+
+async function openA2Glossary(button) {
+  button.disabled = true;
+  button.setAttribute("aria-busy", "true");
+  try {
+    await loadA2Glossary();
+    a2GlossaryFilter = { query: "", chapter: "all" };
+    render("a2-glossary");
+  } catch (error) {
+    toast(error.message || "The A2 glossary could not be loaded.", "error");
+  } finally {
+    button.disabled = false;
+    button.removeAttribute("aria-busy");
+  }
+}
+
+function handleA2Search(event) {
+  const input = event.target.closest("[data-a2-search]");
+  if (!input) return;
+  a2GlossaryFilter.query = input.value;
+  window.clearTimeout(a2SearchTimer);
+  a2SearchTimer = window.setTimeout(refreshA2GlossaryResults, 120);
 }
 
 async function loadB1PlusGlossary() {
@@ -1862,12 +2031,14 @@ function render(screen) {
     if (screenHistory.length > 10) screenHistory.shift();
   }
   activeScreen = screen;
-  document.body.classList.toggle("glossary-open", screen === "b1plus-glossary");
-  updateNavigation((screen === "mode-select" || screen === "session-type-select" || screen === "vocab-level-select" || screen === "b1plus-glossary" || screen === "b1plus-chapter-select") ? "practice" : screen);
+  document.body.classList.toggle("glossary-open", screen === "a2-glossary" || screen === "b1plus-glossary");
+  updateNavigation((screen === "mode-select" || screen === "session-type-select" || screen === "vocab-level-select" || screen === "a2-glossary" || screen === "a2-chapter-select" || screen === "b1plus-glossary" || screen === "b1plus-chapter-select") ? "practice" : screen);
   const verbs = getVerbs();
-  if (screen === "home") app.innerHTML = renderHome({ stats: state.stats, verbCount: verbs.length, wordCountA1: glossaryWords.length, wordCountB1: b1GlossaryWords.length, wordCountB1Plus: B1_PLUS_ENTRY_COUNT });
+  if (screen === "home") app.innerHTML = renderHome({ stats: state.stats, verbCount: verbs.length, wordCountA1: glossaryWords.length, wordCountA2: A2_ENTRY_COUNT, wordCountB1: b1GlossaryWords.length, wordCountB1Plus: B1_PLUS_ENTRY_COUNT });
   else if (screen === "mode-select") app.innerHTML = renderModeSelect();
   else if (screen === "vocab-level-select") app.innerHTML = renderVocabLevelSelect();
+  else if (screen === "a2-glossary" && a2GlossaryEntries.length) app.innerHTML = renderA2Glossary();
+  else if (screen === "a2-chapter-select" && a2GlossaryEntries.length) app.innerHTML = renderA2ChapterSelect();
   else if (screen === "b1plus-glossary" && b1PlusGlossaryEntries.length) app.innerHTML = renderB1PlusGlossary();
   else if (screen === "b1plus-chapter-select" && b1PlusGlossaryEntries.length) app.innerHTML = renderB1PlusChapterSelect();
   else if (screen === "session-type-select") app.innerHTML = renderSessionTypeSelect(pendingKind, pendingVocabLevel);
@@ -1897,20 +2068,27 @@ function startSession(mode) {
 }
 async function startVocabSession(mode, level, kind = "vocab", chapterNumber = null) {
   const isReverse = kind === "vocab-reverse" || level === "both";
+  if (level === "a2") {
+    try { await loadA2Glossary(); }
+    catch (error) { toast(error.message || "The A2 glossary could not be loaded.", "error"); return; }
+  }
   if (level === "b1plus") {
     try { await loadB1PlusGlossary(); }
     catch (error) { toast(error.message || "The B1+ glossary could not be loaded.", "error"); return; }
   }
   const selectedChapter = Number(chapterNumber);
+  const isA2ChapterPractice = level === "a2" && mode === "practice" && Number.isInteger(selectedChapter) && selectedChapter > 0;
   const isB1PlusChapterPractice = level === "b1plus" && mode === "practice" && Number.isInteger(selectedChapter) && selectedChapter > 0;
-  const words = isB1PlusChapterPractice
+  const words = isA2ChapterPractice
+    ? a2GlossaryWords.filter(entry => entry.chapter === selectedChapter)
+    : isB1PlusChapterPractice
     ? b1PlusGlossaryWords.filter(entry => entry.chapter === selectedChapter)
-    : level === "b1plus" ? b1PlusGlossaryWords : level === "b1" ? b1GlossaryWords : (level === "both" ? [...glossaryWords, ...b1GlossaryWords] : glossaryWords);
+    : level === "a2" ? a2GlossaryWords : level === "b1plus" ? b1PlusGlossaryWords : level === "b1" ? b1GlossaryWords : (level === "both" ? [...glossaryWords, ...b1GlossaryWords] : glossaryWords);
   if (!words.length) return toast("No glossary words are available yet.", "error");
   const difficulty = "hard";
-  const count = isB1PlusChapterPractice ? words.length : Math.min(mode === "exam" ? 50 : 20, words.length);
-  const progressKey = isReverse ? "usedVocabKeysReverse" : (level === "b1plus" ? "usedVocabKeysB1Plus" : level === "b1" ? "usedVocabKeysB1" : "usedVocabKeys");
-  const recentKey = isReverse ? "recentVocabQuestionsReverse" : (level === "b1plus" ? "recentVocabQuestionsB1Plus" : level === "b1" ? "recentVocabQuestionsB1" : "recentVocabQuestions");
+  const count = isB1PlusChapterPractice ? words.length : isA2ChapterPractice ? words.length : Math.min(mode === "exam" ? 50 : 20, words.length);
+  const progressKey = isReverse ? "usedVocabKeysReverse" : (level === "a2" ? "usedVocabKeysA2" : level === "b1plus" ? "usedVocabKeysB1Plus" : level === "b1" ? "usedVocabKeysB1" : "usedVocabKeys");
+  const recentKey = isReverse ? "recentVocabQuestionsReverse" : (level === "a2" ? "recentVocabQuestionsA2" : level === "b1plus" ? "recentVocabQuestionsB1Plus" : level === "b1" ? "recentVocabQuestionsB1" : "recentVocabQuestions");
   if (!state.progress) state.progress = { usedVerbKeys: [] };
   const deckProgress = { usedVocabKeys: state.progress[progressKey] || [], recentVocabQuestions: state.progress[recentKey] || [] };
   const deck = createVocabDeck(words, deckProgress, count);
@@ -1919,7 +2097,7 @@ async function startVocabSession(mode, level, kind = "vocab", chapterNumber = nu
   state.progress[recentKey] = deckProgress.recentVocabQuestions;
   saveState(state);
   activeSession = {
-    kind: "vocab", mode, level: isReverse ? "both" : (level || "a1"), chapter: isB1PlusChapterPractice ? selectedChapter : null, direction: isReverse ? "reverse" : "forward", questions, index: 0, answers: [], currentAnswer: null, score: 0, currentStreak: 0, requeued: new Set(),
+    kind: "vocab", mode, level: isReverse ? "both" : (level || "a1"), chapter: (isA2ChapterPractice || isB1PlusChapterPractice) ? selectedChapter : null, direction: isReverse ? "reverse" : "forward", questions, index: 0, answers: [], currentAnswer: null, score: 0, currentStreak: 0, requeued: new Set(),
     startedAt: performance.now(), questionStartedAt: performance.now(), endsAt: mode === "exam" ? Date.now() + 10 * 60 * 1000 : null
   };
   if (mode === "exam") { stopTimer(); timerId = window.setInterval(tickExam, 1000); }
@@ -2084,6 +2262,17 @@ async function handleAction(event) {
   }
   if (action === "choose-vocab-level") { pendingVocabLevel = button.dataset.level; render("session-type-select"); }
   if (action === "choose-vocab-reverse") { pendingVocabLevel = "both"; render("session-type-select"); }
+  if (action === "open-a2-glossary") { await openA2Glossary(button); return; }
+  if (action === "filter-a2-chapter") {
+    a2GlossaryFilter.chapter = button.dataset.chapter;
+    document.querySelectorAll("[data-action='filter-a2-chapter']").forEach(tab => {
+      const active = tab.dataset.chapter === a2GlossaryFilter.chapter;
+      tab.classList.toggle("active", active);
+      tab.setAttribute("aria-pressed", String(active));
+    });
+    refreshA2GlossaryResults();
+    return;
+  }
   if (action === "open-b1plus-glossary") { await openB1PlusGlossary(button); return; }
   if (action === "filter-b1plus-chapter") {
     b1PlusGlossaryFilter.chapter = button.dataset.chapter;
@@ -2098,6 +2287,14 @@ async function handleAction(event) {
   if (action === "start-session") {
     const mode = button.dataset.mode;
     const kind = button.dataset.kind || "vocab";
+    if (kind === "vocab" && pendingVocabLevel === "a2" && mode === "practice") {
+      button.disabled = true;
+      button.setAttribute("aria-busy", "true");
+      try { await loadA2Glossary(); render("a2-chapter-select"); }
+      catch (error) { toast(error.message || "The A2 glossary could not be loaded.", "error"); }
+      finally { button.disabled = false; button.removeAttribute("aria-busy"); }
+      return;
+    }
     if (kind === "vocab" && pendingVocabLevel === "b1plus" && mode === "practice") {
       button.disabled = true;
       button.setAttribute("aria-busy", "true");
@@ -2111,6 +2308,7 @@ async function handleAction(event) {
     else if (kind === "zahlen") startZahlenSession(mode, pendingZahlenRange);
     else startSession(mode);
   }
+  if (action === "choose-a2-chapter") { await startVocabSession("practice", "a2", "vocab", button.dataset.chapter); return; }
   if (action === "choose-b1plus-chapter") { await startVocabSession("practice", "b1plus", "vocab", button.dataset.chapter); return; }
   if (action === "answer") answer(button.dataset.answer);
   if (action === "para-answer") { const bi = parseInt(button.dataset.blank, 10); paraAnswer(bi, button.dataset.answer); return; }

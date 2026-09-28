@@ -1,8 +1,9 @@
-const CACHE_NAME = "uebungsheft-v7";
+const CACHE_NAME = "uebungsheft-v8";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./css/styles.css",
+  "./data/a2-glossary.json",
   "./data/b1plus-glossary.json",
   "./manifest.json",
   "./icon-192.png",
