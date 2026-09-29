@@ -108,8 +108,11 @@ const Mascot = (() => {
   function init() {
     if (el) return el;
 
-    el = document.createElement('div');
+    el = document.createElement('button');
+    el.type = 'button';
     el.className = 'mascot-container';
+    el.setAttribute('aria-label', 'Play with mascot');
+    el.title = 'Play with mascot';
     el.innerHTML = createSVG('idle');
 
     document.body.appendChild(el);
@@ -118,8 +121,9 @@ const Mascot = (() => {
       const style = document.createElement('style');
       style.id = 'mascot-styles';
       style.textContent = `
-        .mascot-container { position: fixed; bottom: 20px; right: 20px; z-index: 5; pointer-events: none; }
-        .mascot { width: 80px; height: 80px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); pointer-events: auto; cursor: pointer; }
+        .mascot-container { position: fixed; bottom: 20px; right: 20px; z-index: 5; width: 80px; height: 80px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+        .mascot-container:focus-visible { outline: 2px solid var(--redline); outline-offset: 3px; border-radius: 8px; }
+        .mascot { width: 80px; height: 80px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); pointer-events: none; }
         .mascot.correct { animation: mascot-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .mascot.streak { animation: mascot-pulse 0.8s ease-in-out; }
         .mascot.perfect { animation: mascot-spin 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -1404,6 +1408,10 @@ function renderB1PlusResults(entries) {
 function renderB1PlusGlossary() {
   const chapters = [...new Map(b1PlusGlossaryEntries.map(entry => [entry.chapter.number, entry.chapter])).values()];
   const entries = filteredB1PlusEntries();
+  const chapterOptions = [{ number: "all", title: "Alle Kapitel (1–10)" }, ...chapters].map(chapter => {
+    const value = String(chapter.number);
+    return `<option value="${value}" ${b1PlusGlossaryFilter.chapter === value ? "selected" : ""}>${value === "all" ? chapter.title : `Kapitel ${value} · ${escapeHtml(chapter.title)}`}</option>`;
+  }).join("");
   const chapterButtons = [{ number: "all", title: "Alle" }, ...chapters].map(chapter => {
     const value = String(chapter.number);
     const pressed = b1PlusGlossaryFilter.chapter === value;
@@ -1414,7 +1422,8 @@ function renderB1PlusGlossary() {
     <section class="panel glossary-controls" aria-label="Glossary filters">
       <label class="glossary-search-label" for="b1plus-search">Glossar durchsuchen</label>
       <input id="b1plus-search" class="glossary-search" type="search" data-b1plus-search value="${escapeHtml(b1PlusGlossaryFilter.query)}" placeholder="German or English word" autocomplete="off" spellcheck="false" aria-describedby="b1plus-result-count">
-      <div class="chapter-tabs" role="group" aria-label="Filter by chapter">${chapterButtons}</div>
+      <div class="glossary-chapter-picker"><label for="b1plus-chapter-select">Kapitel auswählen</label><select id="b1plus-chapter-select" class="glossary-chapter-select" data-b1plus-chapter-select>${chapterOptions}</select></div>
+      <div class="chapter-tabs b1plus-chapter-tabs" role="group" aria-label="Filter by chapter">${chapterButtons}</div>
       <p id="b1plus-result-count" class="glossary-result-count" role="status" aria-live="polite">${entries.length.toLocaleString("en-US")} of ${B1_PLUS_ENTRY_COUNT.toLocaleString("en-US")} entries</p>
     </section>
     <div id="b1plus-glossary-results">${renderB1PlusResults(entries)}</div>
@@ -1431,6 +1440,18 @@ function refreshB1PlusGlossaryResults() {
   count.textContent = `${entries.length.toLocaleString("en-US")} of ${B1_PLUS_ENTRY_COUNT.toLocaleString("en-US")} entries`;
 }
 
+function setB1PlusChapterFilter(chapter) {
+  b1PlusGlossaryFilter.chapter = chapter;
+  document.querySelectorAll("[data-action='filter-b1plus-chapter']").forEach(tab => {
+    const active = tab.dataset.chapter === chapter;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-pressed", String(active));
+  });
+  const select = document.querySelector("[data-b1plus-chapter-select]");
+  if (select) select.value = chapter;
+  refreshB1PlusGlossaryResults();
+}
+
 function renderSessionTypeSelect(kind, vocabLevel) {
   const isReverse = kind === "vocab-reverse" || vocabLevel === "both";
   const isA2 = kind === "vocab" && vocabLevel === "a2";
@@ -1443,6 +1464,7 @@ function renderSessionTypeSelect(kind, vocabLevel) {
     : (vocabLevel === "b1plus" ? "B1+ Wortschatz" : vocabLevel === "b1" ? "B1 Wortschatz" : vocabLevel === "a2" ? "A2 Wortschatz" : "A1 Wortschatz");
   return `<section class="screen">
     <div><div class="page-heading"><h1>${label.toUpperCase()}</h1></div><p class="page-copy">Practice loop or timed exam?</p></div>
+    ${isB1Plus && b1PlusGlossaryError ? `<section class="panel glossary-error" role="alert"><h2>Glossar nicht verfügbar</h2><p>Die Wortliste konnte nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.</p><button type="button" class="secondary-button" data-action="retry-b1plus-glossary">Erneut versuchen ↻</button></section>` : ""}
     <button type="button" class="panel mode-card" data-action="start-session" data-mode="practice" data-kind="${kind}" data-level="${vocabLevel}">
       <span class="kicker">${isChapterGlossary ? "Kapitelweise" : "Endlos"}</span>
       <h2 class="mode-card-title">Übungsmodus</h2>
@@ -1479,14 +1501,47 @@ function b1PlusChapterSummaries() {
   return [...chapters.values()].sort((a, b) => a.number - b.number);
 }
 
+function savedB1PlusSession() {
+  const saved = state?.b1PlusSession;
+  if (saved?.kind !== "vocab" || saved.mode !== "practice" || saved.level !== "b1plus") return null;
+  if (!Number.isInteger(saved.chapter) || saved.chapter < 1 || saved.chapter > 10) return null;
+  if (!Array.isArray(saved.questions) || !saved.questions.length || !Array.isArray(saved.answers)) return null;
+  if (!Number.isInteger(saved.index) || saved.index < 0 || saved.index >= saved.questions.length) return null;
+  return saved;
+}
+
+function saveB1PlusSession() {
+  if (activeSession?.kind !== "vocab" || activeSession.mode !== "practice" || activeSession.level !== "b1plus" || !activeSession.chapter) return;
+  const { kind, mode, level, chapter, questions, index, answers, currentAnswer, score, currentStreak } = activeSession;
+  state.b1PlusSession = { kind, mode, level, chapter, questions, index, answers, currentAnswer, score, currentStreak, requeued: [...activeSession.requeued] };
+  saveState(state);
+}
+
+function resumeB1PlusSession(chapter) {
+  const saved = savedB1PlusSession();
+  if (!saved || saved.chapter !== chapter) return false;
+  activeSession = {
+    ...saved, direction: "forward", requeued: new Set(saved.requeued || []),
+    startedAt: performance.now(), questionStartedAt: performance.now(), endsAt: null
+  };
+  render("practice");
+  app.querySelector(activeSession.currentAnswer ? '[data-action="next-question"]' : '[data-action="answer"]')?.focus({ preventScroll: true });
+  return true;
+}
+
 function renderB1PlusChapterSelect() {
-  const chapterCards = b1PlusChapterSummaries().map(chapter => `<button type="button" class="panel mode-card" data-action="choose-b1plus-chapter" data-chapter="${chapter.number}">
-    <span class="kicker">Kapitel ${chapter.number} · ${chapter.count.toLocaleString("en-US")} Fragen</span>
+  const saved = savedB1PlusSession();
+  const chapterCards = b1PlusChapterSummaries().map(chapter => {
+    const resume = saved?.chapter === chapter.number;
+    return `<button type="button" class="panel mode-card ${resume ? "chapter-resume" : ""}" data-action="choose-b1plus-chapter" data-chapter="${chapter.number}">
+    <span class="kicker">Kapitel ${chapter.number} · ${resume ? `${saved.answers.length.toLocaleString("en-US")} von ${saved.questions.length.toLocaleString("en-US")} beantwortet` : `${chapter.count.toLocaleString("en-US")} Fragen`}</span>
     <h2 class="mode-card-title">${escapeHtml(chapter.title)}</h2>
-    <p class="page-copy">Alle Wörter dieses Kapitels in einer Sitzung.</p>
-  </button>`).join("");
+    <p class="page-copy">${resume ? `Weiter bei Frage ${(saved.index + 1).toLocaleString("en-US")}. Alle bisherigen Antworten sind gespeichert.` : "Alle Wörter dieses Kapitels in einer Sitzung."}</p>
+    ${resume ? `<progress class="resume-meter" value="${saved.answers.length}" max="${saved.questions.length}" aria-label="${saved.answers.length} von ${saved.questions.length} Fragen beantwortet"></progress><strong class="resume-action">Übung fortsetzen →</strong>` : ""}
+  </button>`;
+  }).join("");
   return `<section class="screen">
-    <div><div class="page-heading"><h1>B1+ ÜBUNGSMODUS</h1></div><p class="page-copy">Wähle ein Kapitel. Du übst jeden Eintrag dieses Kapitels.</p></div>
+    <div><div class="page-heading"><h1>B1+ ÜBUNGSMODUS</h1></div><p class="page-copy">Wähle ein Kapitel. Dein Stand bleibt gespeichert.</p></div>
     ${chapterCards}
     <button type="button" class="text-button" data-nav="session-type-select">← Back to B1+ Wortschatz</button>
   </section>`;
@@ -1537,7 +1592,7 @@ function renderQuiz({ session, question, mode, remainingSeconds }) {
 
 function feedbackWithSpeaker(question, correct) {
   const sentenceSpeaker = speakerButton(question.solutionSentence, "Pronounce full sentence", "speak-sentence");
-  return `<div class="feedback" aria-live="polite" ${correct ? "" : "wrong-feedback"}"><strong>${correct ? "Richtig! +10" : "Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span><span class="solution-row">Full sentence: ${escapeHtml(question.solutionSentence)} ${sentenceSpeaker}</span></div>`;
+  return `<div class="feedback${correct ? "" : " wrong-feedback"}" aria-live="polite"><strong>${correct ? "Richtig! +10" : "Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span><span class="solution-row">Full sentence: ${escapeHtml(question.solutionSentence)} ${sentenceSpeaker}</span></div>`;
 }
 function capitalize(str) {
   return str.charAt(0).toLocaleUpperCase("de-DE") + str.slice(1).toLocaleLowerCase("de-DE");
@@ -1574,7 +1629,7 @@ function renderVocabQuiz({ session, question, mode, remainingSeconds }) {
 }
 function vocabFeedbackWithSpeaker(question, correct) {
   const germanSpeaker = question.isReverse ? speakerButton(question.correct, "Pronounce German answer", "speak-german-answer") : "";
-  return `<div class="feedback" aria-live="polite" ${correct ? "" : "wrong-feedback"}"><strong>${correct ? "Richtig! +10" : "Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span>${germanSpeaker ? `<span class="solution-row">${germanSpeaker}</span>` : ""}</div>`;
+  return `<div class="feedback${correct ? "" : " wrong-feedback"}" aria-live="polite"><strong>${correct ? "Richtig! +10" : "Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span>${germanSpeaker ? `<span class="solution-row">${germanSpeaker}</span>` : ""}</div>`;
 }
 function renderPossessiveQuiz({ session, question, mode, remainingSeconds }) {
   const answered = Boolean(session.currentAnswer);
@@ -1604,7 +1659,7 @@ function renderPossessiveQuiz({ session, question, mode, remainingSeconds }) {
     }).join('');
     const allAnswered = paraAnswered && session.currentAnswer.blanks.every(b => b !== null);
     const allCorrect = allAnswered && session.currentAnswer.blanks.every((b, i) => b.selected === question.blanks[i].correctForm);
-    const paraFeedback = allAnswered ? `<div class="feedback" aria-live="polite" ${allCorrect ? '' : 'wrong-feedback'}"><strong>${allCorrect ? 'Richtig! +' + (question.blanks.length*10) : 'Nochmal!'}</strong><span>${question.blanks.map((b, i) => `${i+1}. ${b.explanation}`).join(' ')}</span><span class="solution-row">Vollständiger Absatz: ${escapeHtml(question.blanks.reduce((acc, b) => acc.replace('___', b.correctForm), question.paragraph))} ${sentenceSpeaker}</span></div>` : '';
+    const paraFeedback = allAnswered ? `<div class="feedback${allCorrect ? '' : ' wrong-feedback'}" aria-live="polite"><strong>${allCorrect ? 'Richtig! +' + (question.blanks.length*10) : 'Nochmal!'}</strong><span>${question.blanks.map((b, i) => `${i+1}. ${b.explanation}`).join(' ')}</span><span class="solution-row">Vollständiger Absatz: ${escapeHtml(question.blanks.reduce((acc, b) => acc.replace('___', b.correctForm), question.paragraph))} ${sentenceSpeaker}</span></div>` : '';
     return `<section class="screen" style="align-items:start"><div style="position:sticky;top:0;z-index:3;background:var(--bg);padding:6px 0 8px;margin:-6px 0 8px;border-bottom:1px solid transparent"><div class="quiz-meta"><span>${mode === "exam" ? "POSSESSIV EXAM" : "POSSESSIV LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}" style="margin-top:6px;display:block;width:100%"></progress></div>
     <article class="question-card" style="overflow:visible;align-self:start"><div style="position:sticky;top:42px;z-index:2;background:var(--panel);margin:-14px -14px 10px;padding:12px 14px;border-bottom:2px dashed rgba(35,50,77,.2);border-radius:7px 7px 0 0"><span class="kicker">${question.caseLabel} · ${question.owner.label}</span><p class="prompt" style="font-size:.98rem;line-height:1.6;margin-top:6px">${paraHtml}</p></div>${blanksHtml}${paraFeedback}${allAnswered ? `<button type="button" class="primary-button" data-action="next-question">${index === session.questions.length ? "Finish Session →" : "Next Question →"}</button>` : ''}</article><button type="button" class="text-button" data-action="abandon-session">End session</button></section>`;
   }
@@ -1619,7 +1674,7 @@ function renderPossessiveQuiz({ session, question, mode, remainingSeconds }) {
     </article><button type="button" class="text-button" data-action="abandon-session">End session</button></section>`;
 }
 function possessiveFeedbackWithSpeaker(question, correct, sentenceSpeaker) {
-  return `<div class="feedback" aria-live="polite" ${correct ? "" : "wrong-feedback"}"><strong>${correct ? "Richtig! +10" : "Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span><span class="solution-row">Full sentence: ${escapeHtml(question.solutionSentence)} ${sentenceSpeaker}</span></div>`;
+  return `<div class="feedback${correct ? "" : " wrong-feedback"}" aria-live="polite"><strong>${correct ? "Richtig! +10" : "Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span><span class="solution-row">Full sentence: ${escapeHtml(question.solutionSentence)} ${sentenceSpeaker}</span></div>`;
 }
 function renderStatistics(stats) {
   const data = summary(stats);
@@ -1660,7 +1715,36 @@ function renderReview(session) {
 }
 function statCard(label, value, suffix = "") { return `<article class="stat-card"><span class="stat-label">${label}</span><strong class="stat-value">${value}<span class="stat-suffix">${suffix}</span></strong></article>`; }
 function toast(message, type = "") { const region = document.querySelector("#toast-region"); region.innerHTML = `<div class="toast ${type}">${escapeHtml(message)}</div>`; window.setTimeout(() => { region.innerHTML = ""; }, 3500); }
-function confirmation(title, text, action) { document.body.insertAdjacentHTML("beforeend", `<div class="modal" id="confirm-modal"><section class="modal-card"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(text)}</p><div class="button-row"><button type="button" class="danger-button" id="confirm-action">${escapeHtml(action)}</button><button type="button" class="secondary-button" id="cancel-action">Cancel</button></div></section></div>`); return new Promise(resolve => { document.querySelector("#confirm-action").onclick = () => { document.querySelector("#confirm-modal").remove(); resolve(true); }; document.querySelector("#cancel-action").onclick = () => { document.querySelector("#confirm-modal").remove(); resolve(false); }; }); }
+function confirmation(title, text, action) {
+  const trigger = document.activeElement;
+  const background = [document.querySelector(".app-shell"), document.querySelector(".mascot-container")].filter(Boolean);
+  const wasInert = background.map(element => element.inert);
+  document.body.insertAdjacentHTML("beforeend", `<div class="modal" id="confirm-modal"><section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-description"><h2 id="confirm-title">${escapeHtml(title)}</h2><p id="confirm-description">${escapeHtml(text)}</p><div class="button-row"><button type="button" class="danger-button" id="confirm-action">${escapeHtml(action)}</button><button type="button" class="secondary-button" id="cancel-action">Cancel</button></div></section></div>`);
+  const modal = document.querySelector("#confirm-modal");
+  const confirmButton = modal.querySelector("#confirm-action");
+  const cancelButton = modal.querySelector("#cancel-action");
+  background.forEach(element => { element.inert = true; });
+  return new Promise(resolve => {
+    const close = accepted => {
+      document.removeEventListener("keydown", onKeydown, true);
+      modal.remove();
+      background.forEach((element, index) => { element.inert = wasInert[index]; });
+      if (trigger?.isConnected) trigger.focus({ preventScroll: true });
+      resolve(accepted);
+    };
+    const onKeydown = event => {
+      if (event.key === "Escape") { event.preventDefault(); close(false); }
+      else if (event.key === "Tab") {
+        if (event.shiftKey && document.activeElement === confirmButton) { event.preventDefault(); cancelButton.focus(); }
+        else if (!event.shiftKey && document.activeElement === cancelButton) { event.preventDefault(); confirmButton.focus(); }
+      }
+    };
+    document.addEventListener("keydown", onKeydown, true);
+    confirmButton.onclick = () => close(true);
+    cancelButton.onclick = () => close(false);
+    cancelButton.focus({ preventScroll: true });
+  });
+}
 
 // ---- js/xlsx-import.js ----
 async function importWorkbook(file) {
@@ -1787,7 +1871,8 @@ const defaults = {
   stats: { total: 0, correct: 0, wrong: 0, currentStreak: 0, bestStreak: 0, score: 0, totalTimeMs: 0, correctVerbs: {}, missedVerbs: {} },
   achievements: [],
   progress: { usedVerbKeys: [] },
-  customVerbs: null
+  customVerbs: null,
+  b1PlusSession: null
 };
 
 function hasArtifactStorage() {
@@ -1870,6 +1955,7 @@ let b1PlusGlossaryWords = [];
 let b1PlusGlossaryPromise = null;
 let b1PlusGlossaryFilter = { query: "", chapter: "all" };
 let b1PlusSearchTimer = null;
+let b1PlusGlossaryError = false;
 let possessiveNouns = [];
 let activeSession = null;
 let activeScreen = "home";
@@ -1995,10 +2081,14 @@ async function openB1PlusGlossary(button) {
   button.setAttribute("aria-busy", "true");
   try {
     await loadB1PlusGlossary();
+    b1PlusGlossaryError = false;
     b1PlusGlossaryFilter = { query: "", chapter: "all" };
     render("b1plus-glossary");
   } catch (error) {
-    toast(error.message || "The B1+ glossary could not be loaded.", "error");
+    console.error("B1+ glossary load failed:", error);
+    b1PlusGlossaryError = true;
+    render("session-type-select");
+    app.querySelector('[data-action="retry-b1plus-glossary"]')?.focus({ preventScroll: true });
   } finally {
     button.disabled = false;
     button.removeAttribute("aria-busy");
@@ -2032,6 +2122,8 @@ function render(screen) {
   }
   activeScreen = screen;
   document.body.classList.toggle("glossary-open", screen === "a2-glossary" || screen === "b1plus-glossary");
+  document.body.classList.toggle("chapter-select-open", screen === "b1plus-chapter-select");
+  document.body.classList.toggle("session-open", screen === "practice" || screen === "exam");
   updateNavigation((screen === "mode-select" || screen === "session-type-select" || screen === "vocab-level-select" || screen === "a2-glossary" || screen === "a2-chapter-select" || screen === "b1plus-glossary" || screen === "b1plus-chapter-select") ? "practice" : screen);
   const verbs = getVerbs();
   if (screen === "home") app.innerHTML = renderHome({ stats: state.stats, verbCount: verbs.length, wordCountA1: glossaryWords.length, wordCountA2: A2_ENTRY_COUNT, wordCountB1: b1GlossaryWords.length, wordCountB1Plus: B1_PLUS_ENTRY_COUNT });
@@ -2100,6 +2192,7 @@ async function startVocabSession(mode, level, kind = "vocab", chapterNumber = nu
     kind: "vocab", mode, level: isReverse ? "both" : (level || "a1"), chapter: (isA2ChapterPractice || isB1PlusChapterPractice) ? selectedChapter : null, direction: isReverse ? "reverse" : "forward", questions, index: 0, answers: [], currentAnswer: null, score: 0, currentStreak: 0, requeued: new Set(),
     startedAt: performance.now(), questionStartedAt: performance.now(), endsAt: mode === "exam" ? Date.now() + 10 * 60 * 1000 : null
   };
+  saveB1PlusSession();
   if (mode === "exam") { stopTimer(); timerId = window.setInterval(tickExam, 1000); }
   render("practice");
 }
@@ -2213,7 +2306,7 @@ function renderZahlenQuiz({ session, question, mode, remainingSeconds }) {
     if(question.type === "preis") return `<div class="verb-word" style="font-size:clamp(1.5rem,3.4vw+2vh,2.35rem)">${escapeHtml(t).replace("___",'<span style="display:inline-block;min-width:2.4em;height:.85em;border-bottom:3px dashed var(--redline);">&nbsp;</span>')}</div>`;
     const parts = question.wordParts || [t]; const html = parts.map(p => escapeHtml(p).replace("___",'<span class="blank">______</span>')).join("<br>"); return `<div class="verb-word" style="font-size:clamp(1.5rem,3.4vw+2vh,2.35rem)">${html}</div>`; })() : "";
   const promptBlock = isBigType ? "" : `<p class="prompt">${promptHtml}</p>`;
-  return `<section class="screen"><div class="quiz-meta"><span>${mode==="exam"?"ZAHLEN EXAM":"ZAHLEN LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress><article class="question-card"><span class="kicker">${typeLabel}</span>${clock}${priceChip}${bigWord}${promptBlock}<div class="options">${question.options.map((o,i)=>optionButton(o,i,session.currentAnswer, question.type==="word-digit"?"none":"first")).join("")}</div>${answered?`<div class="feedback" aria-live="polite" ${correct?"":"wrong-feedback"}"><strong>${correct?"Richtig! +10":"Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span></div>`:""}${answered?`<button type="button" class="primary-button" data-action="next-question">${index===session.questions.length?"Finish Session →":"Next Question →"}</button>`:""}</article><button type="button" class="text-button" data-action="abandon-session">End session</button></section>`;
+  return `<section class="screen"><div class="quiz-meta"><span>${mode==="exam"?"ZAHLEN EXAM":"ZAHLEN LOOP"} // ${index} OF ${session.questions.length}</span>${timer}</div><progress class="progress-meter" value="${index}" max="${session.questions.length}"></progress><article class="question-card"><span class="kicker">${typeLabel}</span>${clock}${priceChip}${bigWord}${promptBlock}<div class="options">${question.options.map((o,i)=>optionButton(o,i,session.currentAnswer, question.type==="word-digit"?"none":"first")).join("")}</div>${answered?`<div class="feedback${correct?"":" wrong-feedback"}" aria-live="polite"><strong>${correct?"Richtig! +10":"Nochmal!"}</strong><span>${escapeHtml(question.explanation)}</span></div>`:""}${answered?`<button type="button" class="primary-button" data-action="next-question">${index===session.questions.length?"Finish Session →":"Next Question →"}</button>`:""}</article><button type="button" class="text-button" data-action="abandon-session">End session</button></section>`;
 }
 function renderActiveQuestion() {
   if (!activeSession) return render("home");
@@ -2241,6 +2334,11 @@ function renderActiveQuestion() {
   app.innerHTML = renderQuiz({ session: activeSession, question: activeSession.questions[activeSession.index], mode: activeSession.mode, remainingSeconds: remaining });
   question = activeSession.questions[activeSession.index];
   if (state.settings.autoSpeak) speakVerb(question.verb);
+}
+function focusAfterAnswer() {
+  const next = app.querySelector('[data-action="next-question"]');
+  if (next) next.focus({ preventScroll: true });
+  else app.querySelector('[data-action="para-answer"]:not(:disabled)')?.focus({ preventScroll: true });
 }
 function tickExam() {
   if (!activeSession?.endsAt) return stopTimer();
@@ -2274,14 +2372,9 @@ async function handleAction(event) {
     return;
   }
   if (action === "open-b1plus-glossary") { await openB1PlusGlossary(button); return; }
+  if (action === "retry-b1plus-glossary") { await openB1PlusGlossary(button); return; }
   if (action === "filter-b1plus-chapter") {
-    b1PlusGlossaryFilter.chapter = button.dataset.chapter;
-    document.querySelectorAll("[data-action='filter-b1plus-chapter']").forEach(tab => {
-      const active = tab.dataset.chapter === b1PlusGlossaryFilter.chapter;
-      tab.classList.toggle("active", active);
-      tab.setAttribute("aria-pressed", String(active));
-    });
-    refreshB1PlusGlossaryResults();
+    setB1PlusChapterFilter(button.dataset.chapter);
     return;
   }
   if (action === "start-session") {
@@ -2309,7 +2402,14 @@ async function handleAction(event) {
     else startSession(mode);
   }
   if (action === "choose-a2-chapter") { await startVocabSession("practice", "a2", "vocab", button.dataset.chapter); return; }
-  if (action === "choose-b1plus-chapter") { await startVocabSession("practice", "b1plus", "vocab", button.dataset.chapter); return; }
+  if (action === "choose-b1plus-chapter") {
+    const chapter = Number(button.dataset.chapter);
+    if (resumeB1PlusSession(chapter)) return;
+    const saved = savedB1PlusSession();
+    if (saved && !await confirmation("Start another chapter?", `Your saved position in Kapitel ${saved.chapter} will be replaced. Submitted answer statistics remain saved.`, `Start Kapitel ${chapter}`)) return;
+    await startVocabSession("practice", "b1plus", "vocab", chapter);
+    return;
+  }
   if (action === "answer") answer(button.dataset.answer);
   if (action === "para-answer") { const bi = parseInt(button.dataset.blank, 10); paraAnswer(bi, button.dataset.answer); return; }
   if (action === "next-question") nextQuestion();
@@ -2377,6 +2477,7 @@ function paraAnswer(blankIndex, selected) {
     if (!correct) triggerWrongFeedback();
   }
   renderActiveQuestion();
+  focusAfterAnswer();
 }
 function answer(selected) {
   if (!activeSession || activeSession.currentAnswer) return;
@@ -2395,6 +2496,7 @@ function answer(selected) {
     const insertAt = Math.min(activeSession.index + 3 + Math.floor(Math.random() * 3), activeSession.questions.length);
     activeSession.questions.splice(insertAt, 0, question);
   }
+  saveB1PlusSession();
   sound(correct ? "correct" : "wrong");
   if (!correct) triggerWrongFeedback();
   if (window.Mascot) {
@@ -2407,6 +2509,7 @@ function answer(selected) {
     }
   }
   renderActiveQuestion();
+  focusAfterAnswer();
 }
 function triggerWrongFeedback() {
   if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
@@ -2421,7 +2524,10 @@ function nextQuestion() {
   const q = activeSession.questions[activeSession.index];
   if (q.isParagraph && !activeSession.currentAnswer.blanks?.every(b => b !== null)) return;
   if (activeSession.index + 1 >= activeSession.questions.length) return finishSession(false);
-  activeSession.index += 1; activeSession.currentAnswer = null; activeSession.questionStartedAt = performance.now(); renderActiveQuestion();
+  activeSession.index += 1; activeSession.currentAnswer = null; activeSession.questionStartedAt = performance.now();
+  saveB1PlusSession();
+  renderActiveQuestion();
+  app.querySelector('[data-action="answer"], [data-action="para-answer"]')?.focus({ preventScroll: true });
 }
 function finishSession(timedOut) {
   if (!activeSession) return;
@@ -2439,6 +2545,7 @@ function finishSession(timedOut) {
     state.progress.seitenDone = state.progress.seitenDone || {};
     if (!state.progress.seitenDone[activeSession.kind]) { state.progress.seitenDone[activeSession.kind] = true; }
   }
+  if (activeSession.kind === "vocab" && activeSession.mode === "practice" && activeSession.level === "b1plus" && activeSession.chapter) state.b1PlusSession = null;
   const newlyUnlocked = updateAchievements(state, activeSession); saveState(state);
   newlyUnlocked.forEach(item => window.setTimeout(() => toast(`Achievement unlocked: ${item.title}`), 350));
   updatePunchHoles();
@@ -2480,6 +2587,8 @@ async function importSelectedWorkbook() {
   } catch (error) { toast(error.message || "The workbook could not be imported.", "error"); }
 }
 function handleSetting(event) {
+  const chapterSelect = event.target.closest("[data-b1plus-chapter-select]");
+  if (chapterSelect) { setB1PlusChapterFilter(chapterSelect.value); return; }
   const control = event.target.closest("[data-setting]"); if (!control) return;
   state.settings[control.dataset.setting] = control.checked; saveState(state);
   if (control.dataset.setting === "animations") document.body.classList.toggle("no-animations", !control.checked);
@@ -2497,7 +2606,7 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(() => {});
   });
   navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (window.activeSession) {
+    if (activeSession) {
       toast("Update ready — finish this session, it will apply on your next visit.");
     } else {
       window.location.reload();

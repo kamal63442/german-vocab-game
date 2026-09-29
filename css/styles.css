@@ -35,7 +35,7 @@ body {
 }
 button, input { font: inherit; }
 button { color: inherit; cursor: pointer; }
-button:focus-visible, input:focus-visible { outline: 2px solid var(--redline); outline-offset: 3px; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--redline); outline-offset: 3px; }
 
 /* Notebook margin rule and loose-leaf punch holes */
 .margin-rule { position: absolute; top: 0; bottom: 0; left: clamp(24px, 6vw, 38px); width: 2px; background: var(--margin-rule); opacity: .8; pointer-events: none; }
@@ -95,6 +95,9 @@ h1 .line { display: block; }
 .mode-card { width: 100%; text-align: left; cursor: pointer; display: block; font-family: var(--font-body); transition: transform .12s ease; }
 .mode-card-title { font-family: var(--font-hand); font-size: 1.5rem; font-weight: 700; color: var(--text); margin: 6px 0 4px; }
 .mode-card.glossary-card { border-left: 6px solid var(--accent); }
+.mode-card.chapter-resume { border-left: 6px solid var(--approved); }
+.resume-meter { width: 100%; height: 8px; margin-top: 12px; accent-color: var(--approved); }
+.resume-action { display: block; margin-top: 8px; color: var(--approved); font-weight: 800; }
 .mode-card:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(35, 50, 77, .14); }
 .mode-card:disabled, .mode-card[aria-busy="true"] { cursor: wait; opacity: .65; }
 
@@ -104,10 +107,14 @@ h1 .line { display: block; }
 .glossary-search { width: 100%; min-height: 44px; border: 2px solid var(--text); border-radius: 8px; padding: 0 12px; color: var(--text); background: var(--panel-strong); font-size: 1rem; font-weight: 600; }
 .glossary-search::placeholder { color: var(--muted); opacity: .82; }
 .chapter-tabs { display: flex; gap: 7px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: thin; }
+.b1plus-chapter-tabs { flex-wrap: wrap; }
 .chapter-tab { flex: 0 0 auto; min-height: 44px; padding: 0 12px; border: 2px solid var(--line-strong); border-radius: 8px; background: var(--panel); color: var(--muted); font-size: .78rem; font-weight: 800; transition: transform .12s ease, background .15s ease, border-color .15s ease, color .15s ease; }
 .chapter-tab.active, .chapter-tab[aria-pressed="true"] { border-color: var(--text); background: var(--accent); color: var(--accent-ink); }
 .chapter-tab:active { transform: translateY(2px); }
 .chapter-tab:disabled, .chapter-tab[aria-busy="true"] { cursor: not-allowed; opacity: .5; }
+.glossary-chapter-picker { display: none; }
+.glossary-chapter-picker label { color: var(--text); font-family: var(--font-hand); font-weight: 700; }
+.glossary-chapter-select { width: 100%; min-height: 44px; padding: 0 12px; border: 2px solid var(--text); border-radius: 8px; background: var(--panel-strong); color: var(--text); font: 700 .875rem var(--font-body); }
 .glossary-result-count { color: var(--muted); font-size: .75rem; font-weight: 800; }
 #a2-glossary-results, #b1plus-glossary-results { display: grid; gap: 18px; }
 .glossary-chapter { display: grid; gap: 12px; }
@@ -123,6 +130,10 @@ h1 .line { display: block; }
 .glossary-table td { color: var(--text); font-size: .82rem; line-height: 1.45; font-weight: 600; }
 .glossary-table td[lang="en"] { color: var(--muted); }
 .glossary-table .glossary-activity { color: var(--redline); font-family: var(--font-hand); font-weight: 700; white-space: nowrap; }
+.glossary-error { display: grid; gap: 10px; border-color: var(--redline); }
+.glossary-error h2 { color: var(--redline); font-family: var(--font-hand); font-size: 1.35rem; }
+.glossary-error p { color: var(--text); line-height: 1.5; font-size: .875rem; font-weight: 600; }
+.glossary-error button { width: 100%; color: var(--redline); border-color: var(--redline); }
 
 .primary-button, .secondary-button, .option-button, .text-button, .danger-button {
   min-height: clamp(44px, 6.5vh, 50px); border-radius: 8px; border: 2px solid var(--text); font-weight: 700; letter-spacing: 0;
@@ -172,6 +183,7 @@ h1 .line { display: block; }
   font-size: 1.1rem; font-weight: 700;
 }
 .feedback.wrong-feedback strong { color: var(--redline); transform: rotate(2deg); text-decoration: underline wavy var(--redline); text-underline-offset: 4px; }
+[data-action="next-question"]:focus { outline: 2px solid var(--redline); outline-offset: 3px; }
 .timer { color: var(--redline); font-weight: 800; }
 .page-heading { display: flex; align-items: start; justify-content: space-between; gap: 12px; margin: 2px 0 6px; }
 .page-heading h1 { font-size: clamp(1.3rem, 3.4vw + 2.5vh, 2.2rem); margin: 0; overflow-wrap: break-word; }
@@ -243,6 +255,7 @@ h1 .line { display: block; }
   .chapter-tab.active:hover, .chapter-tab[aria-pressed="true"]:hover { border-color: var(--text); color: var(--accent-ink); }
 }
 @media (max-width: 620px) {
+  body.session-open .mascot-container { display: none !important; }
   .site-header { margin-bottom: 6px; padding-bottom: 6px; }
   .screen { gap: 8px; }
   .quiz-meta { font-size: .65rem; }
@@ -259,10 +272,14 @@ h1 .line { display: block; }
   .glossary-table th, .glossary-table td { padding: 7px 6px; }
   .glossary-table th { font-size: .62rem; }
   .glossary-table td { font-size: .73rem; line-height: 1.4; }
+  .b1plus-chapter-tabs { display: none; }
+  .glossary-chapter-picker { display: grid; gap: 6px; }
+  #b1plus-glossary-results .glossary-table td { font-size: .8125rem; line-height: 1.5; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
 body.no-animations *, body.no-animations *::before, body.no-animations *::after { animation: none !important; transition: none !important; }
 body.glossary-open .mascot-container { display: none; }
+body.chapter-select-open .mascot-container { display: none !important; }
 
 /* ---- Das Lebendige Heft (Concept 2) ---- */
 .screen { position: relative; }
