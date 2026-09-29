@@ -1337,6 +1337,10 @@ function renderA2Results(entries) {
 function renderA2Glossary() {
   const chapters = [...new Map(a2GlossaryEntries.map(entry => [entry.chapter.number, entry.chapter])).values()];
   const entries = filteredA2Entries();
+  const chapterOptions = [{ number: "all", title: "Alle Kapitel (1–12)" }, ...chapters].map(chapter => {
+    const value = String(chapter.number);
+    return `<option value="${value}" ${a2GlossaryFilter.chapter === value ? "selected" : ""}>${value === "all" ? chapter.title : `Kapitel ${value} · ${escapeHtml(chapter.title)}`}</option>`;
+  }).join("");
   const chapterButtons = [{ number: "all", title: "Alle" }, ...chapters].map(chapter => {
     const value = String(chapter.number);
     const pressed = a2GlossaryFilter.chapter === value;
@@ -1347,7 +1351,8 @@ function renderA2Glossary() {
     <section class="panel glossary-controls" aria-label="Glossary filters">
       <label class="glossary-search-label" for="a2-search">Glossar durchsuchen</label>
       <input id="a2-search" class="glossary-search" type="search" data-a2-search value="${escapeHtml(a2GlossaryFilter.query)}" placeholder="German or English word" autocomplete="off" spellcheck="false" aria-describedby="a2-result-count">
-      <div class="chapter-tabs" role="group" aria-label="Filter by chapter">${chapterButtons}</div>
+      <div class="glossary-chapter-picker"><label for="a2-chapter-select">Kapitel auswählen</label><select id="a2-chapter-select" class="glossary-chapter-select" data-a2-chapter-select>${chapterOptions}</select></div>
+      <div class="chapter-tabs a2-chapter-tabs" role="group" aria-label="Filter by chapter">${chapterButtons}</div>
       <p id="a2-result-count" class="glossary-result-count" role="status" aria-live="polite">${entries.length.toLocaleString("en-US")} of ${A2_ENTRY_COUNT.toLocaleString("en-US")} entries</p>
     </section>
     <div id="a2-glossary-results">${renderA2Results(entries)}</div>
@@ -1362,6 +1367,18 @@ function refreshA2GlossaryResults() {
   const entries = filteredA2Entries();
   results.innerHTML = renderA2Results(entries);
   count.textContent = `${entries.length.toLocaleString("en-US")} of ${A2_ENTRY_COUNT.toLocaleString("en-US")} entries`;
+}
+
+function setA2ChapterFilter(chapter) {
+  a2GlossaryFilter.chapter = chapter;
+  document.querySelectorAll("[data-action='filter-a2-chapter']").forEach(tab => {
+    const active = tab.dataset.chapter === chapter;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-pressed", String(active));
+  });
+  const select = document.querySelector("[data-a2-chapter-select]");
+  if (select) select.value = chapter;
+  refreshA2GlossaryResults();
 }
 
 function filteredB1PlusEntries() {
@@ -2362,13 +2379,7 @@ async function handleAction(event) {
   if (action === "choose-vocab-reverse") { pendingVocabLevel = "both"; render("session-type-select"); }
   if (action === "open-a2-glossary") { await openA2Glossary(button); return; }
   if (action === "filter-a2-chapter") {
-    a2GlossaryFilter.chapter = button.dataset.chapter;
-    document.querySelectorAll("[data-action='filter-a2-chapter']").forEach(tab => {
-      const active = tab.dataset.chapter === a2GlossaryFilter.chapter;
-      tab.classList.toggle("active", active);
-      tab.setAttribute("aria-pressed", String(active));
-    });
-    refreshA2GlossaryResults();
+    setA2ChapterFilter(button.dataset.chapter);
     return;
   }
   if (action === "open-b1plus-glossary") { await openB1PlusGlossary(button); return; }
@@ -2587,6 +2598,8 @@ async function importSelectedWorkbook() {
   } catch (error) { toast(error.message || "The workbook could not be imported.", "error"); }
 }
 function handleSetting(event) {
+  const a2ChapterSelect = event.target.closest("[data-a2-chapter-select]");
+  if (a2ChapterSelect) { setA2ChapterFilter(a2ChapterSelect.value); return; }
   const chapterSelect = event.target.closest("[data-b1plus-chapter-select]");
   if (chapterSelect) { setB1PlusChapterFilter(chapterSelect.value); return; }
   const control = event.target.closest("[data-setting]"); if (!control) return;

@@ -27,6 +27,10 @@ check(html.includes('data-level="a2"'), 'A2 practice card is missing.');
 check(html.includes('Grundstufe Plus · Deutsch–Englisch'), 'The A2 glossary should use the Grundstufe Plus label.');
 check(html.includes('data-action="open-a2-glossary"'), 'A2 full glossary entry point is missing.');
 check(html.includes('renderA2Glossary'), 'A2 full glossary renderer is missing.');
+check(html.includes('for="a2-chapter-select">Kapitel auswählen</label>'), 'A2 mobile chapter picker must have a visible associated label.');
+check(html.includes('data-a2-chapter-select'), 'A2 mobile chapter picker is missing.');
+check(html.includes('Alle Kapitel (1–12)'), 'A2 mobile chapter picker must include all 12 chapters.');
+check(html.includes('setA2ChapterFilter(a2ChapterSelect.value)'), 'A2 mobile chapter picker must update the chapter filter.');
 check(serviceWorker.includes('./data/a2-glossary.json'), 'A2 glossary is missing from the offline cache.');
 
 const levelSelect = html.slice(html.indexOf('function renderVocabLevelSelect'), html.indexOf('function sectionLabel'));
