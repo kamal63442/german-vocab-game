@@ -1,4 +1,4 @@
-const CACHE_NAME = "uebungsheft-v10";
+const CACHE_NAME = "uebungsheft-v11";
 const APP_SHELL = [
   "./",
   "./index.html",

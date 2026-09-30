@@ -452,7 +452,7 @@ function updateNavigation(screen) {
 function bindNavigation(onNavigate) {
   document.addEventListener("click", event => {
     const target = event.target.closest("[data-nav]");
-    if (target) onNavigate(target.dataset.nav);
+    if (target) onNavigate(target.dataset.nav, target.hasAttribute("data-back"));
   });
 }
 
@@ -490,7 +490,7 @@ function initEdgeSwipe() {
     settleShell("bounce");
   };
   document.addEventListener("pointerdown", event => {
-    if (swipeState || !swipeShell) return;
+    if (swipeState || !swipeShell || swipeShell.inert) return;
     if (!event.isPrimary) return;
     if (event.pointerType === "touch" ? false : event.pointerType === "mouse" ? !(event.buttons & 1) : true) return;
     if (event.clientX > cfg.edge) return;
@@ -548,16 +548,31 @@ function initEdgeSwipe() {
 }
 
 async function handleSwipeBack(startScreen) {
+  if (startScreen !== activeScreen || swipeShell?.inert) return;
   if (activeSession) {
     await abandonSession("Swipe back to leave the current Übungsmodus. You'll see your results so far.");
     return;
   }
-  render(backTarget(startScreen));
+  goBack();
+}
+
+function goBack(fallback = backTarget()) {
+  const previous = screenHistory.pop();
+  if (previous) {
+    pendingKind = previous.kind;
+    pendingVocabLevel = previous.vocabLevel;
+    pendingZahlenRange = previous.zahlenRange;
+    if (previous.session) lastSession = previous.session;
+    render(previous.screen, false);
+  } else {
+    render(fallback, false);
+  }
 }
 
 function backTarget(screen) {
   screen = screen || activeScreen;
   if (screen === "vocab-level-select") return "mode-select";
+  if (screen === "a2-glossary" || screen === "b1plus-glossary" || screen === "a2-chapter-select" || screen === "b1plus-chapter-select") return "session-type-select";
   if (screen === "session-type-select") {
     if (pendingKind === "vocab") return "vocab-level-select";
     return "mode-select";
@@ -1282,7 +1297,7 @@ function renderVocabLevelSelect() {
       <h2 class="mode-card-title">English → German</h2>
       <p class="page-copy">See an English meaning, choose the correct German word.</p>
     </button>
-    <button type="button" class="text-button" data-nav="practice">← Back</button>
+    <button type="button" class="text-button" data-nav="practice" data-back>← Back</button>
   </section>`;
 }
 
@@ -1356,7 +1371,7 @@ function renderA2Glossary() {
       <p id="a2-result-count" class="glossary-result-count" role="status" aria-live="polite">${entries.length.toLocaleString("en-US")} of ${A2_ENTRY_COUNT.toLocaleString("en-US")} entries</p>
     </section>
     <div id="a2-glossary-results">${renderA2Results(entries)}</div>
-    <button type="button" class="text-button" data-nav="session-type-select">← Back to A2 Wortschatz</button>
+    <button type="button" class="text-button" data-nav="session-type-select" data-back>← Back to A2 Wortschatz</button>
   </section>`;
 }
 
@@ -1444,7 +1459,7 @@ function renderB1PlusGlossary() {
       <p id="b1plus-result-count" class="glossary-result-count" role="status" aria-live="polite">${entries.length.toLocaleString("en-US")} of ${B1_PLUS_ENTRY_COUNT.toLocaleString("en-US")} entries</p>
     </section>
     <div id="b1plus-glossary-results">${renderB1PlusResults(entries)}</div>
-    <button type="button" class="text-button" data-nav="session-type-select">← Back to B1+ Wortschatz</button>
+    <button type="button" class="text-button" data-nav="session-type-select" data-back>← Back to B1+ Wortschatz</button>
   </section>`;
 }
 
@@ -1502,7 +1517,7 @@ function renderSessionTypeSelect(kind, vocabLevel) {
       <h2 class="mode-card-title">Ganzes Glossar</h2>
       <p class="page-copy">Browse and search every German–English entry by chapter.</p>
     </button>` : ""}
-    <button type="button" class="text-button" data-nav="${pendingKind === "vocab" ? "vocab-level-select" : "practice"}">← Back</button>
+    <button type="button" class="text-button" data-nav="${pendingKind === "vocab" ? "vocab-level-select" : "practice"}" data-back>← Back</button>
   </section>`;
 }
 
@@ -1560,7 +1575,7 @@ function renderB1PlusChapterSelect() {
   return `<section class="screen">
     <div><div class="page-heading"><h1>B1+ ÜBUNGSMODUS</h1></div><p class="page-copy">Wähle ein Kapitel. Dein Stand bleibt gespeichert.</p></div>
     ${chapterCards}
-    <button type="button" class="text-button" data-nav="session-type-select">← Back to B1+ Wortschatz</button>
+    <button type="button" class="text-button" data-nav="session-type-select" data-back>← Back to B1+ Wortschatz</button>
   </section>`;
 }
 
@@ -1585,7 +1600,7 @@ function renderA2ChapterSelect() {
   return `<section class="screen">
     <div><div class="page-heading"><h1>A2 ÜBUNGSMODUS</h1></div><p class="page-copy">Wähle ein Kapitel. Du übst jeden Eintrag dieses Kapitels.</p></div>
     ${chapterCards}
-    <button type="button" class="text-button" data-nav="session-type-select">← Back to A2 Wortschatz</button>
+    <button type="button" class="text-button" data-nav="session-type-select" data-back>← Back to A2 Wortschatz</button>
   </section>`;
 }
 const SKETCHY_SPEAKER = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M11.4 5.6 C10 6.7 8.4 7.9 6.5 8.8 L3.6 8.9 C3.2 10.9 3.2 13 3.5 15.1 L6.6 15.3 C8.5 16.2 10.1 17.5 11.5 18.6 C11.8 14.3 11.8 9.9 11.4 5.6 Z" fill="currentColor" fill-opacity=".18"/><path d="M15.4 9.4 C16.5 11 16.5 13 15.3 14.7"/><path d="M18.6 6.9 C21 10 21 14 18.4 17.2"/></svg>`;
@@ -1976,6 +1991,7 @@ let b1PlusGlossaryError = false;
 let possessiveNouns = [];
 let activeSession = null;
 let activeScreen = "home";
+let activeRoute = null;
 let screenHistory = [];
 let timerId = null;
 let lastSession = null;
@@ -2125,19 +2141,23 @@ function validateVerbs(verbs) {
   const required = ["verb", "meaning", "ich", "du", "er", "wir", "ihr", "sie"];
   if (!Array.isArray(verbs) || !verbs.length || verbs.some(verb => required.some(field => !String(verb[field] || "").trim()))) throw new Error("The verb database has missing required forms.");
 }
-async function navigate(screen) {
+async function navigate(screen, isBack = false) {
   if (activeSession && screen !== "practice" && screen !== "exam" && screen !== activeScreen) {
     if (!await abandonSession()) return;
   }
+  if (isBack) return goBack(screen === "practice" ? "mode-select" : screen);
   if (screen === "practice") return render("mode-select");
   render(screen);
 }
-function render(screen) {
-  if (screen !== activeScreen) {
-    screenHistory.push({ screen: activeScreen, html: app.innerHTML });
+function render(screen, remember = true) {
+  if (screen === "home") {
+    screenHistory = [];
+  } else if (remember && screen !== activeScreen && activeRoute && activeScreen !== "practice" && activeScreen !== "exam") {
+    screenHistory.push(activeRoute);
     if (screenHistory.length > 10) screenHistory.shift();
   }
   activeScreen = screen;
+  activeRoute = { screen, kind: pendingKind, vocabLevel: pendingVocabLevel, zahlenRange: pendingZahlenRange, session: screen === "review" ? activeSession || lastSession : null };
   document.body.classList.toggle("glossary-open", screen === "a2-glossary" || screen === "b1plus-glossary");
   document.body.classList.toggle("chapter-select-open", screen === "b1plus-chapter-select");
   document.body.classList.toggle("session-open", screen === "practice" || screen === "exam");
