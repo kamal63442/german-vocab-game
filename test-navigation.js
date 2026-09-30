@@ -24,8 +24,8 @@ function makeApp() {
     activeSession: null, lastSession: null, pendingKind: null,
     pendingVocabLevel: 'a1', pendingZahlenRange: '0-1000',
     swipeShell: { inert: false }, state: { stats: {}, settings: {}, achievements: [] },
-    glossaryWords: [], b1GlossaryWords: [], a2GlossaryEntries: [{}], b1PlusGlossaryEntries: [{}],
-    A2_ENTRY_COUNT: 1486, B1_PLUS_ENTRY_COUNT: 2782,
+    glossaryWords: [], b1GlossaryWords: [], a1GlossaryEntries: [{}], a2GlossaryEntries: [{}], b1PlusGlossaryEntries: [{}],
+    B1_ENTRY_COUNT: 2007, A1_ENTRY_COUNT: 1976, A2_ENTRY_COUNT: 1486, B1_PLUS_ENTRY_COUNT: 2782,
     document: {
       body: { classList: { toggle() {} } },
       addEventListener(type, listener) { listeners[type] = listener; }
@@ -34,8 +34,8 @@ function makeApp() {
   });
   for (const [renderer, screen] of Object.entries({
     renderHome: 'home', renderModeSelect: 'mode-select', renderVocabLevelSelect: 'vocab-level-select',
-    renderA2Glossary: 'a2-glossary', renderB1PlusGlossary: 'b1plus-glossary',
-    renderA2ChapterSelect: 'a2-chapter-select', renderB1PlusChapterSelect: 'b1plus-chapter-select',
+    renderB1Glossary: 'b1-glossary', renderA1Glossary: 'a1-glossary', renderA2Glossary: 'a2-glossary', renderB1PlusGlossary: 'b1plus-glossary',
+    renderA1ChapterSelect: 'a1-chapter-select', renderA2ChapterSelect: 'a2-chapter-select', renderB1PlusChapterSelect: 'b1plus-chapter-select',
     renderStatistics: 'statistics', renderSettings: 'settings', renderAchievements: 'achievements'
   })) context[renderer] = () => screen;
   context.renderSessionTypeSelect = (kind, level) => `${kind}:${level}`;
@@ -66,6 +66,7 @@ async function test(name, run) {
 
 (async () => {
   for (const [level, screen] of [
+    ['b1', 'b1-glossary'], ['a1', 'a1-glossary'], ['a1', 'a1-chapter-select'],
     ['a2', 'a2-glossary'], ['a2', 'a2-chapter-select'],
     ['b1plus', 'b1plus-glossary'], ['b1plus', 'b1plus-chapter-select']
   ]) await test(`${screen} returns through its vocabulary hierarchy`, async () => {
@@ -85,8 +86,8 @@ async function test(name, run) {
   });
 
   for (const screen of [
-    'mode-select', 'vocab-level-select', 'session-type-select', 'a2-glossary',
-    'a2-chapter-select', 'b1plus-glossary', 'b1plus-chapter-select', 'achievements'
+    'b1-glossary', 'mode-select', 'vocab-level-select', 'session-type-select', 'a1-glossary', 'a2-glossary',
+    'a1-chapter-select', 'a2-chapter-select', 'b1plus-glossary', 'b1plus-chapter-select', 'achievements'
   ]) await test(`Noten and Mehr return to ${screen}`, async () => {
     const context = makeApp();
     enterVocabulary(context, 'b1plus', screen);
@@ -226,8 +227,8 @@ async function test(name, run) {
     assert.ok(context.screenHistory.every(route => !Object.hasOwn(route, 'html')));
   });
 
-  await test('All six Back controls declare back intent to the navigation binding', async () => {
-    assert.equal((html.match(/data-back>←/g) || []).length, 6);
+  await test('All nine Back controls declare back intent to the navigation binding', async () => {
+    assert.equal((html.match(/data-back>←/g) || []).length, 9);
     const context = makeApp();
     let received;
     context.bindNavigation((screen, isBack) => { received = [screen, isBack]; });
